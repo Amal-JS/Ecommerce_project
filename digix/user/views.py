@@ -8,3 +8,6 @@ def index(request):
 
 def category_display_all_products(request):
     return render(request,'user_app/category.html')
+
+def product(request):
+    return render(request,'user_app/product.html')
