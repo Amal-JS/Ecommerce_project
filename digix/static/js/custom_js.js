@@ -16,7 +16,8 @@ for (var i = 0; i < navDownArrows.length; i++) {
 
 //grey scale for brands logos
 
-var home_brands = document.getElementById('home_brands')
-home_brands.style.filter ="grayscale(100%)";
-
+var home_brands = document.getElementById('home_brands');
+if (home_brands) {
+  home_brands.style.filter = "grayscale(100%)";
+}
 console.log('comes2')
