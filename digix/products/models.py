@@ -9,18 +9,14 @@ class Category(models.Model):
     def __str__(self) -> str:
         return self.name
     
-#brand model
-class Brand(models.Model):
-    name = models.CharField(max_length=30,unique=True)
-    def __str__(self) -> str:
-        return self.name
+
 
 #product model
 class Product(models.Model):
-    name=models.CharField(max_length=30)
+    name=models.CharField(max_length=30,unique=True)
     category = models.ForeignKey(Category,related_name='category_products',on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    brand = models.ForeignKey(Brand,related_name='brand_products',on_delete=models.SET_NULL,null=True)
+    brand = models.CharField(max_length=30)
 
     def __str__(self) -> str:
         return self.name
@@ -38,13 +34,16 @@ class Variant(models.Model):
     ram = models.PositiveBigIntegerField()
     storage = models.PositiveBigIntegerField()
     color = models.CharField(max_length=20)
-    screen_resolution = models.DecimalField(max_digits=4,decimal_places=2)
+    mr_price = models.DecimalField(max_digits=7,decimal_places=2)
+    selling_price = models.DecimalField(max_digits=7,decimal_places=2)
+
+    screen_resolution = models.CharField(max_length=4,blank=True,null=True)
     no_of_usb_ports = models.PositiveIntegerField(blank=True,null=True)
     no_of_hdmi_ports = models.PositiveIntegerField(blank=True,null=True)
     tv_mount = models.CharField(max_length=30,choices=tv_mount_choices,blank=True,null=True)
 
     def __str__(self) -> str:
-        return f'{self.name} : {self.product}'
+        return f'{self.product} {self.name}'
     
 
 #image for a variant

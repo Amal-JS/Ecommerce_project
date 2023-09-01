@@ -1,0 +1,90 @@
+{% extends 'digix_admin/base.html' %}
+{% load static %}
+
+{% block title %}Add {{element}}{% endblock %}
+
+{% block body %}
+
+
+<div class="content-wrapper" id="content_wrapper_div">
+
+<div class="container h-100">
+    <div class="row d-flex justify-content-center text-dark">
+        <div class="col-12">
+
+
+            {% if element == 'Category' %}
+
+            
+
+            {% endif %}
+
+
+
+
+
+
+
+
+            <form method="POST"  >
+                {% csrf_token %}
+             
+                {% for field in form %}
+            
+                <div class="form-group m-3 d-flex">
+                    
+                    {{ field }} {% if field.name == 'is_superuser' %}   {{field.label}} {% endif %}
+                </div>
+                {{ form.field.errors }}
+                    {% if field.errors %}
+                        <div class="mx-3">
+                            {% for error in field.errors %}
+                            <small id="" class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                  
+            
+                {% endfor %}
+            
+                {% if form.non_field_errors %}
+            <div class="invalid-feedback">
+                {% for error in form.non_field_errors %}
+                <p class="text-danger">{{ error }}</p>
+                {% endfor %}
+                {% endif %}
+            
+                
+            
+                    
+                        
+            
+                        
+                        
+                        <div class="w-50">
+                    <div class="text-start mx-3 w-50">
+            
+                <button type="submit" class="btn text-white btn-warning mx-1 p-3">Submit</button>
+            </div></div>
+            
+                <!-- {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <p{% if message.tags %} class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %} -->
+            
+            </form>
+    </div>
+</div>
+
+
+
+
+   
+        <!-- 
+    {{ field.errors }}
+{{ form.non_field_errors }} -->
+    </div>
+    {% endblock %}
