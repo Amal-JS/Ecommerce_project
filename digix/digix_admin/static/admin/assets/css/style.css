@@ -21167,8 +21167,8 @@ div.tagsinput {
 }
 
 .navbar .navbar-menu-wrapper .search input {
-  color:white;
-  background: black;
+  color:black;
+  background: white;
   padding: 13px 20px 11px 20px;
   border: 1px solid #2c2e33;
 }
@@ -21269,7 +21269,7 @@ tbody, td, tfoot, th, thead, tr {
 }
 
 .content-wrapper {
-  background: #9f2626;
+  background: #fff;
   padding: 1.875rem 1.75rem;
   width: 100%;
   -webkit-flex-grow: 1;
@@ -21289,10 +21289,10 @@ tbody, td, tfoot, th, thead, tr {
 .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
   cursor: default;
   color: blue;
-  border: 1px solid white;
+  border: 1px solid black;
   background: transparent;
   box-shadow: none;
-  color: #fff !important;
+  color: black !important;
 }
 
 .dataTables_wrapper {
@@ -21317,3 +21317,89 @@ label{
     width: 15rem;
     height: 2rem;
   }
+
+  .sidebar {
+    min-height: calc(100vh - 70px);
+    background: #fff;
+    font-weight: normal;
+    padding: 0;
+    width: 244px;
+    z-index: 11;
+    transition: width 0.25s ease, background 0.25s ease;
+    -webkit-transition: width 0.25s ease, background 0.25s ease;
+    -moz-transition: width 0.25s ease, background 0.25s ease;
+    -ms-transition: width 0.25s ease, background 0.25s ease;
+  }
+
+  .sidebar .sidebar-brand-wrapper {
+    transition: width 0.25s ease, background 0.25s ease;
+    -webkit-transition: width 0.25s ease, background 0.25s ease;
+    -moz-transition: width 0.25s ease, background 0.25s ease;
+    -ms-transition: width 0.25s ease, background 0.25s ease;
+    width: 244px;
+    height: 70px;
+    background: #bab8b9;
+  }
+
+
+  .navbar .navbar-menu-wrapper {
+    transition: width 0.25s ease;
+    -webkit-transition: width 0.25s ease;
+    -moz-transition: width 0.25s ease;
+    -ms-transition: width 0.25s ease;
+    box-shadow: 20px 19px 34px -15px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 20px 19px 34px -15px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 20px 19px 34px -15px rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+    padding-left: 15px;
+    padding-right: 15px;
+    width: 100%;
+    height: 70px;
+    background: #bab8b9;
+}
+
+
+.sidebar .nav {
+  border-right: 10px solid #dbdbdb;
+  overflow: hidden;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  margin-bottom: 60px;
+  padding-top: 70px;
+}
+
+
+.dataTables_wrapper {
+  padding-left: 0;
+  padding-right: 0;
+  color: black;
+}
+
+.dataTables_wrapper .dataTables_length select {
+  border: 2px solid black;
+  background: white;
+  min-width: 65px;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+  color: black;
+}
+
+.admin_side_a{
+  height:1rem;
+}
+
+
+.sidebar .nav {
+  margin-top: 3rem;
+  border-right: 10px solid #dbdbdb;
+  overflow: hidden;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  margin-bottom: 60px;
+  padding-top: 70px;
+}
+
+#content_wrapper_div {
+  margin-top: 1.5rem;
+  color: black;
+}

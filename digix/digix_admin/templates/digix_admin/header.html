@@ -2,32 +2,50 @@
 <div class="container-scroller">
     <!-- partial:partials/_sidebar.html -->
     <nav class="sidebar sidebar-offcanvas border-right  " id="sidebar">
-      <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top p-5">
-        <a class="sidebar-brand brand-logo" href="index.html"><img src="{% static 'admin_logo_copy.png' %}" style="height: 5rem;
+      <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top p-5" style="background: white;border-right:10px solid #dadada">
+        <a class="sidebar-brand brand-logo" href="index.html"><img src="{% static 'logo_symbol.jpg' %}" style="height: 5rem;
           width: 19rem;" alt="logo" /></a>
         <a class="sidebar-brand brand-logo-mini" href="index.html"><img src="{% static 'admin/assets/images/logo-mini.svg' %}" alt="logo" /></a>
       </div>
       <ul class="nav" id="nav_ul">
         
-        <li class="nav-item menu-items ml-2 mb-3 mt-5">
-          <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center" href="{% url 'digix_admin:admin_home' %}" >Home
+        <li class="nav-item menu-items ml-2 mb-5 mt-5">
+          <a  class="btn mr-3 p-2 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a" href="{% url 'digix_admin:admin_home' %}" > <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-house-door-fill mr-2 text-black" viewBox="0 0 16 16">
+            <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5Z"/>
+          </svg>Home
           </a></li>
 
-        <li class="nav-item menu-items ml-2 mb-3">
-        <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center" href="{% url 'digix_admin:all_category' %}" >Category
+        <li class="nav-item menu-items ml-2 mb-5">
+        <a  class="btn  mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a"" href="{% url 'digix_admin:all_category' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi mr-2 text-black bi-bookmarks" viewBox="0 0 16 16">
+          <path d="M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5V4zm2-1a1 1 0 0 0-1 1v10.566l3.723-2.482a.5.5 0 0 1 .554 0L11 14.566V4a1 1 0 0 0-1-1H4z"/>
+          <path d="M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1z"/>
+        </svg>Category
         </a></li>
 
-        <li class="nav-item menu-items ml-2 mb-3">
-          <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center" href="{% url 'digix_admin:all_products' %}" >Product
+        <li class="nav-item menu-items ml-2 mb-5">
+          <a  class="btn  mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a"" href="{% url 'digix_admin:all_products' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi mr-2 text-black bi-phone-vibrate" viewBox="0 0 16 16">
+            <path d="M10 3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4zM6 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H6z"/>
+            <path d="M8 12a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM1.599 4.058a.5.5 0 0 1 .208.676A6.967 6.967 0 0 0 1 8c0 1.18.292 2.292.807 3.266a.5.5 0 0 1-.884.468A7.968 7.968 0 0 1 0 8c0-1.347.334-2.619.923-3.734a.5.5 0 0 1 .676-.208zm12.802 0a.5.5 0 0 1 .676.208A7.967 7.967 0 0 1 16 8a7.967 7.967 0 0 1-.923 3.734.5.5 0 0 1-.884-.468A6.967 6.967 0 0 0 15 8c0-1.18-.292-2.292-.807-3.266a.5.5 0 0 1 .208-.676zM3.057 5.534a.5.5 0 0 1 .284.648A4.986 4.986 0 0 0 3 8c0 .642.12 1.255.34 1.818a.5.5 0 1 1-.93.364A5.986 5.986 0 0 1 2 8c0-.769.145-1.505.41-2.182a.5.5 0 0 1 .647-.284zm9.886 0a.5.5 0 0 1 .648.284C13.855 6.495 14 7.231 14 8c0 .769-.145 1.505-.41 2.182a.5.5 0 0 1-.93-.364C12.88 9.255 13 8.642 13 8c0-.642-.12-1.255-.34-1.818a.5.5 0 0 1 .283-.648z"/>
+          </svg>Product
           </a></li>
-          <li class="nav-item menu-items ml-2 mb-3">
-            <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center" href="{% url 'digix_admin:all_variants' %}" >Variant
+          <li class="nav-item menu-items ml-2 mb-5">
+            <a  class="btn  mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a"" href="{% url 'digix_admin:all_variants' %}" >
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi mr-2 text-black bi-laptop" viewBox="0 0 16 16">
+                <path d="M13.5 3a.5.5 0 0 1 .5.5V11H2V3.5a.5.5 0 0 1 .5-.5h11zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11zM0 12.5h16a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5z"/>
+              </svg>Variant
             </a></li>
-            <li class="nav-item menu-items ml-2 mb-3">
-              <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center" href="" >Users
+
+            <li class="nav-item menu-items ml-2 mb-5">
+              <a  class="btn  mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a"" href="" >
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi mr-2 text-black bi-person-fill" viewBox="0 0 16 16">
+                  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                </svg>Users
               </a></li>
               <li class="nav-item menu-items ml-2 mb-3">
-                <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center" href="{% url 'digix_admin:add_category' %}" >Orders
+                <a  class="btn  mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a"" href="{% url 'digix_admin:add_category' %}" >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi mr-2 text-black bi-cart-fill" viewBox="0 0 16 16">
+                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                  </svg>Orders
                 </a></li>
 
 
@@ -179,9 +197,9 @@
 
 
         <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch p-5">
-  <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+  <!-- <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
     <span class="mdi mdi-menu"></span>
-  </button>
+  </button> -->
   <ul class="navbar-nav w-100">
     <li class="nav-item w-100">
       
