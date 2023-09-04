@@ -29,27 +29,28 @@ class Variant(models.Model):
         ("table mount","Table Mount")
 
     ]
-    name = models.CharField(max_length=30,unique=True)
+    name = models.CharField(max_length=200,unique=True)
     product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name='product_variants')
     ram = models.PositiveBigIntegerField()
     storage = models.PositiveBigIntegerField()
     color = models.CharField(max_length=20)
-    mr_price = models.DecimalField(max_digits=7,decimal_places=2)
-    selling_price = models.DecimalField(max_digits=7,decimal_places=2)
+    mr_price = models.DecimalField(max_digits=8,decimal_places=2)
+    selling_price = models.DecimalField(max_digits=8,decimal_places=2)
 
     screen_resolution = models.CharField(max_length=4,blank=True,null=True)
     no_of_usb_ports = models.PositiveIntegerField(blank=True,null=True)
     no_of_hdmi_ports = models.PositiveIntegerField(blank=True,null=True)
     tv_mount = models.CharField(max_length=30,choices=tv_mount_choices,blank=True,null=True)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return f'{self.product} {self.name}'
-    
+       
+        
 
 #image for a variant
 class Variant_Images(models.Model):
     variant = models.ForeignKey(Variant,on_delete=models.CASCADE,related_name="variant_images")
-    image=models.ImageField(upload_to='product_images/')
+    image=models.ImageField(upload_to='product_images/',null=True,blank=True,default='product_images/default_image.jpg')
     def __str__(self) -> str:
         return self.variant
 

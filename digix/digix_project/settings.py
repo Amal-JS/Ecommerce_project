@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'digix_admin',
     'user',
-    'products'
+    'products',
+    'table',
 ]
 
 MIDDLEWARE = [

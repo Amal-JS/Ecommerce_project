@@ -3,4 +3,95 @@ Superuser
 Username: digix
 Email address: digix@gmail.com
 
+
+
 ==============================
+
+
+Data Table
+
+==========================
+
+    Install the django-datatable package.
+
+pip install django-datatable
+
+    Define a simple model named Product in your Django project.
+
+Python
+
+# example/app/models.py
+class Product(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+Use code with caution. Learn more
+
+    Add table to your INSTALLED_APPS setting.
+
+Python
+
+INSTALLED_APPS = (
+    ...,
+    'table',
+)
+
+Use code with caution. Learn more
+
+    Create a view that renders the data table.
+
+Python
+
+# example/app/views.py
+def product_list(request):
+    products = Product.objects.all()
+    table = DataTable(request=request, queryset=products)
+    return render(request, 'product_list.html', {'table': table})
+
+Use code with caution. Learn more
+
+    Create a template that renders the data table.
+
+HTML
+
+<!-- example/templates/product_list.html -->
+<table id="product_table" class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in table.data %}
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.description }}</td>
+            <td>{{ product.price }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+Use code with caution. Learn more
+
+    In your Django project's settings.py file, add the following line to the TEMPLATES setting:
+
+Python
+
+'DIRS': [os.path.join(BASE_DIR, 'templates')],
+
+Use code with caution. Learn more
+
+This will tell Django where to look for templates.
+
+    Finally, you can now access the data table in your Django project by visiting the URL /product_list/.
+
+I hope this helps!
+Sources
+
+    github.com/TheDumbfounds/pytest-tutorial 
+
+===============================================================================

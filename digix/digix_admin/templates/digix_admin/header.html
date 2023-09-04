@@ -10,24 +10,24 @@
       <ul class="nav" id="nav_ul">
         
         <li class="nav-item menu-items ml-2 mb-3 mt-5">
-          <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100" href="{% url 'digix_admin:admin_home' %}" >Home
+          <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center" href="{% url 'digix_admin:admin_home' %}" >Home
           </a></li>
 
         <li class="nav-item menu-items ml-2 mb-3">
-        <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100" href="{% url 'digix_admin:all_category' %}" >Category
+        <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center" href="{% url 'digix_admin:all_category' %}" >Category
         </a></li>
 
         <li class="nav-item menu-items ml-2 mb-3">
-          <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100" href="{% url 'digix_admin:all_products' %}" >Product
+          <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center" href="{% url 'digix_admin:all_products' %}" >Product
           </a></li>
           <li class="nav-item menu-items ml-2 mb-3">
-            <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100" href="{% url 'digix_admin:all_variants' %}" >Variant
+            <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center" href="{% url 'digix_admin:all_variants' %}" >Variant
             </a></li>
             <li class="nav-item menu-items ml-2 mb-3">
-              <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100" href="" >Variant Images
+              <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center" href="" >Users
               </a></li>
               <li class="nav-item menu-items ml-2 mb-3">
-                <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100" href="{% url 'digix_admin:add_category' %}" >Category
+                <a  class="btn btn-dark mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center" href="{% url 'digix_admin:add_category' %}" >Orders
                 </a></li>
 
 
@@ -184,9 +184,7 @@
   </button>
   <ul class="navbar-nav w-100">
     <li class="nav-item w-100">
-      <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-        <input type="text" class="form-control" placeholder="Search products">
-      </form>
+      
     </li>
   </ul>
   <ul class="navbar-nav navbar-nav-right">
@@ -201,9 +199,7 @@
     <li class="nav-item dropdown">
       <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
         <div class="navbar-profile">
-          <img class="img-xs rounded-circle" src="assets/images/faces/face15.jpg" alt="">
-          <p class="mb-0 d-none d-sm-block navbar-profile-name">Henry Klein</p>
-          <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+          <a href="" class="btn btn-danger">Logout</a>
         </div>
       </a>
       <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">

@@ -21,3 +21,6 @@ if (home_brands) {
   home_brands.style.filter = "grayscale(100%)";
 }
 console.log('comes2')
+
+
+//data table for admin side

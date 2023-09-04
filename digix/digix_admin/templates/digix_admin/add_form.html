@@ -13,11 +13,11 @@
         <div class="col-12">
 
 
-            {% if element == 'Category' %}
+            
 
             
 
-            {% endif %}
+            
 
 
 
@@ -26,20 +26,38 @@
 
 
 
-            <form method="POST"  >
+            <form method="POST"  {% if element == 'Variant' %} enctype="multipart/form-data" {% endif %}>
                 {% csrf_token %}
              
                 {% for field in form %}
             
-                <div class="form-group m-3 d-flex">
-                    
+                <div class="form-group m-3 {% if element != 'Variant' %} mt-4  w-50 {% else %} mt-4 d-flex w-50 {% endif %}  {% if update %} d-flex w-50 {% endif %}">
+                   
+                    <div class="w-50 ">
+                    {% if update %}
+                    {{field.label}}
+                    {% else %} 
+                    {% if field.name|slice:":5" == 'image'  %} 
+                    <div class="mr-3 ">{% if field.label %} {{field.label}} {% endif %}</div>
+                    {% endif %}
+
+
+                    {% if field.name == 'tv_mount'  %} 
+                    <div class="mr-3">{% if field.label %}*If TV <br> Mount Type {% endif %}</div>
+                    {% endif %}
+                    {% endif %}
+                </div>
+
                     {{ field }} {% if field.name == 'is_superuser' %}   {{field.label}} {% endif %}
                 </div>
+
+
+
                 {{ form.field.errors }}
                     {% if field.errors %}
                         <div class="mx-3">
                             {% for error in field.errors %}
-                            <small id="" class="text-danger">{{ error }}</small>
+                            <small id="" class="text-danger">{{field.name}} {{ error }}</small>
                             {% endfor %}
                         </div>
                     {% endif %}
@@ -50,7 +68,7 @@
                 {% if form.non_field_errors %}
             <div class="invalid-feedback">
                 {% for error in form.non_field_errors %}
-                <p class="text-danger">{{ error }}</p>
+                <p class="text-success">{{ error }}</p>
                 {% endfor %}
                 {% endif %}
             
@@ -64,7 +82,7 @@
                         <div class="w-50">
                     <div class="text-start mx-3 w-50">
             
-                <button type="submit" class="btn text-white btn-warning mx-1 p-3">Submit</button>
+                <button type="submit" class="btn text-white btn-warning mx-1 p-3 add_btn">Submit</button>
             </div></div>
             
                 <!-- {% if messages %}
