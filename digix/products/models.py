@@ -36,11 +36,13 @@ class Variant(models.Model):
     color = models.CharField(max_length=20)
     mr_price = models.DecimalField(max_digits=8,decimal_places=2)
     selling_price = models.DecimalField(max_digits=8,decimal_places=2)
-
+    stock = models.PositiveIntegerField()
+    is_available= models.BooleanField(default=True)
     screen_resolution = models.CharField(max_length=4,blank=True,null=True)
     no_of_usb_ports = models.PositiveIntegerField(blank=True,null=True)
     no_of_hdmi_ports = models.PositiveIntegerField(blank=True,null=True)
     tv_mount = models.CharField(max_length=30,choices=tv_mount_choices,blank=True,null=True)
+    description=models.TextField()
 
     def __str__(self):
         return f'{self.product} {self.name}'

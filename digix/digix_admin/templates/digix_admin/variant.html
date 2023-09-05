@@ -14,7 +14,7 @@
 
   <thead>
       <!-- really important when rendering button , an empty <td> want to be given else won't work --empty data table -->
-      
+        
           <td>Variant</td> 
           <td>Product</td> 
           <td>Ram</td> 
@@ -22,6 +22,9 @@
           <td>color</td>
           <td>MRP</td>
           <td>Selling Price</td>
+          <td>Stock</td>
+          <td>Is available</td>
+          <td></td>
           <td></td>
           <td></td>
           
@@ -30,7 +33,17 @@
 
   <!-- Your table content here -->
 </table>
-
+<!-- Modal for displaying images -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content" id="ad_modal_content">
+        <div id="imageContainer" class="modal-body">
+          <!-- Images will be displayed here -->
+        </div>
+        
+      </div>
+  </div>
+</div>
         </div>
       </div>
 
