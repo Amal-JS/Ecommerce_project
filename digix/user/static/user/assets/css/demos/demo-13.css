@@ -82,3 +82,11 @@
     .btn-product-icon:hover span, .btn-product-icon:focus span {
         background-color: #333;
     }
+
+    .cat-block:hover .cat-block-title {
+        color: #333333;
+    }
+
+    .header.header-10.header-intro-clearance .cart-dropdown:hover .cart-txt, .header.header-10.header-intro-clearance .cart-dropdown:focus .cart-txt {
+        color: #333333;
+    }

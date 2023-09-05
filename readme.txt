@@ -29,3 +29,16 @@ Day 3:
     
 
 ==================================================================================
+
+Day 4:
+==================================================================================
+
+1.Added  form for UserCreation
+    
+2.Customized the home page add carousel
+
+3.View funcion for handling user sign in , sign out , sign up
+
+4.Created User sign up , User sign html pages
+
+===================================================================================

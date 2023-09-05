@@ -50,3 +50,15 @@
     background-color: #c96;
     background-color: #303842;
 }
+
+.nav.nav-pills .nav-item.show .nav-link,.nav.nav-pills .nav-item .nav-link.active {
+    color: white;
+    border-bottom-color: #303842
+}
+
+
+.nav.nav-pills .nav-item.show .nav-link, .nav.nav-pills .nav-item .nav-link.active {
+    color: white;
+    border-bottom-color: #303842;
+    background: #333333;
+  }

@@ -435,7 +435,7 @@
             <div class="header-center">
                 <nav class="main-nav">
                     <ul class="menu sf-arrows">
-                        <li class="megamenu-container active">
+                        <li class="megamenu-container ">
                             <a href="index.html" class="sf-with-ul no-dropdown">Home</a>
 
                             
@@ -536,7 +536,7 @@
                         
                         
                         <li>
-                            <a href="elements-list.html" class="sf-with-ul no-dropdown">Sign In</a>
+                            <a href="{% url 'user:user_sign_in' %}" class="sf-with-ul no-dropdown">Sign In</a>
 
                             
                         </li>
@@ -544,7 +544,7 @@
 
 
                         <li>
-                            <a href="elements-list.html" class="sf-with-ul no-dropdown">Sign Up</a>
+                            <a href="{% url 'user:user_sign_up' %}" class="sf-with-ul no-dropdown">Sign Up</a>
 
                             
                         </li>
