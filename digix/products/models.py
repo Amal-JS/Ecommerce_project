@@ -52,7 +52,11 @@ class Variant(models.Model):
 #image for a variant
 class Variant_Images(models.Model):
     variant = models.ForeignKey(Variant,on_delete=models.CASCADE,related_name="variant_images")
-    image=models.ImageField(upload_to='product_images/',null=True,blank=True,default='product_images/default_image.jpg')
+    image=models.ImageField(upload_to='product_images/',null=True,blank=True)
     def __str__(self) -> str:
         return self.variant
+    def save(self, *args, **kwargs):
+        if not self.image:  # Check if the image field is blank
+            self.image = 'product_images/default_image.jpg'  # Set the default image path
+        super().save(*args, **kwargs)
 

@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'digix_admin',
     'user',
     'products',
-    'table',
+    
 ]
 
 MIDDLEWARE = [

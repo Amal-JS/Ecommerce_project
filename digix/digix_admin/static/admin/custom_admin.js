@@ -172,7 +172,7 @@ $(document).ready(function () {
           render: function (data, type, row) {
             if (Array.isArray(data.images) && data.images.length > 0) {
               return (
-                '<button class="btn btn-warning view-images " data-images="' +
+                '<button class="btn btn-info view-images " data-images="' +
                 data.images.join(",") +
                 '" style="width:100px";>View Images</button>'
               );
