@@ -1,0 +1,89 @@
+index .html
+
+get all variants 
+=======================================================================
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Variant List</title>
+</head>
+<body>
+    <h1>Variant List</h1>
+    <ul>
+        {% for variant in variants_with_images|slice:":10" %}
+            <li>
+                <strong>Name:</strong> {{ variant.name }}<br>
+                <strong>Product:</strong> {{ variant.product.name }}<br>
+                <strong>Category:</strong> {{ variant.product.category.name }}<br>
+                <!-- Add other fields you want to display from the Variant model -->
+
+                <strong>Images:</strong>
+                <ul>
+                    {% for image in variant.variant_images.all %}
+                        <li>
+                            <img src="{{ image.image.url }}" alt="Variant Image">
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <hr>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+---------------------------------------------------------------------
+
+from django.shortcuts import render
+from .models import Variant, Variant_Images
+
+def variant_list(request):
+    # Query all Variant objects along with their related Variant_Images
+    variants_with_images = Variant.objects.prefetch_related('variant_images').all()
+
+    context = {
+        'variants_with_images': variants_with_images,
+    }
+
+    return render(request, 'your_template.html', context)
+
+
+======================================================================
+
+
+get filter by category 
+
+===============================================================================
+
+{% if variant.product.category.name == 'Smart Phone' %}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Variant List</title>
+</head>
+<body>
+    <h1>Variant List</h1>
+    <ul>
+        {% for variant in variants_with_images %}
+            {% if variant.product.category.name == 'smart phone' %}
+                <li>
+                    <strong>Name:</strong> {{ variant.name }}<br>
+                    <strong>Product:</strong> {{ variant.product.name }}<br>
+                    <strong>Category:</strong> {{ variant.product.category.name }}<br>
+                    <!-- Add other fields you want to display from the Variant model -->
+
+                    <strong>Image:</strong>
+                    {% if variant.variant_images.all %}
+                        <img src="{{ variant.variant_images.all.0.image.url }}" alt="Variant Image">
+                    {% else %}
+                        <img src="path/to/default/image.jpg" alt="Default Image">
+                    {% endif %}
+                </li>
+                <hr>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</body>
+</html>
+

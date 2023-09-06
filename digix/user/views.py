@@ -1,11 +1,17 @@
 from django.shortcuts import redirect, render
+#Form for user creation
 from . forms import UserCreationForm
+#display form validation errors
 from django.contrib import messages
+#check user authentication , login and logout (adding and removing user in session )
 from django.contrib.auth import authenticate, login,logout
+#import Variant model for index.html
+from products.models import Variant
 
 #home page
 def index(request):
-    return render(request,'user_app/home.html')
+    variants_with_images = Variant.objects.prefetch_related('variant_images').all()
+    return render(request,'user_app/home.html',{'variants_with_images':variants_with_images})
 
 #display all products based on category , 
 def category_display_all_products(request):
