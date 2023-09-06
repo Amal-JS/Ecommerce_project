@@ -7,6 +7,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login,logout
 #import Variant model for index.html
 from products.models import Variant
+#pagination
+from django.core.paginator import Paginator
 
 #home page
 def index(request):
@@ -14,8 +16,37 @@ def index(request):
     return render(request,'user_app/home.html',{'variants_with_images':variants_with_images})
 
 #display all products based on category , 
-def category_display_all_products(request):
-    return render(request,'user_app/category.html')
+def category_display_all_products(request, category=None, brand=None):
+
+    brand = request.GET.get('brand')
+    category = request.GET.get('category')
+    # Start with all variants with prefetch_related
+    variants_with_images = Variant.objects.prefetch_related('variant_images').all()
+
+    if category:
+        # Filter by category name if category parameter is provided
+        variants_with_images = variants_with_images.filter(product__category__name=category)
+
+    if brand:
+        # Filter by brand name if brand parameter is provided
+        variants_with_images = variants_with_images.filter(product__brand=brand)
+
+    if variants_with_images is None:
+        print('empty')
+
+     # Set the number of items per page
+    items_per_page = 10  # Change this to your desired number
+
+    # Create a Paginator object
+    paginator = Paginator(variants_with_images, items_per_page)
+
+    # Get the current page number from the request's GET parameters
+    page_number = request.GET.get('page')
+
+    # Get the Page object for the current page
+    page = paginator.get_page(page_number)
+
+    return render(request, 'user_app/category.html', {'page': page})
 
 #display single product
 def product(request):

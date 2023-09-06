@@ -47,3 +47,70 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+
+
+//category fetch
+
+ // Get references to the checkbox elements
+ const SmartPhoneCheckbox = document.getElementById('Smart PhoneCheckbox');
+ const LaptopCheckbox = document.getElementById('LaptopCheckbox');
+ const SmartTVCheckbox = document.getElementById('Smart TVCheckbox');
+
+ // Add event listeners to the checkboxes
+ SmartPhoneCheckbox.addEventListener('change', sendRequest);
+ LaptopCheckbox.addEventListener('change', sendRequest);
+ SmartTVCheckbox.addEventListener('change', sendRequest);
+
+ // Function to send the request when a checkbox is clicked
+ function sendRequest(event) {
+  
+     const checkbox = event.target;
+     const isChecked = checkbox.checked;
+     const category = checkbox.id.replace('Checkbox', ''); // Remove "Checkbox" from the ID
+     
+     if (isChecked) {
+         
+          window.location.href=`/all_products/?page=1&category=${category}`;
+     }
+ }
+
+
+
+
+
+ console.log('check category and brand')
+
+
+
+    // for brand Define a mapping of checkbox IDs to their corresponding URLs
+    var urlMapping = {
+        'brand-Apple': '/all_products/?page=1&brand=Apple',
+        'brand-Samsung': '/all_products/?page=1&brand=Samsung',
+        'brand-MI': '/all_products/?page=1&brand=MI',
+        'brand-LG': '/all_products/?page=1&brand=LG',
+        'brand-HP': '/all_products/?page=1&brand=HP',
+        'brand-ASUS': '/all_products/?page=1&brand=ASUS',
+        'brand-Xioami': '/all_products/?page=1&brand=Xioami',
+        'brand-Real Me': '/all_products/?page=1&brand=Real Me'
+    };
+
+
+    //for brand and category
+    var checkboxes = document.querySelectorAll('.custom-control-input');
+
+    checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('click', function() {
+            // Get the ID of the clicked checkbox
+            var checkboxId = this.id;
+
+            // Check if the checkbox is checked
+            if (this.checked) {
+                // If checked, fetch content from the corresponding URL
+                var url = urlMapping[checkboxId];
+                if (url) {
+                  window.location.href = url;
+                }
+            } 
+        });
+    });

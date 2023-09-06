@@ -42,3 +42,17 @@ Day 4:
 4.Created User sign up , User sign html pages
 
 ===================================================================================
+
+
+Day 5:
+==================================================================================
+
+1.Index.html 80% complete
+    
+2.Category page and brand page done
+
+3.Checkbox to select brand vise products and category based products
+
+4.Added products
+
+===================================================================================
