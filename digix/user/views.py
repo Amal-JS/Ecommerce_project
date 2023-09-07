@@ -17,40 +17,38 @@ def index(request):
 
 #display all products based on category , 
 def category_display_all_products(request,category=None,sort_option=None):
-
-    # brand = request.GET.get('brand')
-    # category = request.GET.get('category')
-    # sort_option = request.GET.get('sortby')
-    print('brand : ', 'category : ', category, 'sort_option : ', sort_option)
+    filter_value=category
+ 
+    #print('brand : ', 'category : ', category, 'sort_option : ', sort_option)
     
     variants_with_images = Variant.objects.prefetch_related('variant_images').all().order_by('selling_price')
 
-    if sort_option == 'price_high_to_low' or category== 'price_high_to_low':
-        print('worked1')
+    if sort_option == 'price_high_to_low' or filter_value== 'price_high_to_low':
+        #print('worked1')
         # Sort by price high to low (you may need to adjust this based on your model fields)
 
         variants_with_images = variants_with_images.order_by('-selling_price')
 
-    elif sort_option == 'price_low_to_high' or category== 'price_low_to_high':
-        print('worked2')
+    elif sort_option == 'price_low_to_high' or filter_value== 'price_low_to_high':
+        #print('worked2')
         # Sort by price low to high (you may need to adjust this based on your model fields)
         variants_with_images = variants_with_images.order_by('selling_price')
 
     
-    if category != 'price_low_to_high' and category != 'price_high_to_low' and category is not None:
-        print('worked3')
-        if category and Category.objects.filter(name=category).exists():
-            print('worked4')
-            variants_with_images = variants_with_images.filter(product__category__name=category)
+    if filter_value != 'price_low_to_high' and filter_value != 'price_high_to_low' and filter_value is not None:
+        #print('worked3')
+        if filter_value and Category.objects.filter(name=filter_value).exists():
+            #print('worked4')
+            variants_with_images = variants_with_images.filter(product__category__name=filter_value)
         else:
-            print('worked5')
-            variants_with_images = variants_with_images.filter(product__brand=category)
+            #print('worked5')
+            variants_with_images = variants_with_images.filter(product__brand=filter_value)
 
         
 
     return supporter_filter_sort(request,variants_with_images)
 
-#supportor function for all products , category and products
+#supportor function for all products , filter_value and products
 def supporter_filter_sort(request,variants_with_images):
 
      # Set the number of items per page

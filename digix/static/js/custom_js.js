@@ -22,7 +22,7 @@ if (home_brands) {
 }
 // console.log('comes2')
 
-
+//=======================================================================================================
 //data table for admin side
 
 
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-
+//===============================================================================================
 
 //category fetch
 
@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
   
      const checkbox = event.target;
      const isChecked = checkbox.checked;
-     const category = checkbox.id.replace('Checkbox', ''); // Remove "Checkbox" from the ID
+     const category = checkbox.id; // Remove "Checkbox" from the ID
      
      if (isChecked) {
       // Construct the URL with the selected category
@@ -103,14 +103,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
- console.log('check category and brand')
+ //console.log('check category and brand')
 
-
+//==========================================================================================================
 
     // for brand wise sorting , Define a mapping of checkbox IDs to their corresponding URLs
   
 
-    //for brand and category
+    //for brand 
     var checkboxes = document.querySelectorAll('.custom-control-input');
 
 
@@ -144,13 +144,18 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-
+//======================================================================================================
     //sorting option for filtering url (user/category.html)
+    //getting the select 
     const sortbySelect = document.getElementById('sortby');
    
+
+    //if select object in the dom
     if (sortbySelect) {
+
         // Add an event listener to detect changes in the select element
         sortbySelect.addEventListener('change', function () {
+
             // Get the selected value
             const selectedValue = sortbySelect.value;
             console.log('--------------------',selectedValue,'-----------------')
@@ -158,12 +163,15 @@ document.addEventListener("DOMContentLoaded", function () {
     
             // Construct the URL for your fetch request
             const currentURL = window.location.href;
-          console.log('selected value ', selectedValue,'   current url  ',currentURL)
-          if (currentURL=='/all_products/'){
+
+          //console.log('selected value ', selectedValue,'   current url  ',currentURL)
+
+          if (currentURL=='/all_products/'){//check if url is for all products
             url = currentURL + selectedValue;
           }
-          else if (currentURL.startsWith('/all_products/price')){
+          else if (currentURL.startsWith('/all_products/price')){ //second , all products with price filter option
             if (currentURL.includes("price_low_to_high")) {
+
               // Split the URL by "/"
               const urlParts = currentURL.split("/");
 
@@ -215,6 +223,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             } else {
                 // If the URL does not contain "price," do something else
+                //adding filter option with url
                 url = currentURL + selectedValue;
                 console.log(url);
             }
