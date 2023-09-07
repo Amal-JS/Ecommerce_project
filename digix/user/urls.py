@@ -10,6 +10,9 @@ path('',views.index,name='index'),
 
 #get all products
 path('all_products/',views.category_display_all_products,name='all_products'),
+  path('all_products/<str:category>/', views.category_display_all_products, name='category_display_all_products'),
+    path('all_products/<str:category>/<str:sort_option>/', views.category_display_all_products, name='category_display_all_products'),
+    #path('all_products/<str:category>/<str:brand>/<str:sort_option>/', views.category_display_all_products, name='category_display_all_products'),
 
 #get specafic product
 path('product/',views.product,name="product"),

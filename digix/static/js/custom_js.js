@@ -58,9 +58,18 @@ document.addEventListener("DOMContentLoaded", function () {
  const SmartTVCheckbox = document.getElementById('Smart TVCheckbox');
 
  // Add event listeners to the checkboxes
- SmartPhoneCheckbox.addEventListener('change', sendRequest);
- LaptopCheckbox.addEventListener('change', sendRequest);
- SmartTVCheckbox.addEventListener('change', sendRequest);
+ if (SmartPhoneCheckbox){
+  SmartPhoneCheckbox.addEventListener('change', sendRequest);
+ }
+ if(LaptopCheckbox){
+
+  LaptopCheckbox.addEventListener('change', sendRequest);
+ }
+ if (SmartPhoneCheckbox){
+
+  SmartTVCheckbox.addEventListener('change', sendRequest);
+ }
+
 
  // Function to send the request when a checkbox is clicked
  function sendRequest(event) {
@@ -70,9 +79,24 @@ document.addEventListener("DOMContentLoaded", function () {
      const category = checkbox.id.replace('Checkbox', ''); // Remove "Checkbox" from the ID
      
      if (isChecked) {
-         
-          window.location.href=`/all_products/?page=1&category=${category}`;
-     }
+      // Construct the URL with the selected category
+      const url = `/all_products/${category}/`;
+      console.log(url)
+      // Send a fetch request to the constructed URL
+      fetch(url)
+  .then(response => {
+
+    if (response.ok) {
+      window.location.href=url
+      console.log('Request successful');
+    } else {
+      console.error('Request failed with status:', response.status);
+    }
+  })
+  .catch(error => {
+    console.error('Fetch error:', error);
+  });
+  }
  }
 
 
@@ -83,34 +107,131 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-    // for brand Define a mapping of checkbox IDs to their corresponding URLs
-    var urlMapping = {
-        'brand-Apple': '/all_products/?page=1&brand=Apple',
-        'brand-Samsung': '/all_products/?page=1&brand=Samsung',
-        'brand-MI': '/all_products/?page=1&brand=MI',
-        'brand-LG': '/all_products/?page=1&brand=LG',
-        'brand-HP': '/all_products/?page=1&brand=HP',
-        'brand-ASUS': '/all_products/?page=1&brand=ASUS',
-        'brand-Xioami': '/all_products/?page=1&brand=Xioami',
-        'brand-Real Me': '/all_products/?page=1&brand=Real Me'
-    };
-
+    // for brand wise sorting , Define a mapping of checkbox IDs to their corresponding URLs
+  
 
     //for brand and category
     var checkboxes = document.querySelectorAll('.custom-control-input');
+
 
     checkboxes.forEach(function(checkbox) {
         checkbox.addEventListener('click', function() {
             // Get the ID of the clicked checkbox
             var checkboxId = this.id;
-
+            const brand = checkbox.id.replace('brand-', '');
+          
             // Check if the checkbox is checked
             if (this.checked) {
-                // If checked, fetch content from the corresponding URL
-                var url = urlMapping[checkboxId];
-                if (url) {
-                  window.location.href = url;
-                }
+                // Construct the URL with the selected category
+      const url = `/all_products/${brand}/`;
+      console.log(url)
+      // Send a fetch request to the constructed URL
+      fetch(url)
+  .then(response => {
+
+    if (response.ok) {
+      window.location.href=url
+      console.log('Request successful');
+    } else {
+      console.error('Request failed with status:', response.status);
+    }
+  })
+  .catch(error => {
+    console.error('Fetch error:', error);
+  });
+
             } 
         });
     });
+
+
+    //sorting option for filtering url (user/category.html)
+    const sortbySelect = document.getElementById('sortby');
+   
+    if (sortbySelect) {
+        // Add an event listener to detect changes in the select element
+        sortbySelect.addEventListener('change', function () {
+            // Get the selected value
+            const selectedValue = sortbySelect.value;
+            console.log('--------------------',selectedValue,'-----------------')
+            let url = null;
+    
+            // Construct the URL for your fetch request
+            const currentURL = window.location.href;
+          console.log('selected value ', selectedValue,'   current url  ',currentURL)
+          if (currentURL=='/all_products/'){
+            url = currentURL + selectedValue;
+          }
+          else if (currentURL.startsWith('/all_products/price')){
+            if (currentURL.includes("price_low_to_high")) {
+              // Split the URL by "/"
+              const urlParts = currentURL.split("/");
+
+              // Remove "price_low_to_high/" if it exists in the URL
+              const newUrlParts = urlParts.filter(part => part !== "price_low_to_high");
+
+              // Reconstruct the modified URL
+              const newURL = newUrlParts.join("/");
+              url = newURL;
+              console.log(newURL);
+          } else {
+              // Split the URL by "/"
+              const urlParts = currentURL.split("/");
+
+              // Remove "price_low_to_high/" if it exists in the URL
+              const newUrlParts = urlParts.filter(part => part !== "price_high_to_low");
+
+              // Reconstruct the modified URL
+              const newURL = newUrlParts.join("/");
+              url = newURL;
+              console.log(newURL);
+          }
+            
+          }
+            else if (currentURL.includes("price")) {
+                // If the URL contains "price," do something
+                if (currentURL.includes("price_low_to_high")) {
+                    // Split the URL by "/"
+                    const urlParts = currentURL.split("/");
+    
+                    // Remove "price_low_to_high/" if it exists in the URL
+                    const newUrlParts = urlParts.filter(part => part !== "price_low_to_high");
+    
+                    // Reconstruct the modified URL
+                    const newURL = newUrlParts.join("/");
+                    url = newURL;
+                    console.log(newURL);
+                } else {
+                    // Split the URL by "/"
+                    const urlParts = currentURL.split("/");
+    
+                    // Remove "price_low_to_high/" if it exists in the URL
+                    const newUrlParts = urlParts.filter(part => part !== "price_high_to_low");
+    
+                    // Reconstruct the modified URL
+                    const newURL = newUrlParts.join("/");
+                    url = newURL;
+                    console.log(newURL);
+                }
+            } else {
+                // If the URL does not contain "price," do something else
+                url = currentURL + selectedValue;
+                console.log(url);
+            }
+    
+            // Perform the fetch request
+            fetch(url)
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = url;
+                        console.log('Request successful');
+                    } else {
+                        console.error('Request failed with status:', response.status);
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                });
+        });
+    }
+    

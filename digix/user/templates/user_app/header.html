@@ -436,12 +436,12 @@
                 <nav class="main-nav">
                     <ul class="menu sf-arrows">
                         <li class="megamenu-container ">
-                            <a href="index.html" class="sf-with-ul no-dropdown">Home</a>
+                            <a href="{% url 'user:index' %}" class="sf-with-ul no-dropdown">Home</a>
 
                             
                         </li>
                         <li>
-                            <a href="category.html" class="sf-with-ul">Category<i class="fa-solid fa-angle-down nav-down-arrow"></i></a>
+                            <a href="{% url 'user:all_products' %}" class="sf-with-ul">Category<i class="fa-solid fa-angle-down nav-down-arrow"></i></a>
 
                             <div class="megamenu megamenu-md">
                             <div class="row no-gutters">

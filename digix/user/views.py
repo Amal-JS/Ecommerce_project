@@ -6,7 +6,7 @@ from django.contrib import messages
 #check user authentication , login and logout (adding and removing user in session )
 from django.contrib.auth import authenticate, login,logout
 #import Variant model for index.html
-from products.models import Variant
+from products.models import Variant,Category
 #pagination
 from django.core.paginator import Paginator
 
@@ -16,23 +16,42 @@ def index(request):
     return render(request,'user_app/home.html',{'variants_with_images':variants_with_images})
 
 #display all products based on category , 
-def category_display_all_products(request, category=None, brand=None):
+def category_display_all_products(request,category=None,sort_option=None):
 
-    brand = request.GET.get('brand')
-    category = request.GET.get('category')
-    # Start with all variants with prefetch_related
-    variants_with_images = Variant.objects.prefetch_related('variant_images').all()
+    # brand = request.GET.get('brand')
+    # category = request.GET.get('category')
+    # sort_option = request.GET.get('sortby')
+    print('brand : ', 'category : ', category, 'sort_option : ', sort_option)
+    
+    variants_with_images = Variant.objects.prefetch_related('variant_images').all().order_by('selling_price')
 
-    if category:
-        # Filter by category name if category parameter is provided
-        variants_with_images = variants_with_images.filter(product__category__name=category)
+    if sort_option == 'price_high_to_low' or category== 'price_high_to_low':
+        print('worked1')
+        # Sort by price high to low (you may need to adjust this based on your model fields)
 
-    if brand:
-        # Filter by brand name if brand parameter is provided
-        variants_with_images = variants_with_images.filter(product__brand=brand)
+        variants_with_images = variants_with_images.order_by('-selling_price')
 
-    if variants_with_images is None:
-        print('empty')
+    elif sort_option == 'price_low_to_high' or category== 'price_low_to_high':
+        print('worked2')
+        # Sort by price low to high (you may need to adjust this based on your model fields)
+        variants_with_images = variants_with_images.order_by('selling_price')
+
+    
+    if category != 'price_low_to_high' and category != 'price_high_to_low' and category is not None:
+        print('worked3')
+        if category and Category.objects.filter(name=category).exists():
+            print('worked4')
+            variants_with_images = variants_with_images.filter(product__category__name=category)
+        else:
+            print('worked5')
+            variants_with_images = variants_with_images.filter(product__brand=category)
+
+        
+
+    return supporter_filter_sort(request,variants_with_images)
+
+#supportor function for all products , category and products
+def supporter_filter_sort(request,variants_with_images):
 
      # Set the number of items per page
     items_per_page = 10  # Change this to your desired number
@@ -45,8 +64,8 @@ def category_display_all_products(request, category=None, brand=None):
 
     # Get the Page object for the current page
     page = paginator.get_page(page_number)
+    return render(request,'user_app/category.html',{'page': page})
 
-    return render(request, 'user_app/category.html', {'page': page})
 
 #display single product
 def product(request):
