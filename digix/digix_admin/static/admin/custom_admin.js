@@ -32,6 +32,7 @@ $(document).ready(function () {
       columns: [
         //which datas to show
         { data: "name" }, //show category name
+        {data :"is_availble"},
         {
           data: null,
           render: function (data, type, row) {
@@ -129,7 +130,7 @@ $(document).ready(function () {
 
     //check root url there is a button to delete the object
 
-    console.log("vannu");
+    //console.log("vannu");
 
     var table = $("#myTable3").DataTable({
       ajax: "/product/variant_with_image/", // URL to your Django view

@@ -8,12 +8,13 @@ from . models import Category,Product,Variant
 
 def get_all_category(request):
     data= Category.objects.all().values()
+    print(list(data))
     return JsonResponse({'data': list(data)})
 
 def get_all_products(request):
     data = Product.objects.all().values('id', 'name', 'category__name','brand')
     
-    print(list(data))
+    
     return JsonResponse({'data': list(data)})
 
 def get_all_variants(request):

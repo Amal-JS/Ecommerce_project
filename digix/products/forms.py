@@ -1,11 +1,12 @@
 from . models import Category,Product,Variant,Variant_Images
 from django import forms
-from django.core.files.base import ContentFile
-from digix_project.settings import STATIC_URL
+
+
 class CategoryForm(forms.ModelForm):
+    is_available = forms.BooleanField(label='Available', widget=forms.CheckboxInput(attrs={'class': 'mx-2',}),required=False)
     class Meta:
         model=Category
-        fields=['name']
+        fields=['name','is_available']
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Enter Category Name','class': ''}),
         }
@@ -76,16 +77,16 @@ class VariantForm(forms.ModelForm):
         fields=['product','name','ram','storage','color','mr_price','selling_price','is_available','stock','screen_resolution','description','no_of_usb_ports','no_of_hdmi_ports','tv_mount','image1','image2','image3','image4','image5',]
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Enter Variant Name'}),
-            'ram': forms.TextInput(attrs={'placeholder': 'Ram'}),
-            'storage': forms.TextInput(attrs={'placeholder': 'Storage'}),
+            'ram': forms.NumberInput(attrs={'placeholder': 'Ram'}),
+            'storage': forms.NumberInput(attrs={'placeholder': 'Storage'}),
             'color': forms.TextInput(attrs={'placeholder': 'Color of variant'}),
-            'mr_price': forms.TextInput(attrs={'placeholder': 'MRP'}),
-            'selling_price': forms.TextInput(attrs={'placeholder': 'Selling Price'}),
+            'mr_price': forms.NumberInput(attrs={'placeholder': 'MRP'}),
+            'selling_price': forms.NumberInput(attrs={'placeholder': 'Selling Price'}),
             'stock':forms.NumberInput(attrs={'placeholder':'Enter number of stocks'}),
             'description':forms.Textarea(attrs={'placeholder':'Enter the description for product'}),
-            'screen_resolution': forms.TextInput(attrs={'placeholder': 'Screen Resolution'}),
-            'no_of_usb_ports': forms.TextInput(attrs={'placeholder': '*If TV Number of HDMI ports '}),
-            'no_of_hdmi_ports':forms.TextInput(attrs=({'placeholder':'*If TV Number of HDMI ports  '})),
+            'screen_resolution': forms.NumberInput(attrs={'placeholder': 'Screen Resolution'}),
+            'no_of_usb_ports': forms.NumberInput(attrs={'placeholder': '*If TV Number of HDMI ports '}),
+            'no_of_hdmi_ports':forms.NumberInput(attrs=({'placeholder':'*If TV Number of HDMI ports  '})),
             'image1': forms.ImageField(),
             'image2': forms.ImageField(),
             'image3': forms.ImageField(),
