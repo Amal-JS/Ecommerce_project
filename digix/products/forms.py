@@ -1,6 +1,7 @@
 from . models import Category,Product,Variant,Variant_Images
 from django import forms
-
+from django.core.files.base import ContentFile
+from digix_project.settings import STATIC_URL
 class CategoryForm(forms.ModelForm):
     class Meta:
         model=Category
@@ -92,6 +93,7 @@ class VariantForm(forms.ModelForm):
             'image5': forms.ImageField(),            
             }
         
+    
 
 class VariantImagesForm(forms.ModelForm):
     class Meta:

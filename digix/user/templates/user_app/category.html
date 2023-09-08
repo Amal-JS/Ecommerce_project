@@ -67,7 +67,7 @@
                                         <div class="product product-7 text-center">
                                             <figure class="product-media">
                                                 <span class="product-label label-new">New</span>
-                                                <a href="product.html">
+                                                <a href="{% url 'user:product' variant.id %}">
                                                     <img src="{{ variant.variant_images.all.0.image.url }}" alt="Product image" class="product-image" >
                                                 </a>
 
@@ -85,7 +85,7 @@
                                                 <div class="product-cat">
                                                     <a href="#">{{variant.product.category.name}}</a>
                                                 </div><!-- End .product-cat -->
-                                                <h3 class="product-title"><a href="product.html">{{variant.name|slice:"15"}}</a></h3><!-- End .product-title -->
+                                                <h3 class="product-title"><a href="{% url 'user:product' variant.id %}">{{variant.name|slice:"15"}}</a></h3><!-- End .product-title -->
                                                 <div class="product-price">
                                                     {{variant.selling_price}}
                                                 </div><!-- End .product-price -->
@@ -397,9 +397,9 @@
                         </ul>
                     </li>
                     <li>
-                        <a href="product.html" class="sf-with-ul">Product</a>
+                        <a href="" class="sf-with-ul">Product</a>
                         <ul>
-                            <li><a href="product.html">Default</a></li>
+                            <li><a href="">Default</a></li>
                             <li><a href="product-centered.html">Centered</a></li>
                             <li><a href="product-extended.html"><span>Extended Info<span class="tip tip-new">New</span></span></a></li>
                             <li><a href="product-gallery.html">Gallery</a></li>

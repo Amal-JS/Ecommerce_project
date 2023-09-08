@@ -168,36 +168,49 @@ def product_update(request, id):
     
     return render(request, 'digix_admin/add_form.html', {'form': form, 'element': product,'update':True})
 
-
-
-
+# Retrieve the Variant instance to be updated using its primary key (id)
 def variant_update(request, id):
-    variant = get_object_or_404(Variant, pk=id)
-    
+    variant = Variant.objects.get(pk=id)
+
     if request.method == 'POST':
-        form = VariantForm(request.POST, instance=variant)
-        
+        # Create a VariantForm instance with the data from the request, including uploaded files, and bind it to the existing Variant instance
+        form = VariantForm(request.POST, request.FILES, instance=variant)
         if form.is_valid():
-            try:
-                with transaction.atomic():
-                    form.save()
+            # Check if new images have been uploaded
+            new_images = []
 
-                    # Handle updating variant images (similar to your add_variant view)
-                    for i in range(1, 6):
-                        uploaded_file = request.FILES.get(f'image{i}')
-                        if uploaded_file:
-                            try:
-                                variant_image = Variant_Images(variant=variant, image=uploaded_file)
-                                variant_image.full_clean()
-                                variant_image.save()
-                            except ValidationError as e:
-                                messages.error(request, e)
+            # Loop through image fields (image1, image2, ..., image5)
+            for i in range(1, 6):
+                image_field_name = f'image{i}'
+                try:
+                    # Attempt to retrieve an uploaded image from request.FILES
+                    image = request.FILES.get(image_field_name, None)
+                    if image:
+                        new_images.append(image)
+                except ValidationError as e:
+                    # If there's a validation error (unlikely in this context), show an error message and return to the form
+                    messages.error(request, e)
+                    return render(request, 'digix_admin/add_form.html', {'form': form, 'element': 'Variant', 'update': True})
 
-                    
-                    return redirect('digix_admin:all_variants')
-            except Exception as e:
-                messages.error(request, str(e))
+            if new_images:
+                # Delete existing images associated with the variant
+                variant.variant_images.all().delete()
+
+                # Create new Variant_Images instances for the variant with the new images
+                for image in new_images:
+                    Variant_Images.objects.create(variant=variant, image=image)
+
+            # Save the updated variant with or without new images
+            form.save()
+            return redirect('digix_admin:all_variants')
+        else:
+            # If the form is not valid, display form errors and return to the form
+            messages(request, form.errors)
+            return render(request, 'digix_admin/add_form.html', {'form': form, 'element': 'Variant', 'update': True})
+
     else:
+        # If it's a GET request, create a VariantForm instance pre-filled with the existing variant data
         form = VariantForm(instance=variant)
 
-    return render(request, 'digix_admin/add_form.html', {'form': form, 'element': 'Variant','update':True})
+    # Render the form page for updating the variant
+    return render(request, 'digix_admin/add_form.html', {'form': form, 'element': 'Variant', 'update': True})

@@ -18,7 +18,10 @@ path('all_products/',views.category_display_all_products,name='all_products'),
 
 
 #get specafic product
-path('product/',views.product,name="product"),
+path('product/<int:id>/',views.product,name="product"),
+
+#get variants for a particular product
+path('product/simillar_variants/<int:id>/',views.get_variants),
 
 #user login , sign up , logout
 path('user_sign_in/',views.user_sign_in,name='user_sign_in'),

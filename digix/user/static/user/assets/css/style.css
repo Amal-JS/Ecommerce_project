@@ -253,3 +253,29 @@ hr.style {
     border-bottom: 1px dashed #ccc;
     background: #999;
 }
+
+
+.header-intro-clearance .dropdown.category-dropdown .dropdown-toggle {
+    display: none;
+    /* color: #333; */
+    /* text-transform: none; */
+    /* padding-left: 5.5rem; */
+    /* min-width: 100%; */
+}
+
+.product-gallery-item img {
+    max-width: none;
+    width: 100%;
+    border:1px solid #333333;
+    border-radius: 20px;
+}
+
+.details-filter-row .product-nav {
+    align-items: center;
+    
+}
+
+.input-spinner .input-group-append {
+    background: transparent;
+    right: 0;
+}
