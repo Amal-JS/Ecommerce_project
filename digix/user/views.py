@@ -22,7 +22,7 @@ def category_display_all_products(request,category=None,sort_option=None):
  
     #print('brand : ', 'category : ', category, 'sort_option : ', sort_option)
     
-    variants_with_images = Variant.objects.prefetch_related('variant_images').all().order_by('selling_price')
+    variants_with_images = Variant.objects.prefetch_related('variant_images').all()
 
     #why filter_value == price high to low , this view also handles all products functionallity
     if sort_option == 'price_high_to_low' or filter_value== 'price_high_to_low':

@@ -180,7 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
               // Reconstruct the modified URL
               const newURL = newUrlParts.join("/");
-              url = newURL;
+              url = newURL+selectedValue;
               console.log(newURL);
           } else {
               // Split the URL by "/"
@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
               // Reconstruct the modified URL
               const newURL = newUrlParts.join("/");
-              url = newURL;
+              url = newURL+selectedValue;
               console.log(newURL);
           }
             
@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
                     // Reconstruct the modified URL
                     const newURL = newUrlParts.join("/");
-                    url = newURL;
+                    url = newURL+selectedValue;
                     console.log(newURL);
                 } else {
                     // Split the URL by "/"
@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
                     // Reconstruct the modified URL
                     const newURL = newUrlParts.join("/");
-                    url = newURL;
+                    url = newURL+selectedValue;
                     console.log(newURL);
                 }
             } else {

@@ -253,8 +253,3 @@ hr.style {
     border-bottom: 1px dashed #ccc;
     background: #999;
 }
-
-.custom-product-image {
-    min-height: 249px;
-    min-width: 182px;
-}
