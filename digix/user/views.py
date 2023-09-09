@@ -60,7 +60,7 @@ def category_display_all_products(request,category=None,sort_option=None):
 def supporter_filter_sort(request,variants_with_images):
 
      # Set the number of items per page
-    items_per_page = 10  # Change this to your desired number
+    items_per_page = 9  # Change this to your desired number
 
     # Create a Paginator object
     paginator = Paginator(variants_with_images, items_per_page)

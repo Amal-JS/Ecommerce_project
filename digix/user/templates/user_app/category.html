@@ -63,9 +63,9 @@
 		
                             {% if variant.name != "APPLE iPhone 13 Pro (Silver, 128 GB)" and variant.name   != "APPLE iPhone 12 Pro (Gold, 512 GB)" %}
                                 
-                                    <div class="col-6 col-md-4 col-lg-4">
+                                    <div class="col-6 col-md-4 col-lg-4" style="border:1px solid black;">
                                         <div class="product product-7 text-center">
-                                            <figure class="product-media">
+                                            <figure class="product-media mt-4">
                                                 <span class="product-label label-new">New</span>
                                                 <a href="{% url 'user:product' variant.id %}">
                                                     <img src="{{ variant.variant_images.all.0.image.url }}" alt="Product image" class="product-image" >
