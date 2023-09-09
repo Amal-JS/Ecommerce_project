@@ -24,8 +24,14 @@ path('product/<int:id>/',views.product,name="product"),
 path('product/simillar_variants/<int:id>/',views.get_variants),
 
 #user login , sign up , logout
-path('user_sign_in/',views.user_sign_in,name='user_sign_in'),
-path('user_sign_up/',views.user_sign_up,name='user_sign_up'),
-path('user_logout/',views.user_logout,name='user_logout')
 
+path('user_sign_in/',views.user_sign_in,name='user_sign_in'),
+
+
+path('user_sign_up/',views.user_sign_up,name='user_sign_up'),
+path('user_logout/',views.user_logout,name='user_logout'),
+
+
+#user sign up , fetch , dyanmic field value checking
+path('user_sign_up_value/',views.user_sign_up_value,name='user_sign_up_value') 
 ]

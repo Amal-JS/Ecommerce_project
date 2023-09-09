@@ -305,12 +305,7 @@ hr.style {
 }
 
 
-.menu .menu-col {
-    padding-left: 3rem;
-    /* padding-right: 3rem; */
-    margin-top: 2.2rem;
-    padding-bottom: 2rem;
-}
+
 
 
 
@@ -338,4 +333,12 @@ hr.style {
     color: black;
     padding-right: 0;
     padding-left: 0;
+}
+
+
+.menu .menu-col {
+    padding-left: 1rem;
+    /* padding-right: 3rem; */
+    margin-top: .2rem;
+    padding-bottom: .5rem;
 }

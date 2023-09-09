@@ -7,7 +7,7 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
 
-    phone = models.CharField(max_length=10)
+    phone = models.IntegerField()
 
 
     # Add related_name arguments to avoid reverse accessor clash

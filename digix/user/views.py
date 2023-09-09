@@ -10,6 +10,8 @@ from django.contrib.auth import authenticate, login,logout
 from products.models import Variant,Category
 #pagination
 from django.core.paginator import Paginator
+#custom user model import
+from . models import CustomUser
 
 #home page
 def index(request):
@@ -111,7 +113,7 @@ def user_sign_in(request):
             messages.error(request,'invalid credentials')
             return redirect('user:user_sign_in')
 
-    return render(request,'user_app/user_sign_in.html')
+    return render(request,'user_app/user_sign_in.html',{'user_links':True})
 
 #login user
 def user_sign_up(request):
@@ -125,8 +127,66 @@ def user_sign_up(request):
             return render(request,'user_app/user_sign_up.html')
     form = UserCreationForm()
 
-    return render(request,'user_app/user_sign_up.html')
+    return render(request,'user_app/user_sign_up.html',{'user_links':True})
 
+
+#function to handle user sign dynamic value checking
+
+def user_sign_up_value(request):
+
+    #getting the field name and value
+    field_name = request.GET.get('field_name',None)
+    field_value = request.GET.get('field_value',None)
+    error_list=''
+    print('comes')
+
+    if field_name == 'username':
+
+
+        if field_value == '':
+            error_list += ',Username required'
+
+        elif len(field_value)<5:
+                error_list += ",Username atleast 5 characters"
+
+
+        if len(field_value)>0 and  CustomUser.objects.filter(username=field_value).exists():
+                    error_list = "Username already exists"
+
+    #check email field
+    elif field_name == 'email':
+
+        if field_value == '':
+            error_list += 'Email required'
+
+        elif '@' not in field_value or '.' not in field_value:
+            error_list += ",Enter valid Email"
+        
+        if len(field_value) >0 and CustomUser.objects.filter(email=field_value).exists():
+            error_list += ",Email already exists"
+        
+           
+    #phone field validation
+    elif field_name == 'phone':
+
+        if field_value == '':
+            error_list += ',Phone Number required'
+         
+        elif len(str(field_value))>0 and len(str(field_value))<10:
+            error_list += ",Phone Number must have 10 numbers"
+
+        
+
+        
+        
+    
+    if error_list == '':  
+        return JsonResponse({'exists':False})
+    
+        
+    else:
+        errors = { field_name:error_list }
+        return JsonResponse({'exists':True,'errors':errors})
 
 #logout user
 def user_logout(request):
