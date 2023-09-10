@@ -13,6 +13,11 @@ from django.core.paginator import Paginator
 #custom user model import
 from . models import CustomUser
 
+from django.contrib.auth import login,logout,authenticate
+
+
+from django.core.exceptions import ObjectDoesNotExist
+
 #home page
 def index(request):
     variants_with_images = Variant.objects.prefetch_related('variant_images').all()
@@ -106,10 +111,12 @@ def user_sign_in(request):
         username=request.POST['username']
         password= request.POST['password']
         user=authenticate(request,username=username,password=password)
+        print(user)
         if user is not None:
             login(request,user)
             return redirect('user:index')
         else:
+            print('error comes')
             messages.error(request,'invalid credentials')
             return redirect('user:user_sign_in')
 
@@ -119,12 +126,25 @@ def user_sign_in(request):
 def user_sign_up(request):
 
     if request.method=='POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            return redirect('user:index')
-        else:
-            messages.error(request,form.errors)
-            return render(request,'user_app/user_sign_up.html')
+
+        username= request.POST['username']
+        phone= request.POST['phone']
+        email= request.POST['email']
+        password= request.POST['password']
+        #print(username)
+        user = CustomUser(username=username,phone=phone,password=password,email=email)
+
+        user.save()
+           #we want to hash the password before saving it into the db
+           
+           
+        user.password = user.make_password(password)
+
+        user.save()
+        
+        return redirect('user:user_sign_in')
+        #return render(request,'user_app/user_sign_up.html')
+
     form = UserCreationForm()
 
     return render(request,'user_app/user_sign_up.html',{'user_links':True})
@@ -172,8 +192,17 @@ def user_sign_up_value(request):
         if field_value == '':
             error_list += ',Phone Number required'
          
-        elif len(str(field_value))>0 and len(str(field_value))<10:
+        elif (len(str(field_value))>0 and len(str(field_value))<10) or (len(str(field_value))>0 and len(str(field_value))>10):
             error_list += ",Phone Number must have 10 numbers"
+    elif field_name == 'password':
+
+        if field_value =='':
+            error_list += ',Password required'
+    elif field_name == 'password2':
+        if field_value=='':
+            error_list += ',Confirm password required'
+
+        
 
         
 

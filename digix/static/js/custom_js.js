@@ -523,6 +523,7 @@ if (sign_up_form){
 document.addEventListener('DOMContentLoaded', function () {
   // Function to check if value and some another validation  in the database
 
+
   async function checkExists(fieldName, fieldValue) {
 
       const response = await fetch(`/user_sign_up_value/?field_name=${fieldName}&field_value=${fieldValue}`);
@@ -545,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                   const error_list = errors[field_name];
                   
-                  console.log("Field Name: " + field_name + "Error List: " + error_list);
+                  //console.log("Field Name: " + field_name + "Error List: " + error_list);
                   
                   //getting the div element to display error
                   errorContainer = document.getElementById(fieldName + '-error')
@@ -560,7 +561,7 @@ document.addEventListener('DOMContentLoaded', function () {
                       for (let i = 0; i < arr.length; i++) {
 
                           const errorLine = document.createElement('p');
-                          console.log(error_list[i])
+                          //console.log(error_list[i])
                           errorLine.textContent = arr[i]
                           errorLine.classList.add('text-danger','m-0', 'ml-5', 'mt-1');
                           errorContainer.appendChild(errorLine);
@@ -579,6 +580,91 @@ document.addEventListener('DOMContentLoaded', function () {
           document.getElementById(fieldName + '-error').textContent = '';
       }
   }
+
+//function to check if phone field contains any charecters
+  function containsNonNumericChars(inputString) {
+    //console.log(inputString)
+    const result = parseInt(inputString)
+    console.log(typeof result,result)
+    return isNaN(result);  //return result=== Nan won't work nan special type 
+  }
+
+  const password2 =document.getElementById('id_password2')
+const password =document.getElementById('id_password')
+const username =document.getElementById('id_username')
+
+
+
+//passwords comparing
+
+function passwordCompare(){
+  console.log('comparing passwords')
+  if ((password) && (password2)){
+
+    if ( password2.value !== '' && password.value !== password2.value ){
+  
+      errorContainer = document.getElementById('password21-error')
+      console.log('password and password2 comparing')
+      const errorLine = document.createElement('p');
+      //console.log(error_list[i])
+      errorLine.textContent = "Password's didn't match"
+      //console.log(errorLine.value)
+      errorLine.classList.add('text-danger','m-0', 'ml-5', 'mt-1','never-erase');
+      console.log(errorLine,errorContainer)
+      errorContainer.appendChild(errorLine);
+      
+  
+  
+    }
+  
+  }
+}
+
+
+
+
+
+//console.log('passoword2 field ',password2)
+
+
+//function checks the username and password value
+function passwordUsernameCheck(){
+  
+  console.log('Username field ',username.value)
+  console.log('password field ',password.value)
+  if (username && password && username.value != ''){
+
+    if (password.value.includes(username.value)){
+
+     errorContainer = document.getElementById('password-2-error')
+   console.log('username and password are comparing','  ',password.value,' ',username.value,'getting the  error div ',errorContainer)
+   const errorLine = document.createElement('p');
+   //console.log(error_list[i])
+   console.log(errorLine)
+   errorLine.textContent = "Password simillar to username"
+   //alert('password simillar to usernaem')
+   errorLine.classList.add('text-danger','m-0', 'ml-5', 'mt-1');
+   errorContainer.appendChild(errorLine);
+   //check password contain any number
+   var digitPattern = /\d/;
+
+  // Use the test method of the regular expression to check if the inputString contains a digit
+  if (! (digitPattern.test(password.value))){
+    errorContainer = document.getElementById('password-3-error')
+    const errorLine = document.createElement('p');
+    errorLine.textContent = "Password simillar to username"
+    errorLine.classList.add('text-danger','m-0', 'ml-5', 'mt-1');
+    errorContainer.appendChild(errorLine);
+  }
+
+
+   
+   console.log(errorLine,errorContainer)
+   //console.log('error container :',errorContainer)
+    }
+ }
+}
+
 
 
   // Event listeners for each input field
@@ -601,8 +687,65 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.getElementById('id_phone').addEventListener('blur', function () {
       clear_div('#phone')
+      document.getElementById('phone1-error').textContent=''
       checkExists('phone', document.getElementById('id_phone').value);
+      containsNonNumericChars(document.getElementById('id_phone').value)
+      const digits_check = containsNonNumericChars(phone.value)
+        //console.log(digits_check)
+
+        if (digits_check){
+
+          errorContainer = document.getElementById('phone1-error')
+            console.log('password and password2 comparing')
+            const errorLine = document.createElement('p');
+            //console.log(error_list[i])
+            errorLine.textContent = "Phone number want to be numbers"
+            errorLine.classList.add('text-danger','m-0', 'ml-5', 'mt-1');
+            errorContainer.appendChild(errorLine);
+
+        }
+
   });
+
+  document.getElementById('id_password').addEventListener('blur', function () {
+    document.getElementById('password-2-error').textContent=''
+    document.getElementById('password-3-error').textContent=''
+    clear_div('#password')
+    checkExists('password', document.getElementById('id_password').value);
+    passwordUsernameCheck()
+    
+  });
+  document.getElementById('id_password2').addEventListener('blur', function () {
+    document.getElementById('password21-error').textContent=''
+    clear_div('#password2')
+    checkExists('password2', document.getElementById('id_password2').value);
+    passwordCompare()
+  });
+
+
 });
 
+
+
+
+
+
+
+const phone =document.getElementById('id_phone')
+//console.log('phone field ',phone)
+if (phone){
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+}
 }

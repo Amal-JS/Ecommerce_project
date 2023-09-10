@@ -1,3 +1,4 @@
+
 {% extends 'user_app/user_base.html' %}
 {% load static %}
 
@@ -39,7 +40,7 @@
                 <div class="cat-blocks-container">
                     <div class="row d-flex justify-content-around">
                         <div class="col-6 col-sm-4 col-lg-2">
-                            <a href="category.html" class="cat-block">
+                            <a href="{% url 'user:category_display_all_products' 'Laptop' %}" class="cat-block">
                                 <figure>
                                     <span>
                                         <img src="{% static 'user/assets/images/demos/demo-13/cats/1.jpg' %}" alt="Category image">
@@ -53,7 +54,7 @@
                         
 
                         <div class="col-6 col-sm-4 col-lg-2">
-                            <a href="category.html" class="cat-block">
+                            <a href="{% url 'user:category_display_all_products' 'Smart Phone' %}" class="cat-block">
                                 <figure>
                                     <span>
                                         <img src="{% static 'user/assets/images/demos/demo-13/cats/3.jpg' %}" alt="Category image">
@@ -65,14 +66,14 @@
                         </div><!-- End .col-sm-4 col-lg-2 -->
 
                         <div class="col-6 col-sm-4 col-lg-2">
-                            <a href="category.html" class="cat-block">
+                            <a href="{% url 'user:category_display_all_products' 'Smart TV' %}" class="cat-block">
                                 <figure>
                                     <span>
                                         <img src="{% static 'user/assets/images/demos/demo-13/cats/4.jpg' %}" alt="Category image">
                                     </span>
                                 </figure>
 
-                                <h3 class="cat-block-title">Televisions</h3><!-- End .cat-block-title -->
+                                <h3 class="cat-block-title">Smart TV</h3><!-- End .cat-block-title -->
                             </a>
                         </div><!-- End .col-sm-4 col-lg-2 -->
 
@@ -85,7 +86,7 @@
 
             <div class="mb-2"></div><!-- End .mb-2 -->
 
-            <div class="container">
+            <!-- <div class="container">
                 <div class="row">
                     <div class="col-sm-6 col-lg-3">
                         <div class="banner banner-overlay">
@@ -94,12 +95,12 @@
                             </a>
 
                             <div class="banner-content">
-                                <h4 class="banner-subtitle text-dark mt-3 ml-4"><a href="#">Weekend Sale</a></h4><!-- End .banner-subtitle -->
-                                <h3 class="banner-title text-dark ml-4"><a href="#">Iphone 13 Pro<br><span>25% off</span></a></h3><!-- End .banner-title -->
+                                <h4 class="banner-subtitle text-dark mt-3 ml-4"><a href="#">Weekend Sale</a></h4>
+                                <h3 class="banner-title text-dark ml-4"><a href="#">Iphone 13 Pro<br><span>25% off</span></a></h3>
                                 <a href="#" class="banner-link">Shop Now <i class="icon-long-arrow-right"></i></a>
-                            </div><!-- End .banner-content -->
-                        </div><!-- End .banner -->
-                    </div><!-- End .col-lg-3 -->
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="col-sm-6 col-lg-3 order-lg-last">
                         <div class="banner banner-overlay">
@@ -108,12 +109,12 @@
                             </a>
 
                             <div class="banner-content">
-                                <h4 class="banner-subtitle text-white"><a href="#">Smart Offer</a></h4><!-- End .banner-subtitle -->
-                                <h3 class="banner-title text-white"><a href="#">Anniversary <br>Special <br><span>15% off</span></a></h3><!-- End .banner-title -->
+                                <h4 class="banner-subtitle text-white"><a href="#">Smart Offer</a></h4>
+                                <h3 class="banner-title text-white"><a href="#">Anniversary <br>Special <br><span>15% off</span></a></h3>
                                 <a href="#" class="banner-link">Shop Now <i class="icon-long-arrow-right"></i></a>
-                            </div><!-- End .banner-content -->
-                        </div><!-- End .banner -->
-                    </div><!-- End .col-lg-3 -->
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="col-lg-6">
                         <div class="banner banner-overlay">
@@ -122,14 +123,14 @@
                             </a>
 
                             <div class="banner-content">
-                                <h4 class="banner-subtitle text-white d-none d-sm-block"><a href="#">Amazing Value</a></h4><!-- End .banner-subtitle -->
-                                <h3 class="banner-title text-white"><a href="#">Laptops Trending <br>Onam Collection 2023 <br><span>from 50,000</span></a></h3><!-- End .banner-title -->
+                                <h4 class="banner-subtitle text-white d-none d-sm-block"><a href="#">Amazing Value</a></h4>
+                                <h3 class="banner-title text-white"><a href="#">Laptops Trending <br>Onam Collection 2023 <br><span>from 50,000</span></a></h3>
                                 <a href="#" class="banner-link">Discover Now <i class="icon-long-arrow-right"></i></a>
-                            </div><!-- End .banner-content -->
-                        </div><!-- End .banner -->
-                    </div><!-- End .col-lg-6 -->
-                </div><!-- End .row -->
-            </div><!-- End .container -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
 
             <div class="mb-3"></div><!-- End .mb-3 -->
             
@@ -886,37 +887,7 @@
 
             <div class="mb-3"></div><!-- End .mb-3 -->
 
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="banner banner-overlay banner-overlay-light">
-                            <a href="#">
-                                <img src="{% static 'user/assets/images/demos/demo-13/banners/banner-4.jpg' %}" alt="Banner">
-                            </a>
-
-                            <div class="banner-content">
-                                <h4 class="banner-subtitle d-none d-sm-block"><a href="#">Spring Sale is Coming</a></h4><!-- End .banner-subtitle -->
-                                <h3 class="banner-title"><a href="#">All Smart Watches <br>Discount <br><span class="text-primary">15% off</span></a></h3><!-- End .banner-title -->
-                                <a href="#" class="banner-link banner-link-dark">Discover Now <i class="icon-long-arrow-right"></i></a>
-                            </div><!-- End .banner-content -->
-                        </div><!-- End .banner -->
-                    </div><!-- End .col-lg-6 -->
-
-                    <div class="col-lg-6">
-                        <div class="banner banner-overlay">
-                            <a href="#">
-                                <img src="{% static 'user/assets/images/demos/demo-13/banners/banner-5.png' %}" alt="Banner">
-                            </a>
-
-                            <div class="banner-content">
-                                <h4 class="banner-subtitle text-white  d-none d-sm-block"><a href="#">Amazing Value</a></h4><!-- End .banner-subtitle -->
-                                <h3 class="banner-title text-white"><a href="#">Headphones Trending <br>JBL Harman <br><span>from $59,99</span></a></h3><!-- End .banner-title -->
-                                <a href="#" class="banner-link">Discover Now <i class="icon-long-arrow-right"></i></a>
-                            </div><!-- End .banner-content -->
-                        </div><!-- End .banner -->
-                    </div><!-- End .col-lg-6 -->
-                </div><!-- End .row -->
-            </div><!-- End .container -->
+            
 
             <div class="mb-1"></div><!-- End .mb-1 -->
 
@@ -1410,24 +1381,24 @@
                                 "dots": false
                             }
                         }
-                    }'>
-                    <a href="#" class="brand">
+                    }'> 
+                    <a href="{% url 'user:category_display_all_products' 'Apple' %}" class="brand">
                         <img src="{% static 'brand_logos/iphone.png' %}" alt="Brand Name">
                     </a>
 
-                    <a href="#" class="brand">
+                    <a href="{% url 'user:category_display_all_products' 'LG' %}" class="brand">
                         <img src="{% static 'brand_logos/lg.jpeg' %}" alt="Brand Name">
                     </a>
 
-                    <a href="#" class="brand">
+                    <a href="{% url 'user:category_display_all_products' 'Real Me' %}" class="brand">
                         <img src="{% static 'brand_logos/realme.png' %}" alt="Brand Name">
                     </a>
 
-                    <a href="#" class="brand">
+                    <a href="{% url 'user:category_display_all_products' 'Samsung' %}" class="brand">
                         <img src="{% static 'brand_logos/samsung.png' %}" alt="Brand Name">
                     </a>
 
-                    <a href="#" class="brand">
+                    <a href="{% url 'user:category_display_all_products' 'Xioami' %}" class="brand">
                         <img src="{% static 'brand_logos/xiomi.png' %}" alt="Brand Name">
                     </a>
 
@@ -1840,4 +1811,3 @@
     </div><!-- End .modal -->
 {% endblock %}
     
-  

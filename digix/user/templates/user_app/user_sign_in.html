@@ -11,18 +11,26 @@
                 <div class="d-flex justify-content-center">
                     <img src="{% static 'logo.jpg' %}" class="img-fluid" alt="Digix logo" style="width:10rem;height:10rem;">
                 </div>
-                <form class="mb-4">
+                <form class="mb-4" method="POSt">
+                    {% csrf_token %}
                     <div class="form-group mt-5 px-4">
-                        <div class="text-start"><label for="exampleInputEmail1">Email address</label></div>
+                        <div class="text-start"><label for="exampleInputUsername">Username</label></div>
                       
-                      <input type="email" class="form-control p-2" id="exampleInputEmail1"   aria-describedby="emailHelp" placeholder="Enter email"  onfocus="this.style.borderColor = 'green';" 
-                      onblur="this.style.borderColor = '#ced4da';">
+                      <input type="text" class="form-control p-2" id="exampleInputUsername"   aria-describedby="emailHelp" placeholder="Enter username"  onfocus="this.style.borderColor = 'green';" 
+                      onblur="this.style.borderColor = '#ced4da';" name="username">
                      
                     </div>
                     <div class="form-group  p-4">
                         <div class="text-start"><label for="exampleInputPassword1">Password</label></div>
-                      <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                      <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" name="password">
                     </div>
+                                                                {% if messages %}
+                                            <div class="alert alert-danger">
+                                                {% for message in messages %}
+                                                <p class="text-danger">{{ message }}</p>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
                     
                     <button type="submit" class="btn btn-primary p-3 mb-3" style="background:#333333;">Login</button>
                   </form>

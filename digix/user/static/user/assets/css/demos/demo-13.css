@@ -89,4 +89,27 @@
 
     .header.header-10.header-intro-clearance .cart-dropdown:hover .cart-txt, .header.header-10.header-intro-clearance .cart-dropdown:focus .cart-txt {
         color: #333333;
+        text-decoration: none;
+    }
+
+
+    .header.header-10.header-intro-clearance .wishlist-link:hover .wishlist-txt, .header.header-10.header-intro-clearance .wishlist-link:focus .wishlist-txt {
+        color:#333333;
+        text-decoration: none;
+    }
+
+    .header.header-10.header-intro-clearance .wishlist-link:hover .wishlist-txt, .header.header-10.header-intro-clearance .wishlist-link:focus .wishlist-txt:hover {
+        color:#333333;
+        text-decoration: none;
+    }
+
+
+    .header.header-10.header-intro-clearance .wishlist-txt, .header.header-10.header-intro-clearance .cart-txt, .header.header-10.header-intro-clearance .compare-txt {
+        /* text-decoration: underline; */
+        font-size: 1.1rem;
+        font-weight: 300;
+        letter-spacing: 0;
+        color: #777;
+        margin-top: 0.3rem;
+        transition: all .3s;
     }

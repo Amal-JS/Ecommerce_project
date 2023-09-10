@@ -1,3 +1,4 @@
+
 {% extends 'user_app/user_base.html' %} {% load static %} {% block title %} Sign
 Up{% endblock %} {% block body %}
 <div
@@ -18,7 +19,7 @@ Up{% endblock %} {% block body %}
         </div>
 
 
-        <form class="mb-4" id="signup_form">
+        <form class="mb-4" id="signup_form" method="POST">
           {% csrf_token %}
           <div class="form-group mt-2 px-4 py-2">
             <div class="text-start">
@@ -39,13 +40,14 @@ Up{% endblock %} {% block body %}
             <div class="text-start"><label for="id_phone">Phone</label></div>
 
             <input
-              type="number"
+              type="text"
               class="form-control p-2 my-number-field"
               id="id_phone"
               name="phone"
               placeholder="Enter Phone"
             />
             <div class="error-container" id="phone-error"></div>
+            <div class="error-container" id="phone1-error"></div>
           </div>
 
           <div class="form-group px-4 py-2">
@@ -64,16 +66,18 @@ Up{% endblock %} {% block body %}
           </div>
           <div class="form-group px-4 py-2">
             <div class="text-start">
-              <label for="id_password1">Password</label>
+              <label for="id_password">Password</label>
             </div>
             <input
               type="password"
               class="form-control"
-              id="id_password1"
+              id="id_password"
               placeholder="Enter Password"
-              name="password1"
+              name="password"
             />
-            <div class="error-container" id="password1-error"></div>
+            <div class="error-container" id="password-error"></div>
+            <div class="error-container" id="password-2-error"></div>
+            <div class="error-container" id="password-3-error"></div>
           </div>
 
           <div class="form-group px-4 py-2">
@@ -88,7 +92,18 @@ Up{% endblock %} {% block body %}
               name="password2"
             />
             <div class="error-container" id="password2-error"></div>
+            <div class="error-container" id="password21-error"></div>
           </div>
+         
+
+          {% if messages %}
+          <ul class="messages">
+              {% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+              {% endfor %}
+          </ul>
+          {% endif %}
+  
 
           <button
             type="submit"
@@ -104,3 +119,5 @@ Up{% endblock %} {% block body %}
 </div>
 
 {% endblock %}
+
+

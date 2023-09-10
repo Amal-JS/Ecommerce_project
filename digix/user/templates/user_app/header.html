@@ -440,8 +440,8 @@
 
                             
                         </li>
-                        <li>
-                            <a href="{% url 'user:all_products' %}" class="sf-with-ul">Category<i class="fa-solid fa-angle-down nav-down-arrow"></i></a>
+                        <li style="min-width:125px;">
+                            <a href="{% url 'user:all_products' %}"  class="sf-with-ul">Category<i class="fa-solid fa-angle-down nav-down-arrow"></i></a>
 
                             <div class="megamenu megamenu-md" style="max-width:200px;">
                             <div class="row no-gutters">
@@ -471,8 +471,8 @@
                             </div><!-- End .row -->
                         </div><!-- End .megamenu megamenu-md -->
                         </li>
-                        <li>
-                            <a href="{% url 'user:all_products' %}" class="sf-with-ul">Product<i class="fa-solid fa-angle-down nav-down-arrow"></i></a>
+                        <li style="min-width:110px;">
+                            <a href="{% url 'user:all_products' %}" class="sf-with-ul ">Product<i class="fa-solid fa-angle-down nav-down-arrow"></i></a>
 
                             <!-- <div class="megamenu megamenu-sm">
                                 <div class="row no-gutters">
@@ -507,7 +507,20 @@
                             </div>-->
                         </li>
                         
-                        
+                        {% if request.user.is_authenticated %}
+                        <li style="min-width:140px;">
+                            <a class="sf-with-ul no-dropdown">Hello, {{request.user.username}}</a>
+                        </li>
+
+                 
+
+                        <li>
+                            <a href="{% url 'user:user_logout' %}" class="sf-with-ul no-dropdown">Logout</a>
+
+                            
+                        </li>
+                        {% else %}
+
                         <li>
                             <a href="{% url 'user:user_sign_in' %}" class="sf-with-ul no-dropdown">Sign In</a>
 
@@ -521,7 +534,7 @@
 
                             
                         </li>
-
+                        {% endif %}
 
                     
                     </ul><!-- End .menu -->
