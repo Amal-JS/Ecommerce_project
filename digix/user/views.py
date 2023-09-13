@@ -105,12 +105,12 @@ def get_variants(request,id):
 
     #get the variant
     variant= Variant.objects.get(id=id)
-    print(variant)
+    print(variant,'no. of stocks ', variant.stock)
     #get the product id
     product_id = variant.product.id
 
     variants_for_product = Variant.objects.filter(product__id=product_id).values('color','ram','storage','id')
-    print(variants_for_product)
+    #print(variants_for_product)
     # Convert the queryset to a list of dictionaries
     variants_list = list(variants_for_product)
 

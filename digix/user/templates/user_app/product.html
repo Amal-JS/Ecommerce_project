@@ -1,6 +1,6 @@
 {% extends 'user_app/user_base.html' %}"
 {% load static %}
-{% block title %} product {% endblock %}
+{% block title %}{{variant.name}}{% endblock %}
 
 {% block body %}
     
@@ -89,9 +89,25 @@
                                         </a>
 
                                     </div> -->
-                                    <div class="w-75 mb-5" id="variant-div">
+                                    {% if variant.stocks > 1 %}
+                                    less than 10 aakanam
+                                    {% else %}
+                                    greater than 20 aakam
+                                    {% endif %}
+                                    <div class="w-75 mb-2 mt-3" id="variant-div">
                                         <!-- Other content goes here -->
                                       </div>
+                                      {% if  variant.stocks > 9 %}
+                                      <div class="w-75 mb-3 mt-3" >
+                                        <p class="mx-2 text-start" style="color:#333333;font-weight: 400;text-align:start;">Number of stocks : {{variant.stock}}</p>
+                                      </div>
+                                      {% else %}
+                                      
+                                      <div class="w-75 mb-3 " >
+                                        <p class="mx-2 text-start" style="color:#333333;font-weight: 400;text-align:start;">Number of stocks :  Only <span class="text-danger h2">{{variant.stock}}</span>  left Hurry Up....</p>
+                                      </div>
+                                      
+                                      {% endif %}
                                 </div>
 
                                 <div class="product-details-action">
