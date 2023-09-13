@@ -1,8 +1,11 @@
 from django.urls import path
+
 from . import views
 app_name= 'digix_admin'
 urlpatterns = [
     path('',views.admin_home,name='admin_home'),
+
+    path('admin_logout/',views.admin_logout,name='admin_logout'),
 
     path('admin_login/',views.admin_login,name='admin_login'),
 
@@ -29,5 +32,9 @@ urlpatterns = [
     path('variant_delete/<int:id>/',views.delete_variant),
 
     path('variant_update/<int:id>/',views.variant_update),
+
+    path('all_users/',views.all_users,name='all_users'),
+
+    
 
 ]

@@ -36,11 +36,25 @@
             </a></li>
 
             <li class="nav-item menu-items ml-2 mb-5">
-              <a  class="btn  mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a"" href="" >
+              <a  class="btn  mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a"" href="{% url 'digix_admin:all_users' %}" >
                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi mr-2 text-black bi-person-fill" viewBox="0 0 16 16">
                   <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
                 </svg>Users
               </a></li>
+              
+              <li class="nav-item menu-items ml-2 mb-5">
+                <a  class="btn  mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a"" href="{% url 'digix_admin:add_category' %}" >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi mr-2 text-black bi-cart-fill" viewBox="0 0 16 16">
+                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                  </svg>Coupouns
+                </a></li>
+
+                <li class="nav-item menu-items ml-2 mb-5">
+                  <a  class="btn  mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a"" href="{% url 'digix_admin:add_category' %}" >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi mr-2 text-black bi-cart-fill" viewBox="0 0 16 16">
+                      <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                    </svg>Offers
+                  </a></li>
               <li class="nav-item menu-items ml-2 mb-3">
                 <a  class="btn  mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a"" href="{% url 'digix_admin:add_category' %}" >
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi mr-2 text-black bi-cart-fill" viewBox="0 0 16 16">
@@ -217,7 +231,7 @@
     <li class="nav-item dropdown">
       <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
         <div class="navbar-profile">
-          <a href="" class="btn btn-danger">Logout</a>
+          <a href="{% url 'digix_admin:admin_logout' %}" class="btn btn-danger">Logout</a>
         </div>
       </a>
       <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">
@@ -232,7 +246,8 @@
             </div>
           </div>
           <div class="preview-item-content">
-            <p class="preview-subject mb-1">Log out</p>
+            <a href="{% url 'digix_admin:admin_logout' %}"><p class="preview-subject mb-1">Log out</p></a>
+            
           </div>
         </a>
         

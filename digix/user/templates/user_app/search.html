@@ -1,0 +1,120 @@
+{% extends 'user_app/user_base.html' %}"
+{% load static %}
+{% block title %}Search Results{% endblock %}
+
+{% block body %}
+    
+<div class="container mt-5">
+    <div class="row mt-2">
+        
+        
+
+            {% for variant in page %}
+		
+                            
+                                
+            <div class="col-4 mt-3" style="border:1px solid black;">
+                                        <div class="product product-7 text-center">
+                                            <figure class="product-media mt-4">
+                                                <span class="product-label label-new">New</span>
+                                                <a href="{% url 'user:product' variant.id %}">
+                                                    <img src="{{ variant.variant_images.all.0.image.url }}" alt="Product image" class="product-image" >
+                                                </a>
+
+                                                <div class="product-action-vertical">
+                                                    <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                                    
+                                                </div><!-- End .product-action-vertical -->
+
+                                                <div class="product-action">
+                                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                                </div><!-- End .product-action -->
+                                            </figure><!-- End .product-media -->
+
+                                            <div class="product-body">
+                                                <div class="product-cat">
+                                                    <a href="#">{{variant.product.category.name}}</a>
+                                                </div><!-- End .product-cat -->
+                                                <h3 class="product-title"><a href="{% url 'user:product' variant.id %}">{{variant.name|slice:"15"}}</a></h3><!-- End .product-title -->
+                                                <div class="product-price">
+                                                    {{variant.selling_price}}
+                                                </div><!-- End .product-price -->
+                                                <div class="ratings-container">
+                                                    <div class="ratings">
+                                                        <div class="ratings-val" style="width: 20%;"></div><!-- End .ratings-val -->
+                                                    </div><!-- End .ratings -->
+                                                    <span class="ratings-text">( 2 Reviews )</span>
+                                                </div><!-- End .rating-container -->
+
+                                                <div class="product-nav product-nav-thumbs">
+                                                    <a href="#" class="active">
+                                                        <img src="{{ variant.variant_images.all.1.image.url }}" alt="product desc">
+                                                    </a>
+                                                    <a href="#">
+                                                        <img src="{{ variant.variant_images.all.2.image.url }}" alt="product desc">
+                                                    </a>
+
+                                                    <a href="#">
+                                                        {% if  variant.variant_images.all.0.image.url %}
+                                                        <img src="{{ variant.variant_images.all.3.image.url }}" alt="product desc">
+                                                        {% endif %}
+                                                    </a>
+                                                
+                                            </div><!-- End .product-body -->
+                                        </div><!-- End .product -->
+                                    </div><!-- End .col-sm-6 col-lg-4 -->
+                                </div>
+                                    
+                                
+                            {% empty %}
+                                    <div class="text-center">
+                                <h1 class="h1 text-center">Sorry <span class='text-danger'>0</span> results found</h1>
+                            </div>
+
+                            {% endfor %}
+                        
+                        
+
+
+
+                        <nav aria-label="Page navigation mt-5">
+                            <ul class="pagination justify-content-center mt-5">
+
+                                {% if page.has_previous %}
+                                <li class="page-item page-link-prev" aria-current="page"><a class="page-link" href="?search_value={{ request.GET.search_value }}&page={{ page.previous_page_number }}"><span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Previous</a></li>
+                                {% endif  %}
+                                {% if page.has_previous %}
+                                <li class="page-item ">
+                                    
+                                    <a class="page-link  active" href="?page=1" aria-label="Previous" tabindex="-1" aria-disabled="true">
+                                        1
+                                    </a>
+                                   
+                                </li>
+                                {% endif %}
+                                
+                                <li class="page-item"><a class="page-link active" href="#">{{ page.number }}</a></li>
+
+
+                                {% if page.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link page-link-next" href="?search_value={{ request.GET.search_value }}&page={{ page.next_page_number }}" aria-label="Next">
+                                        Next 
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if page.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link page-link-next" href="?search_value={{ request.GET.search_value }}&page={{ page.paginator.num_pages }}" aria-label="Next">
+                                        Last <span aria-hidden="true"><i class="icon-long-arrow-right"></i></span>
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                            </ul>
+                        </nav>
+                        
+</div>
+</div>
+                
+{% endblock %}

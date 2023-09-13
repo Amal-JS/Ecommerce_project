@@ -248,6 +248,55 @@ $(document).ready(function () {
       // Redirect to the URL with the object ID (data.id)
       window.location.href = "/admin/variant_update/" + data.id + "/";
     });
+  }else if (currentUrl === "/admin/all_users/") {
+    //product page
+
+    //console.log('vannu');
+
+    var table = $("#myTable4").DataTable({
+      ajax: "/user/get_all_users/", // URL to your Django view
+
+      columns: [
+        { data: "username" },
+        { data: "phone" },
+        { data: "email" },
+        { data : "is_active"},
+
+        
+        {
+          data: null,
+          render: function (data, type, row) {
+            return (
+              '<button class="btn btn-success view-button-unblock" data-id="' +
+              row.id +
+              '">Unblock</button>'
+            );
+          },
+        },
+        {
+          data: null,
+          render: function (data, type, row) {
+            return (
+              '<button class="btn btn-danger view-button-block" data-id="' +
+              row.id +
+              '">Block</button>'
+            );
+          },
+        },
+      ],
+    });
+
+    $("#myTable4 tbody").on("click", ".view-button-block", function () {
+      var data = table.row($(this).parents("tr")).data();
+      // Redirect to the URL with the object ID (data.id)
+      window.location.href = "/user/block/" + data.id + "/";
+    });
+
+    $("#myTable4 tbody").on("click", ".view-button-unblock", function () {
+      var data = table.row($(this).parents("tr")).data();
+      // Redirect to the URL with the object ID (data.id)
+      window.location.href = "/user/unblock/" + data.id + "/";
+    });
   }
 });
 

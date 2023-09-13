@@ -33,5 +33,26 @@ path('user_logout/',views.user_logout,name='user_logout'),
 
 
 #user sign up , fetch , dyanmic field value checking
-path('user_sign_up_value/',views.user_sign_up_value,name='user_sign_up_value') 
+path('user_sign_up_value/',views.user_sign_up_value,name='user_sign_up_value'),
+
+#search results
+path('search_results/',views.search,name='search'),
+
+#get all users
+path('user/get_all_users/',views.get_all_users),
+path('user/unblock/<int:id>/',views.user_unblock),
+path('user/block/<int:id>/',views.user_block),
+
+#forgot password
+path('forgot_password/',views.forgot_password,name='forgot_password'),
+#verify otp
+path('verify_otp/',views.verify_otp,name='verify_otp'),
+
+#user password update
+path('user_password_update/<int:id>/',views.user_password_update,name='user_password_update'),
+
+#otp resend , update
+path('otp_update/',views.otp_update,name='otp_update'),
+
+
 ]

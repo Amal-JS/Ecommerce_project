@@ -8,7 +8,7 @@ import hashlib
 
 class CustomUser(AbstractUser):
 
-    phone = models.CharField(max_length=10)
+    phone = models.CharField(max_length=10,unique=True)
 
 
     # Add related_name arguments to avoid reverse accessor clash
@@ -32,6 +32,7 @@ class CustomUser(AbstractUser):
         salt = 'abcdefghijk'  # Add a unique salt value
 
         hashed_password = hashlib.sha256((salt + raw_password).encode()).hexdigest()
+        print('hashed')
         return hashed_password
     
 #checking password when loging 
@@ -39,6 +40,7 @@ class CustomUser(AbstractUser):
 
     def check_password(self, raw_password):
         hashed_input_password = self.make_password(raw_password)
+        print('checking hashed password')
         return self.password == hashed_input_password
     
     

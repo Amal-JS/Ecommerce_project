@@ -1,0 +1,24 @@
+# Download the helper library from https://www.twilio.com/docs/python/install
+import os
+from twilio.rest import Client
+
+# Set environment variables for your credentials
+# Read more at http://twil.io/secure
+account_sid = "AC929a8e4f621fb41ffd6aaf88b0042071"
+auth_token = os.environ["f9af81f318f41bdd78f6c1c4dac6cbb7"]
+verify_sid = "VA9de7ad527a37e5aa2350b85093758789"
+verified_number = "+918921142877"
+
+client = Client(account_sid, auth_token)
+
+verification = client.verify.v2.services(verify_sid) \
+  .verifications \
+  .create(to=verified_number, channel="sms")
+print(verification.status)
+
+otp_code = input("Please enter the OTP:")
+
+verification_check = client.verify.v2.services(verify_sid) \
+  .verification_checks \
+  .create(to=verified_number, code=otp_code)
+print(verification_check.status)

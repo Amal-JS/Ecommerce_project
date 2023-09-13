@@ -18,30 +18,14 @@
             <div class="header-center">
                 <div class="header-search header-search-extended header-search-visible header-search-no-radius d-none d-lg-block">
                     <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                    <form action="#" method="get">
+                    <form action="{% url 'user:search' %}" method="get">
                         <div class="header-search-wrapper search-wrapper-wide">
-                            <div class="select-custom d-none">
-                                <select id="cat" name="cat">
-                                    <option value="">All Departments</option>
-                                    <option value="1">Fashion</option>
-                                    <option value="2">- Women</option>
-                                    <option value="3">- Men</option>
-                                    <option value="4">- Jewellery</option>
-                                    <option value="5">- Kids Fashion</option>
-                                    <option value="6">Electronics</option>
-                                    <option value="7">- Smart TVs</option>
-                                    <option value="8">- Cameras</option>
-                                    <option value="9">- Games</option>
-                                    <option value="10">Home &amp; Garden</option>
-                                    <option value="11">Motors</option>
-                                    <option value="12">- Cars and Trucks</option>
-                                    <option value="15">- Boats</option>
-                                    <option value="16">- Auto Tools &amp; Supplies</option>
-                                </select>
-                            </div><!-- End .select-custom -->
-                            <label for="q" class="sr-only">Search</label>
-                            <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." required>
+                        
+                            
+                            <label for="search_value" class="sr-only">Search</label>
+                            <input type="search" class="form-control" name="search_value" id="search_value" placeholder="Search product ..." >
                             <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+                        <
                         </div><!-- End .header-search-wrapper -->
                     </form>
                 </div><!-- End .header-search -->
@@ -54,7 +38,7 @@
                     <a href="wishlist.html" class="wishlist-link">
                         <i class="icon-heart-o"></i>
                         <span class="wishlist-count">3</span>
-                        <span class="wishlist-txt">Wishlist</span>
+                        <span class="wishlist-txt" style="text-decoration: none;" id="wish_list_id">Wishlist</span>
                     </a>
 
                     <div class="dropdown cart-dropdown">

@@ -1,46 +1,53 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Corona Admin</title>
-    <!-- plugins:css -->
-    <link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="../../assets/vendors/css/vendor.bundle.base.css">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- Layout styles -->
-    <link rel="stylesheet" href="../../assets/css/style.css">
-    <!-- End layout styles -->
-    <link rel="shortcut icon" href="../../assets/admin_logo copy.png" />
+    <title>Digix Admin Login</title>
+    <link rel="shortcut icon" href="{% static 'admin_logo_copy.png' %}" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+      #grad { 
+        height:100vh;
+        background-image: linear-gradient(to right, #0d6efd, #333333);
+}
+    </style>
+  
   </head>
-  <body>
+  <body id="grad">
     <div class="container-scroller">
       <div class="container-fluid page-body-wrapper full-page-wrapper">
         <div class="row w-100 m-0">
-          <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg" style="background-image:url('/Corona%20Admin/template/assets/ad_login.jpg');">
-            <div class="card col-lg-4 mx-auto">
-              <div class="card-body px-5 py-5 text-center">
-                <h3 class="card-title text-left mb-3">Admin Login</h3>
-                <form>
-                  <div class="form-group">
+          <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg" >
+            <div class="card col-lg-4 mx-auto mt-5">
+              <div class="card-body px-2 py-2 text-center  ">
+                <div class="d-flex justify-content-center">
+                  <img src="{% static 'logo.jpg' %}" class="img-fluid" alt="Digix logo" style="width:10rem;height:10rem;">
+              </div>
+                <form method="POST" class="mt-2 p-3">
+                  {% csrf_token %}
+                  <div class="form-group mt-3">
                     
-                    <input type="text" class="form-control p_input text-white" placeholder="Username" name="admin_username">
+                    <input type="text" class="form-control p_input text-dark" placeholder="Admin Username" name="admin_username">
                   </div>
-                  <div class="form-group">
+                  <div class="form-group mt-3">
                     
-                    <input type="password" class="form-control p_input text-white" placeholder="Enter password" name="admin_password">
+                    <input type="password" class="form-control p_input text-dark" placeholder="Admin password" name="admin_password">
                   </div>
                   <div class="form-group d-flex align-items-center justify-content-between">
                     
-                    
+                    {% if messages %}
+                                            <div class="alert alert-danger text-center w-100 mt-2">
+                                                {% for message in messages %}
+                                                <p class="text-danger">{{ message }}</p>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
                   </div>
-                  <div class="text-center">
-                    <button type="submit" class="btn btn-primary btn-block enter-btn">Login</button>
+                  <div class="text-center mt-5">
+                    <button type="submit" class="btn btn-success btn-block enter-btn" style="background-color: #333333;color:white;">Login</button>
                   </div>
                   </form>
               </div>
@@ -54,16 +61,6 @@
     </div>
     <!-- container-scroller -->
     <!-- plugins:js -->
-    <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
-    <script src="../../assets/js/off-canvas.js"></script>
-    <script src="../../assets/js/hoverable-collapse.js"></script>
-    <script src="../../assets/js/misc.js"></script>
-    <script src="../../assets/js/settings.js"></script>
-    <script src="../../assets/js/todolist.js"></script>
-    <!-- endinject -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
   </body>
 </html>

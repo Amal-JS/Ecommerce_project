@@ -509,10 +509,28 @@ if (sign_up_form){
 
   //console.log('gets the form')
 
-  addEventListener('submit', () => {
-    const elements = document.querySelectorAll('.error-container')
-    // Loop through the selected elements
-    clear_div('.error-container')
+  addEventListener('submit', (e) => {
+    if ((document.getElementById('username-error').textContent === '') &&
+(document.getElementById('phone-error').textContent === '') &&
+(document.getElementById('email-error').textContent === '') &&
+(document.getElementById('password-error').textContent === '') &&
+(document.getElementById('password2-error').textContent === '') &&
+(document.getElementById('password21-error').textContent === '') &&
+(document.getElementById('phone1-error').textContent === '') &&
+(document.getElementById('password-2-error').textContent === '') &&
+(document.getElementById('password-3-error').textContent === '') 
+){
+  clear_div('.error-container');
+      console.log('No error');
+
+}else{
+  e.preventDefault();
+  console.log('Error');
+}
+    // const elements = document.querySelectorAll('.error-container')
+    // // Loop through the selected elements
+    // clear_div('.error-container')
+
     
   })
 }
@@ -637,10 +655,10 @@ function passwordUsernameCheck(){
     if (password.value.includes(username.value)){
 
      errorContainer = document.getElementById('password-2-error')
-   console.log('username and password are comparing','  ',password.value,' ',username.value,'getting the  error div ',errorContainer)
+   //console.log('username and password are comparing','  ',password.value,' ',username.value,'getting the  error div ',errorContainer)
    const errorLine = document.createElement('p');
    //console.log(error_list[i])
-   console.log(errorLine)
+   //console.log(errorLine)
    errorLine.textContent = "Password simillar to username"
    //alert('password simillar to usernaem')
    errorLine.classList.add('text-danger','m-0', 'ml-5', 'mt-1');
@@ -652,7 +670,7 @@ function passwordUsernameCheck(){
   if (! (digitPattern.test(password.value))){
     errorContainer = document.getElementById('password-3-error')
     const errorLine = document.createElement('p');
-    errorLine.textContent = "Password simillar to username"
+    errorLine.textContent = "Password want to contain a number "
     errorLine.classList.add('text-danger','m-0', 'ml-5', 'mt-1');
     errorContainer.appendChild(errorLine);
   }
@@ -669,7 +687,9 @@ function passwordUsernameCheck(){
 
   // Event listeners for each input field
   //id of input ta
-  document.getElementById('id_username').addEventListener('blur', function () {
+  id_username=document.getElementById('id_username')
+  if (id_username){
+    id_username.addEventListener('blur', function () {
 
       //clear the div element again focusing on input element
       
@@ -678,35 +698,42 @@ function passwordUsernameCheck(){
       //check the value 
       checkExists('username', this.value); //this.value or document.getElementById('id_username').value
   });
+  }
+ 
 
-
-  document.getElementById('id_email').addEventListener('blur', function () {
+  id_email=document.getElementById('id_email')
+  if(  id_email){
+    document.getElementById('id_email').addEventListener('blur', function () {
       clear_div('#email')
       checkExists('email', document.getElementById('id_email').value);
   });
+  }
+
+if(  document.getElementById('id_phone')){
 
   document.getElementById('id_phone').addEventListener('blur', function () {
-      clear_div('#phone')
-      document.getElementById('phone1-error').textContent=''
-      checkExists('phone', document.getElementById('id_phone').value);
-      containsNonNumericChars(document.getElementById('id_phone').value)
-      const digits_check = containsNonNumericChars(phone.value)
-        //console.log(digits_check)
+    clear_div('#phone')
+    document.getElementById('phone1-error').textContent=''
+    checkExists('phone', document.getElementById('id_phone').value);
+    containsNonNumericChars(document.getElementById('id_phone').value)
+    const digits_check = containsNonNumericChars(phone.value)
+      //console.log(digits_check)
 
-        if (digits_check){
+      if (digits_check){
 
-          errorContainer = document.getElementById('phone1-error')
-            console.log('password and password2 comparing')
-            const errorLine = document.createElement('p');
-            //console.log(error_list[i])
-            errorLine.textContent = "Phone number want to be numbers"
-            errorLine.classList.add('text-danger','m-0', 'ml-5', 'mt-1');
-            errorContainer.appendChild(errorLine);
+        errorContainer = document.getElementById('phone1-error')
+          console.log('password and password2 comparing')
+          const errorLine = document.createElement('p');
+          //console.log(error_list[i])
+          errorLine.textContent = "Phone number want to be numbers"
+          errorLine.classList.add('text-danger','m-0', 'ml-5', 'mt-1');
+          errorContainer.appendChild(errorLine);
 
-        }
+      }
 
-  });
-
+});
+}
+if(document.getElementById('id_password')){
   document.getElementById('id_password').addEventListener('blur', function () {
     document.getElementById('password-2-error').textContent=''
     document.getElementById('password-3-error').textContent=''
@@ -715,37 +742,101 @@ function passwordUsernameCheck(){
     passwordUsernameCheck()
     
   });
-  document.getElementById('id_password2').addEventListener('blur', function () {
-    document.getElementById('password21-error').textContent=''
-    clear_div('#password2')
-    checkExists('password2', document.getElementById('id_password2').value);
-    passwordCompare()
-  });
+}
+  if(document.getElementById('id_password2')){
+    document.getElementById('id_password2').addEventListener('blur', function () {
+      document.getElementById('password21-error').textContent=''
+      clear_div('#password2')
+      checkExists('password2', document.getElementById('id_password2').value);
+      passwordCompare()
+    });
+  }
+  
 
 
 });
 
+}
 
 
+//verify otp input value length limit and focus change
+
+if ((window.location.pathname === '/user_sign_up/') || (window.location.pathname === '/verify_otp/')){
 
 
+  document.addEventListener('DOMContentLoaded', function () {
+    const otpInputs = document.querySelectorAll('.otp-input');
 
+    if (otpInputs){
+      otpInputs.forEach((input, index) => {
+        input.addEventListener('input', function () {
+            if (this.value.length === 1 && index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+        });
 
-const phone =document.getElementById('id_phone')
-//console.log('phone field ',phone)
-if (phone){
-  
-
-
-
-  
-
-
-
-
-
-
-
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Backspace' && index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        });
+    });
+    }
+   
+});
 
 }
+
+
+//password update field value check 
+
+if (window.location.pathname.startsWith('/user_password_update/')){
+
+  password=document.getElementById('id_password')
+  password2 =document.getElementById('id_password2')
+//passwords comparing
+
+function passwordCompare(){
+  console.log('comparing passwords')
+  if ((password) && (password2)){
+
+    if ( password2.value !== '' && password.value !== password2.value ){
+  
+      errorContainer = document.getElementById('password21-error')
+      console.log('password and password2 comparing')
+      const errorLine = document.createElement('p');
+      //console.log(error_list[i])
+      errorLine.textContent = "Password's didn't match"
+      //console.log(errorLine.value)
+      errorLine.classList.add('text-danger','m-0', 'ml-5', 'mt-1','never-erase');
+      console.log(errorLine,errorContainer)
+      errorContainer.appendChild(errorLine);
+      
+  
+  
+    }
+  
+  }
+}
+
+if(password){
+  document.getElementById('id_password').addEventListener('blur', function () {
+    document.getElementById('password-2-error').textContent=''
+    document.getElementById('password-3-error').textContent=''
+    
+    
+    
+    
+  });
+}
+
+  if(password2 ){
+    document.getElementById('id_password2').addEventListener('blur', function () {
+      document.getElementById('password21-error').textContent=''
+      
+      
+      passwordCompare()
+    });
+  }
+
 }

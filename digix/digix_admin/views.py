@@ -1,23 +1,83 @@
 from django.forms import ValidationError
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from products.models import Variant_Images
 from products.forms import CategoryForm,ProductForm,VariantForm
 from django.contrib import messages
 from products.models import Category,Product,Variant
-
+from user.models import CustomUser
 #for variant images and variant adding we are using 'transactions' in db
 from django.db import transaction
+from django.contrib.auth.models import User
+
+#check user authentication , login and logout (adding and removing user in session )
+from django.contrib.auth import authenticate, login,logout
+from django.contrib.auth.hashers import make_password, check_password
+
+
+from django.contrib.auth.decorators import user_passes_test
+
+def is_user_authenticated(user):
+    return user.is_authenticated
+
 
 #admin home 
+@user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def admin_home(request):
     return render(request,'digix_admin/index.html')
 
 #admin login
 def admin_login(request):
+
+    if request.method == "POST":
+        admin_username = request.POST['admin_username']
+        admin_password =request.POST['admin_password']
+        #print(admin_username,admin_password)
+
+        admin=authenticate(request,username=admin_username,password=admin_password)
+        if admin:
+            if admin.is_superuser:
+                login(request,admin)
+                return redirect('digix_admin:admin_home')
+            else:
+                messages.error(request,'invalid credentials')
+                return redirect('digix_admin:admin_login')
+
+        else:
+            print(admin)
+            messages.error(request,'invalid credentials')
+            return redirect('digix_admin:admin_login')
+
+
+        # try:
+        #     admin=CustomUser.objects.get(username=admin_username)
+        #     psd_hsd = CustomUser.make_password(admin,admin_password)
+
+        #     #print(psd_hsd)
+
+        #     if admin.password == psd_hsd and admin.is_superuser:
+        #         login(request,admin)
+        #         return redirect('digix_admin:admin_home')
+            
+        #     else:
+        #         messages.error(request,'invalid credentials')
+        #         return redirect('digix_admin:admin_login')
+            
+        # except Exception as e:
+        #     messages.error(request,'invalid credentials')
+        #     return redirect('digix_admin:admin_login')
+        
     return render(request,'digix_admin/login.html')
 
-#add new category
 
+#logout admin
+def admin_logout(request):
+    logout(request)
+
+    return redirect('digix_admin:admin_login')
+
+#add new category
+@user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def add_category(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST)
@@ -33,6 +93,7 @@ def add_category(request):
     return render(request,'digix_admin/add_form.html',{'form':form,'element':'Category'})
 
 #add new product
+@user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST)
@@ -48,6 +109,7 @@ def add_product(request):
 
 
 #addding new variant with images corresponding to the variant object
+@user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def add_variant(request):
     if request.method == 'POST':
         form = VariantForm(request.POST)
@@ -101,6 +163,7 @@ def add_variant(request):
 
 
 #get all categories
+@user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def all_category(request):
     categories = Category.objects.all()
     
@@ -108,17 +171,24 @@ def all_category(request):
     return render(request,'digix_admin/category.html',{'categories':categories})
 
 #get all products
+@user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def all_products(request):
     products = Product.objects.all()
     return render(request,'digix_admin/product.html',{'products':products})
 
 #get all variants
+@user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def all_variants(request):
     variants = Variant.objects.all()
     return render(request,'digix_admin/variant.html',{'variants':variants})
 
+#get all users
+@user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
+def all_users(request):
+    users = CustomUser.objects.all()
+    return render(request,'digix_admin/users.html',{'users':users})    
 
-#delete category
+   
 def  delete_category(request,id):
     cat_obj= Category.objects.get(id=id)
     cat_obj.delete()
@@ -138,6 +208,7 @@ def  delete_variant(request,id):
 
 
 #update category object
+@user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def category_update(request, id):
     #will raise exception if object not found
     category = get_object_or_404(Category, id=id)
@@ -154,8 +225,9 @@ def category_update(request, id):
     return render(request, 'digix_admin/add_form.html', {'form': form, 'element': category,'update':True})
 
 
-
+@user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def product_update(request, id):
+    
     product = get_object_or_404(Product, id=id)
     
     if request.method == 'POST':
@@ -169,6 +241,7 @@ def product_update(request, id):
     return render(request, 'digix_admin/add_form.html', {'form': form, 'element': product,'update':True})
 
 # Retrieve the Variant instance to be updated using its primary key (id)
+@user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def variant_update(request, id):
     variant = Variant.objects.get(pk=id)
 

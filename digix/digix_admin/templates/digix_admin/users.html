@@ -1,0 +1,42 @@
+{% extends 'digix_admin/base.html' %}
+{% load static %}
+
+{% block title %}Users{% endblock %}
+
+{% block body %}
+   
+
+<div class="content-wrapper" id="content_wrapper_div">
+    
+
+<table id="myTable4" class="cell-border hover order-column stripe row-border bg-light">
+
+  <thead>
+      <!-- really important when rendering button , an empty <td> want to be given else won't work --empty data table -->
+      
+          <td>Username</td> 
+          <td>Phone</td>  
+          <td>Email</td> 
+          <td>Is active</td>
+          <td></td>
+          <td></td>
+
+  </thead>
+
+  <!-- Your table content here -->
+</table>
+
+
+        </div>
+      </div>
+
+
+
+
+
+
+
+</div>
+
+
+{% endblock %}
