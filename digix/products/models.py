@@ -17,7 +17,7 @@ class Category(models.Model):
 
     name = models.CharField(max_length=30,unique=True)
     rand_id = models.BigIntegerField(default=generate_random_8_digit_number,unique=True)
-    is_availble = models.BooleanField(default=True)
+    is_availble = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.name
@@ -54,7 +54,7 @@ class Variant(models.Model):
     mr_price = models.DecimalField(max_digits=8,decimal_places=2)
     selling_price = models.DecimalField(max_digits=8,decimal_places=2)
     stock = models.PositiveIntegerField()
-    is_available= models.BooleanField(default=True)
+    is_available= models.BooleanField(default=False)
     screen_resolution = models.DecimalField(max_digits=5,decimal_places=2,blank=True,null=True)
     no_of_usb_ports = models.PositiveIntegerField(blank=True,null=True)
     no_of_hdmi_ports = models.PositiveIntegerField(blank=True,null=True)
