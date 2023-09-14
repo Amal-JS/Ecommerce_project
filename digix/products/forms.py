@@ -6,40 +6,114 @@ from django.utils.translation import gettext_lazy as _
 
 
 class CategoryForm(forms.ModelForm):
-    is_available = forms.BooleanField(label='Available', widget=forms.CheckboxInput(attrs={'class': 'mx-2',}),required=False)
+    is_available = forms.BooleanField(label='Available',
+                                       widget=forms.CheckboxInput(attrs={'class': 'mx-2',})
+                                       ,required=False)
+    
+    name = forms.CharField(
+        required=False,  # Set the 'required' attribute to False
+        widget=forms.TextInput(attrs={'placeholder': 'Enter Category Name', 'class': ''}),
+    )
     class Meta:
         model=Category
         fields=['name','is_available']
-        widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Enter Category Name','class': ''}),
-        }
+        
 
 
 class ProductForm(forms.ModelForm):
 
     #select field for selecting category instance
     category = forms.ModelChoiceField(
+        required=False,
         queryset=Category.objects.all(), 
         empty_label="Select Category",
         widget=forms.Select(attrs={'class': 'select_admin'}),)
     
+    name = forms.CharField(
+        required=False,  # Set the 'required' attribute to False
+        widget=forms.TextInput(
+    
+        attrs={'placeholder': 'Enter Product Name'},)
+        
+    )
+
+    brand = forms.CharField(
+        required=False,  # Set the 'required' attribute to False
+        widget=forms.TextInput(
+    
+        attrs={'placeholder': 'Enter Brand Name'},)
+        
+    )
+    
     class Meta:
         model=Product
         fields=['name','category','brand']
-        widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Enter Product Name'}),
-            
-            'brand': forms.TextInput(attrs={'placeholder': 'Enter Brand Name'}),
-        }
-
+        
 
 
 class VariantForm(forms.ModelForm):
 
     product = forms.ModelChoiceField(
+        required=False,
         queryset=Product.objects.all(),  
         empty_label="Select Product",
         widget=forms.Select(attrs={'class': 'select_admin'}),)
+    
+
+    name = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Enter Variant Name'}),
+    )
+
+    ram = forms.IntegerField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Enter RAM'}),
+    )
+
+    storage = forms.IntegerField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Enter Storage'}),
+    )
+
+    color = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Enter Color'}),
+    )
+
+    mr_price = forms.DecimalField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Enter MRP'}),
+    )
+
+    selling_price = forms.DecimalField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Enter Selling Price'}),
+    )
+
+    stock = forms.IntegerField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Enter Number of Stocks'}),
+    )
+
+    description = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'placeholder': 'Enter Description'}),
+    )
+
+    screen_resolution = forms.IntegerField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Enter Screen Resolution'}),
+    )
+
+    no_of_usb_ports = forms.IntegerField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Enter Number of USB Ports'}),
+    )
+
+    no_of_hdmi_ports = forms.IntegerField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Enter Number of HDMI Ports'}),
+    )
     
     #choice field
     tv_mount = forms.ChoiceField(
@@ -63,9 +137,12 @@ class VariantForm(forms.ModelForm):
         # Using ClearableFileInput can be beneficial in scenarios where you want to provide users with the ability
         # to easily remove a file they've selected, such as when they want to replace it with another file or 
         # if they've accidentally uploaded the wrong file.
-        
-        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg'}),
+
+        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg',}),
     )
+
+                               
+
     image2 = forms.ImageField(
         label="Image 2",
         required=False,
@@ -91,25 +168,8 @@ class VariantForm(forms.ModelForm):
 
     class Meta:
         model=Variant
-        fields=['product','name','ram','storage','color','mr_price','selling_price','is_available','stock','screen_resolution','description','no_of_usb_ports','no_of_hdmi_ports','tv_mount','image1','image2','image3','image4','image5',]
-        widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Enter Variant Name'}),
-            'ram': forms.NumberInput(attrs={'placeholder': 'Ram'}),
-            'storage': forms.NumberInput(attrs={'placeholder': 'Storage'}),
-            'color': forms.TextInput(attrs={'placeholder': 'Color of variant'}),
-            'mr_price': forms.NumberInput(attrs={'placeholder': 'MRP'}),
-            'selling_price': forms.NumberInput(attrs={'placeholder': 'Selling Price'}),
-            'stock':forms.NumberInput(attrs={'placeholder':'Enter number of stocks'}),
-            'description':forms.Textarea(attrs={'placeholder':'Enter the description for product'}),
-            'screen_resolution': forms.NumberInput(attrs={'placeholder': 'Screen Resolution'}),
-            'no_of_usb_ports': forms.NumberInput(attrs={'placeholder': '*If TV Number of HDMI ports '}),
-            'no_of_hdmi_ports':forms.NumberInput(attrs=({'placeholder':'*If TV Number of HDMI ports  '})),
-            'image1': forms.ImageField(),
-            'image2': forms.ImageField(),
-            'image3': forms.ImageField(),
-            'image4': forms.ImageField(),
-            'image5': forms.ImageField(),            
-            }
+        fields=['product','name','ram','storage','color','mr_price','selling_price','is_available','stock','screen_resolution','description','no_of_usb_ports','no_of_hdmi_ports','tv_mount','image1', 'image2','image3','image4','image5',]
+        
         
     
 

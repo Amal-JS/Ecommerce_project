@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 #check user authentication , login and logout (adding and removing user in session )
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.hashers import make_password, check_password
-
+from django.utils.safestring import mark_safe
 
 from django.contrib.auth.decorators import user_passes_test
 
@@ -76,15 +76,39 @@ def admin_logout(request):
 
     return redirect('digix_admin:admin_login')
 
+#check form fields which are empty and which are not and return True or false based on that
+#required fields is a list which which are required
+def is_form_empty(form, required_fields):
+    # Check if all fields except required ones are empty
+    return all(not value for field_name, value in form.cleaned_data.items() if field_name not in required_fields)
+
 #add new category
 @user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def add_category(request):
+
     if request.method == 'POST':
+
+        
         form = CategoryForm(request.POST)
+
+        # Define which fields are required
+        required_fields = ['name']
+        
+        
+
+        # Check if the required fields are filled in
+        missing_fields = [field_name for field_name in required_fields if not request.POST.get(field_name)]
+
+        if missing_fields:
+            missing_fields_message = '<br>'.join(missing_fields)  # Join missing fields with <br>
+            messages.warning(request, mark_safe(f"The following required fields are missing:<br>{missing_fields_message}"))
+            return render(request, 'digix_admin/add_form.html', {'element': 'Category Form', 'form': form})
+
         if form.is_valid():
-            
+
             form.save()
             return redirect('digix_admin:all_category')
+            
         else:
             #if error show it in the page 
             messages.warning(request,form.errors)
@@ -95,8 +119,28 @@ def add_category(request):
 #add new product
 @user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def add_product(request):
+
+
     if request.method == 'POST':
+
+        
         form = ProductForm(request.POST)
+
+        # Define which fields are required
+        required_fields = ['name','category','brand']
+        
+        
+
+        # Check if the required fields are filled in
+        missing_fields = [field_name for field_name in required_fields if not request.POST.get(field_name)]
+
+        if missing_fields:
+            missing_fields_message = '<br>'.join(missing_fields)  # Join missing fields with <br>
+            messages.warning(request, mark_safe(f"The following required fields are missing:<br>{missing_fields_message}"))
+            return render(request, 'digix_admin/add_form.html', {'element': 'Product Form', 'form': form})
+
+
+
         if form.is_valid():
             form.save()
             return redirect('digix_admin:all_products')
@@ -113,6 +157,30 @@ def add_product(request):
 def add_variant(request):
     if request.method == 'POST':
         form = VariantForm(request.POST)
+
+        # Define which fields are required
+        required_fields = ['name',
+                           'product',
+                           'ram',
+                           'stock',
+                           'storage',
+                           'color',
+                           'mr_price',
+                           'selling_price',
+                           'screen_resolution',
+
+
+                           ]
+        
+        
+
+        # Check if the required fields are filled in
+        missing_fields = [field_name for field_name in required_fields if not request.POST.get(field_name)]
+
+        if missing_fields:
+            missing_fields_message = '<br>'.join(missing_fields)  # Join missing fields with <br>
+            messages.warning(request, mark_safe(f"The following required fields are missing:<br>{missing_fields_message}"))
+            return render(request,'digix_admin/add_form.html',{'form':form,'element':'Variant'}) 
         
 
         if form.is_valid():

@@ -9,6 +9,9 @@ container_fluid_page_body_wrapper_id.appendChild(main_panel_div);
 var nav_ul = document.getElementById("nav_ul");
 nav_ul.style.background = "white";
 
+
+
+
 //used for showing product , category , variant data
 //data table admin
 
@@ -334,3 +337,7 @@ if(ad_modal_body){
 var ad_modal_content=document.querySelector('#ad_modal_content')
 if(ad_modal_content){
     ad_modal_content.style.borderRadius='25px';}
+
+
+//-------------------------------------------------------------------------------------------------------
+//add form image croping
