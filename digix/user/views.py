@@ -33,6 +33,8 @@ import random
 
 #home page
 def index(request):
+
+    #print(f" from index view ===>  session : {request.session} , user : { request.user}")
     variants_with_images = Variant.objects.prefetch_related('variant_images').all()
     return render(request,'user_app/home.html',{'variants_with_images':variants_with_images})
 
@@ -119,7 +121,7 @@ def get_variants(request,id):
 
 def send_otp(otp):
     account_sid = 'AC929a8e4f621fb41ffd6aaf88b0042071'
-    auth_token = 'f9af81f318f41bdd78f6c1c4dac6cbb7'
+    auth_token = '26e849049eebce56c2454f4fde3a7f32'
     client = Client(account_sid, auth_token)
 
     message = client.messages.create(
@@ -140,17 +142,23 @@ def send_otp(otp):
 #will be called when first otp given was wrong
 def otp_update(request):
 
-    #check forget password otp in session then update new otp value in it
-    if 'forget_password-otp' in request.session:
+    otp = str(random.randint(1000,9999))
+    
+    #send otp
+    
+    send_otp(otp)
+    #update the session with new value
+    #rendered back to verfiy otp and gonna work on forgot-password-block
 
-        otp = str(random.randint(1000,9999))
-        print(f'---------------otp update ----------------{otp}')
-        #send otp
-        
-        send_otp(otp)
-        #update the session with new value
-        #rendered back to verfiy otp and gonna work on forgot-password-block
+    if 'sign_up_otp_wrong' in request.session:
+        request.session['sign_up_otp_wrong'] = otp
+        print(f'---------------otp update user update ----------------{otp}')
+
+    #check forget password otp in session then update new otp value in it
+    elif 'forget_password-otp' in request.session:
+
         request.session['forget_password-otp']=otp
+        print(f'---------------otp update forgot password----------------{otp}')
 
     return redirect('user:verify_otp')
 
@@ -197,15 +205,15 @@ def verify_otp(request):
     if 'user' in request.session:
         #getting the dict 
         user = request.session['user']
-        
+        request.session['phone_number']=user['phone']
 
         if request.method == 'POST':
 
             #getting the otp
             entered_otp = f"{request.POST['otp1']}{request.POST['otp2']}{request.POST['otp3']}{request.POST['otp4']}"
-
+            print(f"entered otp : {entered_otp} , user otp : {request.session['user']['otp']}")
             #if otp is correct then create new user account
-            if entered_otp == user['otp']:
+            if entered_otp == user['otp'] or entered_otp == request.session.get('sign_up_otp_wrong',3):
                 new_user = CustomUser(
                     username=user['username'],
                     phone=user['phone'],
@@ -215,7 +223,8 @@ def verify_otp(request):
                 #we want to hash the password before saving it into the db
                 new_user.password = new_user.make_password(user['password'])
                 new_user.save()
-
+                #for the else case show phone number in resend otp
+                
                 #clear the session
                 request.session.flush()
 
@@ -223,12 +232,13 @@ def verify_otp(request):
             else:
                 #otp don't match
                 messages.error(request,"Entered otp doesn't match")
-                return render(request,'user_app/user_sign_in.html',{'verify_otp':True,'otp_again':True,'user_links':True})
+                request.session['sign_up_otp_wrong']=user['otp']
+                return render(request,'user_app/user_sign_in.html',{'verify_otp':True,'otp_again':True,'user_links':True,'phone':request.session.get('phone_number','None')})
             
     #forgot password in user sign in    
     elif 'forget_password-otp'  in request.session:
 
-        print(f"otp : {request.session['forget_password-otp']} , phone number : {request.session['phone_number']}")
+        print(f" verify otp ==> otp : {request.session['forget_password-otp']} , phone number : {request.session['phone_number']}")
         
         #get the otp from form
         if request.method == 'POST':
@@ -294,7 +304,7 @@ def forgot_password(request):
         try:
             
             user=CustomUser.objects.get(phone=phone_number)
-            print(user)
+            #print(user)
             #user exists
             if user:
                 
@@ -303,11 +313,13 @@ def forgot_password(request):
                 otp = str(random.randint(1000,9999))
                 #save it in session with forget password otp
                 request.session['forget_password-otp']=otp
+                print(f"request.session['forget_password-otp'] : {request.session['forget_password-otp']}")
                 #check already exists
-                if not 'phone_number' in request.session:
-                    request.session['phone_number']=phone_number
+                
+                request.session['phone_number']=phone_number
+                
                 send_otp(otp)
-                print(f'----------------------------------otp---------------------{otp}')
+                #print(f'----------------------------------otp---------------------{otp}')
                 #in session added user id
                 request.session['forgot_user_id'] = user.id
                 #redirected to otp verify view

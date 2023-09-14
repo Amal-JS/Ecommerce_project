@@ -22,3 +22,7 @@ verification_check = client.verify.v2.services(verify_sid) \
   .verification_checks \
   .create(to=verified_number, code=otp_code)
 print(verification_check.status)
+
+
+
+//recovery code - b2d67Mu5P-1kYQJ939tloEl8l2ZfW-QZQ83fe988
