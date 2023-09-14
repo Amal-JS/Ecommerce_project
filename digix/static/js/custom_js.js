@@ -758,7 +758,7 @@ if(document.getElementById('id_password')){
 
 }
 
-
+//-------------------------------------------------------------------------------------------------------
 //verify otp input value length limit and focus change
 
 if ((window.location.pathname === '/user_sign_up/') || (window.location.pathname === '/verify_otp/')){
@@ -787,7 +787,7 @@ if ((window.location.pathname === '/user_sign_up/') || (window.location.pathname
 
 }
 
-
+//-------------------------------------------------------------------------------------------
 //password update field value check 
 
 if (window.location.pathname.startsWith('/user_password_update/')){
@@ -831,6 +831,7 @@ if(password){
 }
 
   if(password2 ){
+    document.getElementById('password21-error').textContent=''
     document.getElementById('id_password2').addEventListener('blur', function () {
       document.getElementById('password21-error').textContent=''
       
@@ -840,3 +841,52 @@ if(password){
   }
 
 }
+
+//-------------------------------------------------------------------------------------------------------
+
+
+//category filter sort  default value setting in select
+window.addEventListener('DOMContentLoaded', function() {
+  // Get the current pathname
+  var pathname = window.location.pathname;
+
+  // Check if "price" exists in the pathname
+  if (pathname.includes('price')) {
+    //console.log('select element selected')
+    // Split the pathname by '/'
+    var pathParts = pathname.split('/');
+   
+    
+    
+    const value = pathParts.filter((element) => element.startsWith('price'));
+
+      if (value.length === 1){
+        console.log(value)
+      
+      // Get a reference to the select element
+      var selectElement = document.getElementById("sortby");
+      //console.log(selectElement)
+
+      // Loop through the options and set the selected option based on priceValue
+      var options = selectElement.options;
+      //console.log(options)
+      //get option index
+      index=null
+      for (var i = 0; i < options.length; i++) {
+        if (options[i].value === value[0]) {
+          index = i;
+          // Set the selected option
+      selectElement.selectedIndex = i;
+      break; // Exit the loop since we found the desired option
+         
+        }
+      }
+      //console.log('select option index :',index)
+     
+      }
+  }
+});
+
+
+//-----------------------------------------------------------------------------------------------------
+

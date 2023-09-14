@@ -342,3 +342,13 @@ hr.style {
     margin-top: .2rem;
     padding-bottom: .5rem;
 }
+.toolbox select.form-control:not([size]):not([multiple]) {
+    height: 30px;
+    border: 1px solid black;
+    color: #333333;
+    font-weight: 500;
+}
+
+  select#sortby option:checked {
+    color: #333333; /* Change the font color to red for the selected option */
+  }
