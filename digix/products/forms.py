@@ -1,5 +1,8 @@
+#importing all the models
 from . models import Category,Product,Variant,Variant_Images
 from django import forms
+
+from django.utils.translation import gettext_lazy as _
 
 
 class CategoryForm(forms.ModelForm):
@@ -44,30 +47,44 @@ class VariantForm(forms.ModelForm):
         required=False,
         widget=forms.Select(attrs={'placeholder': 'Select TV Mount' ,'class':'select_admin'}),
     )
+#=====================================================================================================
+# image field only want to accept jpg or jpeg or svg file for that use 'accept' :'.jpg,.jpeg etc ' 
+# in the attrs
+#=====================================================================================================  
     image1 = forms.ImageField(
         label="Image 1",
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'select_admin'}),
+
+        # The ClearableFileInput widget in Django provides a file input field with the option to clear
+        #   the currently selected file, allowing users to remove a file 
+        # if they change their mind or want to update it. It includes a checkbox and label that, when
+        #   clicked, clears the file input.
+
+        # Using ClearableFileInput can be beneficial in scenarios where you want to provide users with the ability
+        # to easily remove a file they've selected, such as when they want to replace it with another file or 
+        # if they've accidentally uploaded the wrong file.
+        
+        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg'}),
     )
     image2 = forms.ImageField(
         label="Image 2",
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'select_admin'}),
+        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg'}),
     )
     image3 = forms.ImageField(
         label="Image 3",
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'select_admin'}),
+        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg'}),
     )
     image4 = forms.ImageField(
         label="Image 4",
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'select_admin'}),
+        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg'}),
     )
     image5 = forms.ImageField(
         label="Image 5",
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'select_admin'}),
+        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg'}),
     )
 
     is_available = forms.BooleanField(label='Available', widget=forms.CheckboxInput(attrs={'class': 'mx-2',}),required=False)
