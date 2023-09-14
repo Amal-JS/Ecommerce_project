@@ -56,9 +56,11 @@ class Variant(models.Model):
     stock = models.PositiveIntegerField()
     is_available= models.BooleanField(default=False)
     screen_resolution = models.DecimalField(max_digits=5,decimal_places=2,blank=True,null=True)
+
     no_of_usb_ports = models.PositiveIntegerField(blank=True,null=True)
     no_of_hdmi_ports = models.PositiveIntegerField(blank=True,null=True)
-    tv_mount = models.CharField(max_length=30,choices=tv_mount_choices,blank=True,null=True)
+    tv_mount = models.CharField(max_length=30,blank=True,null=True)
+    
     description=models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 

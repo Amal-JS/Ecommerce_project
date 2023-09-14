@@ -89,15 +89,11 @@
                                         </a>
 
                                     </div> -->
-                                    {% if variant.stocks > 1 %}
-                                    less than 10 aakanam
-                                    {% else %}
-                                    greater than 20 aakam
-                                    {% endif %}
+                                    
                                     <div class="w-75 mb-2 mt-3" id="variant-div">
                                         <!-- Other content goes here -->
                                       </div>
-                                      {% if  variant.stocks > 9 %}
+                                      {% if  variant.stock > 9 %}
                                       <div class="w-75 mb-3 mt-3" >
                                         <p class="mx-2 text-start" style="color:#333333;font-weight: 400;text-align:start;">Number of stocks : {{variant.stock}}</p>
                                       </div>
