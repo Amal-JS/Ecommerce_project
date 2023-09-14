@@ -89,8 +89,16 @@
                                         </a>
 
                                     </div> -->
+                                    {% if variant.product.category.name == 'Smart TV' %}
+                                    <div class="w-75 mb-2 mt-3 d-block text-start" id="variant-tv-div">
+                                        <label class="text-dark w-100 mt-2 " style="font-size:2rem;">Screen Resolution: {{variant.screen_resolution}} inch</label>
+                                        <label class="text-dark w-100 mt-2 " style="font-size:2rem;">Hdmi Ports: {{variant.no_of_hdmi_ports}}</label>
+                                        <label class="text-dark w-100 mt-2 " style="font-size:2rem;">Usb Ports: {{variant.no_of_usb_ports}}</label>
+                                    </div>
+                                    {% else %}
+                                    <div class="w-75 mb-2 mt-3" id="variant-div"></div>
+                                    {% endif %}
                                     
-                                    <div class="w-75 mb-2 mt-3" id="variant-div">
                                         <!-- Other content goes here -->
                                       </div>
                                       {% if  variant.stock > 9 %}
@@ -105,6 +113,8 @@
                                       
                                       {% endif %}
                                 </div>
+                                
+
 
                                 <div class="product-details-action">
                                     <div class="details-action-col">
@@ -113,18 +123,19 @@
                                         </div><!-- End .product-details-quantity -->
 
                                         <a href="#" class="btn-product btn-cart p-3"><span>add to cart</span></a>
-                                    </div><!-- End .details-action-col -->
 
-                                    <div class="details-action-wrapper">
-                                        <a href="#" class="btn-product btn-wishlist p-3" title="Wishlist"><span>Add to Wishlist</span></a>
+                                        <a href="#" class="btn-product  btn-cart mx-2 p-3" style="width:200px;"><span>Add to Wishlist</span></a>
+                                    </div><!-- End .details-action-col -->
+                                    
                                         
-                                    </div><!-- End .details-action-wrapper -->
-                                </div><!-- End .product-details-action -->
+                        
+
+                                
 
                                 <div class="product-details-footer">
                                     <div class="product-cat">
-                                        <span>Category:</span>
-                                        <a href="{% url 'user:category_display_all_products' variant.product.category.name %}">{{variant.product.category.name}}</a>
+                                        <span style="color:black;">Category:</span>
+                                        <a href="{% url 'user:category_display_all_products' variant.product.category.name %}" class="text-dark">{{variant.product.category.name}}</a>
                                         
                                     </div><!-- End .product-cat -->
 
@@ -191,7 +202,7 @@
                                     {% endif %}
                                     <li><div>Ram : {{variant.ram}}</div></li>
                                     <li><div>Storage : {{variant.storage}}</div></li>
-                                    <li><div>Screen Resolution : {{variant.screen_resolution}}</div></li>
+                                    <li><div>Screen Resolution : {{variant.screen_resolution|floatformat:1}} inch</div></li>
 
                                     
                                     
