@@ -340,4 +340,121 @@ if(ad_modal_content){
 
 
 //-------------------------------------------------------------------------------------------------------
-//add form image croping
+//add form image croping  and update form image crop
+
+if ( (window.location.pathname.startsWith('/admin/add')) || ( (window.location.pathname.includes('update'))  &&  (window.location.pathname.includes('admin'))))  { 
+
+     //document fully loaded
+
+     document.addEventListener("DOMContentLoaded", function () {
+      // Function to handle image upload and cropping for a specific image input
+      function handleImageUpload(
+        inputId,
+        imageId,
+        modalId,
+        cropBtnId,
+        closeBtnId // Add close button ID argument
+      ) {
+        const input = document.getElementById(inputId);
+        const modal = new bootstrap.Modal(document.getElementById(modalId));
+        const cropBtn = document.getElementById(cropBtnId);
+        const closeBtn = document.getElementById(closeBtnId); // Get close button element
+      
+        let cropper = null; // Declare cropper variable outside of the event listener
+      
+        input.addEventListener("change", () => {
+          const img_data = input.files[0];
+          const url = URL.createObjectURL(img_data);
+      
+          let image = null;
+      
+          // Create a new image element
+          image = new Image();
+          image.id = imageId; // Set the ID for the image element
+          image.style.maxWidth = "600px";
+          image.style.maxHeight = "350px";
+      
+          image.src = url;
+      
+          modal.show(); // Show the modal
+      
+          image.onload = function () {
+            const imageBoxModal = document.getElementById("image-box-modal");
+      
+            // Clear modal content before opening it for a new image
+            imageBoxModal.innerHTML = "";
+            imageBoxModal.appendChild(image);
+      
+            // Initialize Cropper after the image has loaded
+            // Delay the Cropper initialization by a short time (e.g., 100 milliseconds)
+            setTimeout(function () {
+              cropper = new Cropper(image, {
+                aspectRatio: 1, // Set the aspect ratio to 1:1 (square)
+                autoCropArea: 1,
+                viewMode: 1,
+                scalable: true,
+                zoomable: true,
+                movable: true,
+                minCropBoxWidth: 200,
+                minCropBoxHeight: 200,
+              });
+            }, 1000); // Adjust the delay time as needed
+          };
+      
+          cropBtn.addEventListener("click", () => {
+            cropper.getCroppedCanvas().toBlob((blob) => {
+              let fileInputElement = document.getElementById(inputId);
+              let file = new File([blob], img_data.name, {
+                type: "image/*",
+                lastModified: new Date().getTime(),
+              });
+              let container = new DataTransfer();
+              container.items.add(file);
+              fileInputElement.files = container.files;
+      
+              modal.hide(); // Hide the modal after cropping
+              updateInputField(inputId, blob); // Update the input field with the cropped image
+            });
+          });
+      
+          closeBtn.addEventListener("click", () => {
+            modal.hide(); // Hide the modal when the close button is clicked
+          });
+      
+          // JavaScript to close the modal when clicking the icon
+          document.getElementById("closeModalIcon").addEventListener("click", function () {
+            // Assuming you have a reference to the modal element by its ID
+            modal.hide(); // Hide the modal when the close button is clicked
+          });
+        });
+      
+        // Function to update the input field with a Blob object
+        function updateInputField(inputId, blob) {
+          let fileInputElement = document.getElementById(inputId);
+          let file = new File([blob], "cropped_image.png", {
+            type: "image/png",
+            lastModified: new Date().getTime(),
+          });
+          let container = new DataTransfer();
+          container.items.add(file);
+          fileInputElement.files = container.files;
+        }
+      }
+      
+      // Call the function for each image input
+      handleImageUpload("id_image1", "image", "imageModal", "crop-btn", "close-btn");
+      handleImageUpload("id_image2", "image2", "imageModal", "crop-btn", "close-btn");
+      handleImageUpload("id_image3", "image3", "imageModal", "crop-btn", "close-btn");
+      handleImageUpload("id_image4", "image4", "imageModal", "crop-btn", "close-btn");
+      handleImageUpload("id_image5", "image5", "imageModal", "crop-btn", "close-btn");
+
+      
+            });
+
+
+
+
+}
+
+//--------------------------------------------------------------------------------------------------------
+

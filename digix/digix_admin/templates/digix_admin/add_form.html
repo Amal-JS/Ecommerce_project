@@ -3,6 +3,34 @@
 
 {% block title %}Add {{element}}{% endblock %}
 
+{% block priority_css_links %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.css"
+/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.11/cropper.js"></script>
+
+
+
+<style>
+    .cropper-container {
+  width: 759px !important;
+  height: 435px !important;
+}
+
+.cropper-crop-box{
+
+    width: 593px;
+    height: 315.132px;
+    transform: translateX(113.321px);
+
+}
+</style>
+
+{% endblock %}
+
 {% block body %}
 
 
@@ -91,8 +119,37 @@
                 {% endfor %}
             </div>
         {% endif %}
-            
-            </form>
+
+
+            <!-- modal start -->
+        
+            <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content" style="width:800px;height:600px;background:white;">
+                    <div class="modal-header">
+                      <h5 class="modal-title text-dark" id="imageModalLabel">Crop Image</h5>
+                      
+                       <svg id="closeModalIcon" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-x-square-fill text-dark" viewBox="0 0 16 16">
+                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
+                          </svg>
+                      
+                    </div>
+                    <div class="modal-body">
+                      <div id="image-box-modal" class="image-container h-100 w-100"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-dark" data-dismiss="modal" id="close-btn">Close</button>
+                        <button type="button" class="btn btn-dark" id="crop-btn">Crop and Close</button>
+                       </div>
+                  </div>
+                </div>
+              </div>
+        
+        
+        <!-- modal end -->
+        
+        
+        </form>
     </div>
 </div>
 
@@ -105,3 +162,7 @@
 {{ form.non_field_errors }} -->
     </div>
     {% endblock %}
+
+    {% block priority_js_links %}
+
+{% endblock %}

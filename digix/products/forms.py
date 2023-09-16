@@ -138,7 +138,7 @@ class VariantForm(forms.ModelForm):
         # to easily remove a file they've selected, such as when they want to replace it with another file or 
         # if they've accidentally uploaded the wrong file.
 
-        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg',}),
+        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg','id': 'id_image1'}),
     )
 
                                
@@ -146,22 +146,22 @@ class VariantForm(forms.ModelForm):
     image2 = forms.ImageField(
         label="Image 2",
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg'}),
+        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg','id': 'id_image2'}),
     )
     image3 = forms.ImageField(
         label="Image 3",
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg'}),
+        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg','id': 'id_image3'}),
     )
     image4 = forms.ImageField(
         label="Image 4",
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg'}),
+        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg','id': 'id_image4'}),
     )
     image5 = forms.ImageField(
         label="Image 5",
         required=False,
-        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg'}),
+        widget=forms.ClearableFileInput(attrs={'class': 'select_admin','accept': '.jpg, .jpeg, .svg','id': 'id_image5'}),
     )
 
     is_available = forms.BooleanField(label='Available', widget=forms.CheckboxInput(attrs={'class': 'mx-2',}),required=False)
