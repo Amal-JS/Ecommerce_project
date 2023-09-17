@@ -548,6 +548,22 @@ def search(request):
 
 
 
+#search variants json response
+
+def search_variants(request):
+    search_value = request.GET.get('search_value', '')
+
+    if search_value:
+        variants_with_images = Variant.objects.prefetch_related('variant_images').filter(
+            Q(name__icontains=search_value) | Q(product__category__name__icontains=search_value)
+        )[:10]
+        results = [{'id': variant.id, 'name': variant.name} for variant in variants_with_images]
+    else:
+        results = []
+    
+
+    return JsonResponse({'results': results})
+
 #admin side all user display json response
 def get_all_users(request):
     data = CustomUser.objects.all().values('id', 'username', 'phone','email','is_active')

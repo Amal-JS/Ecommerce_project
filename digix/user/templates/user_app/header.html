@@ -14,23 +14,38 @@
                     <img src="{% static 'logo.jpg' %}" alt="DigiX Logo" width="105" height="25">
                 </a>
             </div><!-- End .header-left -->
+            <div class="" style="display:block;">
 
-            <div class="header-center">
-                <div class="header-search header-search-extended header-search-visible header-search-no-radius d-none d-lg-block">
-                    <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                    <form action="{% url 'user:search' %}" method="get">
-                        <div class="header-search-wrapper search-wrapper-wide">
-                        
+                <div class="header-center">
+                
+                    <div class="header-search header-search-extended header-search-visible header-search-no-radius d-none d-lg-block">
+                        <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
+                        <form action="{% url 'user:search' %}" method="get">
+                            <div class="header-search-wrapper search-wrapper-wide">
                             
-                            <label for="search_value" class="sr-only">Search</label>
-                            <input type="search" class="form-control" name="search_value" id="search_value" placeholder="Search product ..." >
-                            <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-                        <
-                        </div><!-- End .header-search-wrapper -->
-                    </form>
-                </div><!-- End .header-search -->
+                                
+                                <label for="search_value" class="sr-only">Search</label>
+                                <input type="search" class="form-control" name="search_value" id="searchInput" placeholder="Search product ..." >
+                                <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+                               
+                    
+                            </div>
+                        </form>
+                        
+    
+    
+                    </div><!-- End .header-search -->
+                    
+                    
+                </div>
+                <div class="text-center">
+                    <div id="suggestions" ></div> 
+                </div>
+                
+                
             </div>
-
+            
+            
             <div class="header-right">
                 <div class="header-dropdown-link">
                     
@@ -87,11 +102,11 @@
                                             <img src="{% static 'user/assets/images/products/cart/product-2.jpg' %}" alt="product">
                                         </a>
                                     </figure>
-                                    <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
+                                    <a href="#" class="btn-remove " title="Remove Product"><i class="icon-close"></i></a>
                                 </div><!-- End .product -->
                             </div><!-- End .cart-product -->
 
-                            <div class="dropdown-cart-total">
+                            <div class="dropdown-cart-total ">
                                 <span>Total</span>
 
                                 <span class="cart-total-price">$160.00</span>
@@ -107,7 +122,12 @@
             </div><!-- End .header-right -->
         </div><!-- End .container -->
     </div><!-- End .header-middle -->
+      <!-- Results dropdown -->
+<div id="search-results"  class="dropdown" style="width:100%;height:100%;">
+    <ul class="dropdown-menu" style="width:100%;height:100%;background-color: blue;"></ul>
+</div>
 
+    </div></div></div>
     <div class="header-bottom sticky-header">
         <div class="container">
             <div class="header-left">

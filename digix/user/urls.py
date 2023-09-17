@@ -38,6 +38,9 @@ path('user_sign_up_value/',views.user_sign_up_value,name='user_sign_up_value'),
 #search results
 path('search_results/',views.search,name='search'),
 
+#search json
+ path('search_variants/', views.search_variants, name='search_variants'),
+
 #get all users
 path('user/get_all_users/',views.get_all_users),
 path('user/unblock/<int:id>/',views.user_unblock),

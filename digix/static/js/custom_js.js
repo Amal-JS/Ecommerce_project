@@ -840,3 +840,125 @@ if(password){
   }
 
 }
+
+//-----------------------------------------------------------------------------------------------------
+//search bar fetch
+
+document.addEventListener('DOMContentLoaded', function () {
+  const searchInput = document.getElementById('searchInput');
+  const suggestionsContainer = document.getElementById('suggestions');
+ 
+  
+  // Sample data for suggestions (replace with your own data)
+  const suggestionsData = [];
+  
+  // Function to update the suggestions based on user input
+  function updateSuggestions() {
+    
+    const userInput = searchInput.value.toLowerCase();
+    suggestionsContainer.innerHTML = ''; // Clear previous suggestions
+    suggestionsContainer.style.display='none';
+
+    // Filter the suggestions based on user input
+    const filteredSuggestions = suggestionsData.filter(item => item.toLowerCase().includes(userInput));
+  
+
+       // Fetch suggestions from the server using the user input
+       fetch(`/search_variants/?search_value=${userInput}`)
+       .then(response => response.json())
+       .then(data => {
+         const results = data.results; // Assuming the server returns a 'results' array
+        
+        // Create and display suggestion paragraphs
+if (results.length > 0) {
+  results.forEach(result => {
+
+    
+    const innerdiv = document.createElement('div')
+    innerdiv.style.display='flex'
+    // innerdiv.style.justifyContent='space-between'
+    innerdiv.style.margin='2px'
+    innerdiv.style.marginBottom='5px'
+   
+    
+    const arrow = document.createElement('span')
+    arrow.classList.add('glyphicon')
+    arrow.innerHTML='&rarr;'
+    arrow.style.fontSize='30px'
+    
+
+    const link = document.createElement('a');
+    const paragraph = document.createElement('p');
+    link.setAttribute('href', `/product/${result.id}/`); // Set the link URL based on your data
+    paragraph.textContent = result.name; // Set the suggestion text based on your data
+    paragraph.style.color = '#333333';
+    paragraph.style.fontWeight = '400';
+    innerdiv.style.border = '1px solid black';
+    paragraph.style.padding = '3px';
+    
+
+
+
+
+    // Add a click event listener to populate the input field with the selected suggestion
+    paragraph.addEventListener('click', () => {
+      searchInput.value = result.name; // Set the input value based on your data
+      suggestionsContainer.innerHTML = ''; // Clear suggestions
+    });
+
+    // Add a mouseover event listener to change background color on hover
+    paragraph.addEventListener('mouseover', () => {
+      paragraph.style.backgroundColor = '#333333 !important'; // Use !important
+      paragraph.style.color = '#fff !important'; // Use !important
+    });
+
+    // Add a mouseout event listener to reset background color when not hovering
+    paragraph.addEventListener('mouseout', () => {
+      paragraph.style.backgroundColor = ''; // Reset background color
+      paragraph.style.color = ''; // Reset text color
+    });
+
+    link.appendChild(paragraph);
+    innerdiv.appendChild(link)
+    innerdiv.appendChild(arrow)
+    suggestionsContainer.appendChild(innerdiv);
+    suggestionsContainer.style.display='block'
+    suggestionsContainer.style.padding = '20px'
+  });
+} else {
+  // Create a paragraph for "No results" message
+  suggestionsContainer.textContent=""
+  
+  const noResultsParagraph = document.createElement('p');
+  noResultsParagraph.textContent = 'No results found';
+  noResultsParagraph.style.color = '#333333';
+    noResultsParagraph.style.fontWeight = '400';
+    noResultsParagraph.style.border = '1px solid black';
+    noResultsParagraph.style.padding = '3px';
+    noResultsParagraph.style.fontSize= '2rem';
+    suggestionsContainer.style.background='white'
+    
+  suggestionsContainer.appendChild(noResultsParagraph);
+}
+
+suggestionsContainer.style.display = 'block';
+suggestionsContainer.style.padding = '20px'
+       })
+       .catch(error => {
+         console.error('Error fetching suggestions:', error);
+       });
+
+
+    
+  }
+  
+  // Event listener for input changes
+  searchInput.addEventListener('input', updateSuggestions);
+  
+
+  document.getElementById('searchInput').addEventListener('blur',()=>{
+    if (document.getElementById('searchInput').value === ''){
+      document.getElementById('suggestions').style.display='none';
+    }
+  })
+  });
