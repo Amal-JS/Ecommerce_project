@@ -585,3 +585,21 @@ def user_block(request,id):
     user.save()
     print(user.username,user.is_active)
     return redirect('digix_admin:all_users')
+
+
+#user profile
+def user_profile(request):
+    return render(request,'user_app/dashboard.html',)
+
+
+#user wishlist
+def user_wishlist(request):
+    return render(request,'user_app/wishlist.html')
+
+#user cart
+def user_cart(request):
+    return render(request,'user_app/cart.html')
+
+#user checkout
+def user_checkout(request):
+    return render(request,'user_app/checkout.html')

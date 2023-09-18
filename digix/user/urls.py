@@ -58,4 +58,26 @@ path('user_password_update/<int:id>/',views.user_password_update,name='user_pass
 path('otp_update/',views.otp_update,name='otp_update'),
 
 
+
+#profile page
+path('profile/',views.user_profile,name='user_profile'),
+
+
+
+#wishlist page
+path('wishlist/',views.user_wishlist,name='user_wishlist'),
+
+
+
+#cart page
+path('cart/',views.user_cart,name='user_cart'),
+
+
+
+#checkout page
+path('checkout/',views.user_checkout,name='user_checkout'),
+
+
+
+
 ]

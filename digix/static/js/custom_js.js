@@ -1,5 +1,25 @@
-// console.log('comes')
+//functions that want to work most of the times
 
+
+// Function to show a simple notification
+function showNotification(message,color){
+ 
+        const liveToast = new bootstrap.Toast(document.getElementById("liveToast"));
+        const toast_body = document.getElementById('toast_body')
+        toast_body.textContent = message
+      // Remove existing color classes
+    toast_body.classList.remove('text-success', 'text-danger');
+
+    // Add the specified color class
+    if (color === 'text-success') {
+        toast_body.classList.add('text-success');
+    } else if (color === 'text-danger') {
+        toast_body.classList.add('text-danger');
+       
+            
+    }
+    liveToast.show();
+      }
 
 //nav side bar hidden
 menu_vertiacal_container=document.getElementById('menu-vertiacal-container')
@@ -469,7 +489,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       })
       .catch(error => {
-        console.error('Error occurred while getting product variants:', error);
+        
       });
   }
 });
@@ -962,3 +982,52 @@ suggestionsContainer.style.padding = '20px'
     }
   })
   });
+
+//====================================================================================================
+//show product qty and increment decrement management
+
+
+if (window.location.pathname.startsWith('/product/')){
+const minusIcon = document.getElementById("minus_icon");
+const plusIcon = document.getElementById("plus_icon");
+const qtyInput = document.getElementById("show_qty");
+const maxStock = parseInt(qtyInput.getAttribute("max_stock"));
+
+
+ // Event listener for the minus icon
+ minusIcon.addEventListener("click", function () {
+  let currentValue = parseInt(qtyInput.value);
+  if (!isNaN(currentValue) && currentValue > 1) {
+      qtyInput.value = (currentValue - 1).toString();
+      showNotification(`Number of stocks removed: ${currentValue - 1}`, 'text-danger');
+      
+  }
+});
+
+ // Event listener for the plus icon
+ plusIcon.addEventListener("click", function () {
+  let currentValue = parseInt(qtyInput.value);
+  if (!isNaN(currentValue) && currentValue < maxStock) {
+      qtyInput.value = (currentValue + 1).toString();
+      showNotification(`Number of stocks : ${currentValue + 1}`, 'text-success');
+        }
+    });
+
+
+   
+}
+  //---------------------------------------------------------------------------------------------------
+  //shopping cart icon
+
+  const cart_icon = document.getElementById('shopping_cart_icon')
+  document.getElementById('shopping_cart_icon').addEventListener('click',()=>{
+
+    window.location.href = '/cart/'
+  })
+
+  //----------------------------------------------------------------------------------------------------
+
+  
+
+
+
