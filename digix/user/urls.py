@@ -78,6 +78,19 @@ path('cart/',views.user_cart,name='user_cart'),
 path('checkout/',views.user_checkout,name='user_checkout'),
 
 
+#user profile views
+path('dashboard/',views.user_profile_dashboard,name='user_profile_dashboard'),
+path('orders/',views.user_profile_order,name='user_profile_orders'),
+path('address/',views.user_profile_address,name='user_profile_address'),
+path('account_details',views.user_profile_account_details,name='user_profile_account_details'),
 
 
+#add new address 
+path('add_new_address/',views.add_new_address,name='add_new_address'),
+#update address
+path('update_address/<int:id>/',views.update_address,name='update_address'),
+#delete address
+path('delete_address/<int:id>/',views.delete_address,name='delete_address'),
+#set default address
+path('default_address/<int:id>/',views.default_address,name='default_address'),
 ]

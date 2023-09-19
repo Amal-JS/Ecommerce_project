@@ -516,13 +516,18 @@
                             <a class="sf-with-ul no-dropdown">Hello, {{request.user.username}}</a>
                         </li>
 
-                 
+                        <li>
+                            <a href="{% url 'user:user_profile' %}" class="sf-with-ul no-dropdown">Profile</a>
+
+                            
+                        </li>
 
                         <li>
                             <a href="{% url 'user:user_logout' %}" class="sf-with-ul no-dropdown">Logout</a>
 
                             
                         </li>
+                       
                         {% else %}
 
                         <li>

@@ -2,7 +2,7 @@ import re
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 #Form for user creation
-from . forms import UserCreationForm
+from . forms import UserCreationForm , ShippingAddressForm
 #display form validation errors
 from django.contrib import messages
 #check user authentication , login and logout (adding and removing user in session )
@@ -29,6 +29,12 @@ from twilio.rest import Client
 import random
 
 
+from django.contrib.auth.decorators import user_passes_test
+
+#import shipping address model
+from . models import ShippingAddress
+
+
 
 
 #home page
@@ -37,6 +43,8 @@ def index(request):
     #print(f" from index view ===>  session : {request.session} , user : { request.user}")
     variants_with_images = Variant.objects.prefetch_related('variant_images').all()
     return render(request,'user_app/home.html',{'variants_with_images':variants_with_images})
+
+
 
 #display all products based on category , brand
 def category_display_all_products(request,category=None,sort_option=None):
@@ -121,7 +129,7 @@ def get_variants(request,id):
 
 def send_otp(otp):
     account_sid = 'AC929a8e4f621fb41ffd6aaf88b0042071'
-    auth_token = '26e849049eebce56c2454f4fde3a7f32'
+    auth_token = 'bf99032ef3ee29284d3118533ccc4c67'
     client = Client(account_sid, auth_token)
 
     message = client.messages.create(
@@ -325,8 +333,9 @@ def forgot_password(request):
                 #redirected to otp verify view
                 return redirect('user:verify_otp')
             
-        except:
+        except Exception as e:
             #no phone number exist in database
+            print(user ,e )
             messages.error(request,"User with phone number doesn't exist")
             return render(request,'user_app/user_sign_in.html',{'forgot_password':True,'user_links':True})
         
@@ -587,6 +596,13 @@ def user_block(request,id):
     return redirect('digix_admin:all_users')
 
 
+
+#check user is authenticated or not
+def is_user_authenticated(user):
+    return user.is_authenticated
+
+
+
 #user profile
 def user_profile(request):
     return render(request,'user_app/dashboard.html',)
@@ -603,3 +619,113 @@ def user_cart(request):
 #user checkout
 def user_checkout(request):
     return render(request,'user_app/checkout.html')
+
+
+
+#user profile views
+
+def user_profile_dashboard(request):
+    return render(request,'user_app/dashboard.html')
+
+
+#check user authenticated  before user profile order
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def user_profile_order(request):
+    return render(request,'user_app/orders.html')
+
+
+#check user authenticated  before user profile address
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def user_profile_address(request):
+
+    address_objects = ShippingAddress.objects.all()
+    
+    context = {'addresses':address_objects}
+    return render(request,'user_app/user_address.html',context)
+
+
+#check user authenticated  before user profile account details
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def user_profile_account_details(request):
+    return render(request,'user_app/user_account_details.html')
+
+
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def add_new_address(request):
+
+    if request.method == 'POST':
+                # Form is not valid, handle the case when all fields are empty
+        if request.POST['city'] == '' or request.POST['address'] == '' or request.POST['zip_code'] == '' or request.POST['country'] == '' :
+            messages.error(request, 'Empty form cannot be submitted.')
+            return redirect('user:add_new_address')
+
+        form = ShippingAddressForm(request.POST)
+
+        if form.is_valid():
+
+             # Create a new ShippingAddress instance with the form data
+            shipping_address = form.save(commit=False)
+            shipping_address.user = request.user  # Assuming you have authentication in place
+            form.save()
+
+            return redirect('user:user_profile_address')
+        else:
+            messages.error(request,form.errors)
+            return render(request,'user_app/user_address.html',{'form':form})
+        
+
+    form = ShippingAddressForm()
+  
+    return render(request,'user_app/user_address.html',{'form':form})
+
+
+
+#update address
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def update_address(request,id):
+
+    address = ShippingAddress.objects.get(id=id)
+    
+
+    if request.method == 'POST':
+
+        form = ShippingAddressForm(request.POST,instance= address)
+        
+
+        if form.is_valid():
+             # Create a new ShippingAddress instance with the form data
+            shipping_address = form.save(commit=False)
+            shipping_address.user = request.user  # Assuming you have authentication in place
+            form.save()
+            
+            return redirect('user:user_profile_address')
+        else:
+            messages.error(request,form.errors)
+            return render(request,'user_app/user_address.html',{'form':form,'update_address':True})
+        
+    form = ShippingAddressForm(instance = address)
+    
+    
+    return render(request,'user_app/user_address.html',{'form':form,'update_address':True})
+
+
+#delete address
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def delete_address(request,id):
+    address=ShippingAddress.objects.get(id=id)
+    address.delete()
+    return redirect('user:user_profile_address')
+
+#default address
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def default_address(request,id):
+
+    address=ShippingAddress.objects.get(id=id)
+
+    address.default_address = True
+    address.save()
+    # Clear default address for other addresses of the user
+    ShippingAddress.objects.filter(user=request.user).exclude(id=address.id).update(default_address=False)
+
+    print(address,address.default_address)
+    return redirect('user:user_profile_address')

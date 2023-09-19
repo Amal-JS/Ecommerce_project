@@ -101,15 +101,22 @@
                                     
                                         <!-- Other content goes here -->
                                       </div>
-                                      {% if  variant.stock > 9 %}
-                                      <div class="w-75 mb-3 mt-3" >
-                                        <p class="mx-2 text-start" style="color:#333333;font-weight: 400;text-align:start;">Number of stocks : {{variant.stock}}</p>
+
+                                      {% if variant.stock == 0 %}
+
+                                      <div class="w-75 mb-3 " >
+                                        <h2 class="mx-2 text-start" style="color:#333333;font-weight: 400;text-align:start;">Out of stock....</h2>
                                       </div>
-                                      {% else %}
+
+                                      {% elif  variant.stock < 11 %}
+                                     
+                                      
                                       
                                       <div class="w-75 mb-3 " >
                                         <p class="mx-2 text-start" style="color:#333333;font-weight: 400;text-align:start;">Number of stocks :  Only <span class="text-danger h2">{{variant.stock}}</span>  left Hurry Up....</p>
                                       </div>
+
+
                                       
                                       {% endif %}
                                 </div>
@@ -118,16 +125,16 @@
 
                                 <div class="product-details-action">
                                     <div class="details-action-col">
-                                        <div class="product-details-quantity  d-flex justify-content-between align-items-center"  style="border:1px solid #333333;padding:5px;height: 40px;width:100px;">
+                                        <!-- <div class="product-details-quantity  d-flex justify-content-between align-items-center"  style="border:1px solid #333333;padding:5px;height: 40px;width:100px;">
 
-                                            <!--minus icon-->
+                                           
                                             <svg id="minus_icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-lg " viewBox="0 0 16 16">
                                                 <path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8Z"/>
                                               </svg>
 
                                               <input id="show_qty" type="text" style="width:15px;border:none;" class=" " value="1" max_stock="{{variant.stock}}">
 
-                                            <!--plus icon-->
+                                           
                                             <svg id="plus_icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg " viewBox="0 0 16 16">
                                                 <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
                                               </svg>
@@ -135,15 +142,18 @@
 
 
                                           
-                                            </div><!-- End .product-details-quantity -->
+                                            </div> -->
+                                            
+                                            <!-- End .product-details-quantity -->
+                                            <div style="width:100px;background:white;"></div>
 
-                                        <a href="#" class="btn-product btn-cart p-3"><span>add to cart</span></a>
+                                        <a href="#" class="btn-product btn-cart p-3 disabled"><span>add to cart</span></a>
 
                                         <a href="#" class="btn-product  btn-cart mx-2 p-3" style="width:200px;"><span>Add to Wishlist</span></a>
                                     </div><!-- End .details-action-col -->
                                     
                                         
-                        
+                        <br>
 
                                 
 

@@ -1,0 +1,198 @@
+{% extends 'user_app/user_base.html' %}"
+{% load static %}
+{% block title %}Profile{% endblock %}
+
+{% block body %}
+
+        <main class="main">
+        	<div class="page-header text-center" >
+        		<div class="container">
+        			<h1 class="page-title">My Account</h1>
+        		</div><!-- End .container -->
+        	</div><!-- End .page-header -->
+           
+
+            <div class="page-content">
+            	<div class="dashboard">
+	                <div class="container">
+	                	<div class="row">
+	                		<aside class="col-md-4 col-lg-3">
+	                			<ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+								    <li class="nav-item">
+								        <a class="nav-link " id="tab-dashboard-link"  href="{% url 'user:user_profile_dashboard' %}" >Dashboard</a>
+								    </li>
+								    <li class="nav-item">
+								        <a class="nav-link" id="tab-orders-link"  href="{% url 'user:user_profile_orders' %}" >Orders</a>
+								    </li>
+								    
+								    <li class="nav-item">
+								        <a class="nav-link active" id="tab-address-link"  href="{% url 'user:user_profile_address' %}" >Addresses</a>
+								    </li>
+								    <li class="nav-item">
+								        <a class="nav-link " id="tab-account-link"  href="{% url 'user:user_profile_account_details' %}" >Account Details</a>
+								    </li>
+								    
+								</ul>
+	                		</aside><!-- End .col-lg-3 -->
+
+	                		<div class="col-md-8 col-lg-9">
+	                			<div class="tab-content mt-5">
+									
+
+								   
+
+								    <div class="" >
+								    	<p>The following addresses will be used on the checkout page by default.</p>
+
+
+                                        {% if not form %}
+                                            
+                                                <a href="{% url 'user:add_new_address' %}" class="btn btn-primary">Add new address</a>
+                                                {% endif %}
+                                        
+                                        
+                                        {% if form %}
+										<!-- user address adding updating form -->
+                                        <div class="row p-3">
+                                            <!-- action="{% url 'user:add_new_address' %}" -->
+                                            <form method ='POST' >
+                                                {% csrf_token %}
+                                                <div class="row">
+                                                    <div class="col-sm-6">
+                                                        <label>House Name *</label>
+                                                        <input type="text" class="form-control" name="address" {% if form.address.value %} value="{{ form.address.value }}" {% endif %}>
+                                                    </div><!-- End .col-sm-6 -->
+    
+                                                    <div class="col-sm-6">
+                                                        <label>Locality/Street/City *</label>
+                                                        <input type="text" class="form-control" name="city" {% if form.city.value %}value="{{ form.city.value }}" {% endif %}>
+                                                    </div><!-- End .col-sm-6 -->
+                                                
+                                                <div class="col-sm-6">
+                                                    <label>State *</label>
+                                                    <input type="text" class="form-control" name="state" {% if form.state.value %}value="{{ form.state.value }}" {% endif %}>
+                                                </div><!-- End .col-sm-6 -->
+                                            
+                                                <div class="col-sm-6">
+                                                    <label>Zip code *</label>
+                                                    <input type="text" class="form-control" name="zip_code" {% if form.zip_code.value %}value="{{ form.zip_code.value }}" {% endif %}>
+                                                </div><!-- End .col-sm-6 -->
+                                            
+                                               
+
+                                                 <div class="col-sm-6">
+                                                    <label>Country *</label>
+                                                    <input type="text" class="form-control" name="country" {% if form.country.value %}value="{{ form.country.value }}" {% endif %}>
+                                                </div><!-- End .col-sm-6 -->
+                                            </div><!-- End .row -->
+                                               
+                                               
+                                                
+                                                <button type="submit" class="btn btn-dark">
+                                                    {% if update_address %}  Update Address {% else %}
+                                                    Add address {% endif %}
+                                                    <i class="icon-long-arrow-right"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+
+
+                                        <div class="text-center">
+
+                                        
+                                        {% if messages %}
+                                        <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %}">
+                                            {% for message in messages %}
+                                            <p class="text-danger">{{ message }}</p>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+
+
+
+                                        {% endif %}
+                                    </div>
+
+
+
+                                        <!-- normal page view -->
+							
+								    	<div class="row mt-5">
+                                           
+                                            {% if not update_address %}
+                                            <h2 class="card-title">Billing Addresses</h2>
+                                            {% endif %}
+
+                                            {% for address in addresses %}
+								    		<div class="col-lg-6 mt-4">
+												
+								    			<div class="card card-dashboard">
+                                                    {% if address.default_address %}
+                                                    <a class="btn btn-success text-white" href="#" >Default</a>
+                                                    
+                                                    {% endif %}
+ 
+								    				<div class="card-body" {% if address.default_address %} style="border: 1px solid green;height:300px;" {% else %} style="border: 1px solid black;height:326px;" {% endif %}>
+								    					<!-- End .card-title -->
+                                                        <div class="text-end">
+                                                            <a href="{% url 'user:delete_address' address.id %}">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash text-dark" viewBox="0 0 16 16">
+                                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+                                                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+                                                              </svg></a>
+                                                        </div>
+                                                        <p class="text-dark fs-2">
+                                                            
+                                                            {{address.user}}</p>
+														<p class="text-dark fs-2">
+                                                            
+                                                            {{address.address}}</p>
+                                                           
+														<p class="text-dark fs-5">{{address.city}}</p>
+														
+														<p class="text-dark fs-5">{{address.zip_code}}</p>
+														<p class="text-dark fs-5">{{address.country}}</p>
+														
+                                                        <div class="d-flex justify-content-between">
+                                                            <a href="{% url 'user:update_address' address.id %}" class="btn-dark btn">Edit <i class="icon-edit"></i></a>
+                                                            {% if not address.default_address %}
+                                                            <a href="{% url 'user:default_address' address.id %}" class="btn-dark p-2">Make address default</a>
+                                                            {% endif %}
+                                                        </div>
+														
+								    				</div><!-- End .card-body -->
+								    			</div><!-- End .card-dashboard -->
+								    		</div><!-- End .col-lg-6 -->
+
+
+                                            {% empty %}
+
+                                            {% if not update_address %}
+                                            <div class="col-lg-6">
+								    			<div class="card card-dashboard">
+								    				<div class="card-body">
+								    					<h3 class="card-title">No Shipping Address added</h3><!-- End .card-title -->
+
+														<p class="mt-3 p-4">Add a new address <br>
+														
+								    				</div><!-- End .card-body -->
+								    			</div><!-- End .card-dashboard -->
+								    		</div><!-- End .col-lg-6 -->
+                                            {% endif %}
+                                            {% endfor %}
+
+								    		
+								    	</div><!-- End .row -->
+								    </div><!-- .End .tab-pane -->
+
+
+
+								</div>
+	                		</div><!-- End .col-lg-9 -->
+	                	</div><!-- End .row -->
+	                </div><!-- End .container -->
+                </div><!-- End .dashboard -->
+            </div><!-- End .page-content -->
+        </main><!-- End .main -->
+
+       {% endblock %}

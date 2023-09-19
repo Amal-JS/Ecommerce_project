@@ -52,3 +52,21 @@ the User model in our django project . So now go to settings.py and add
 AUTH_USER_MODEL = 'user.CustomUser'
 
 '''
+
+
+
+class ShippingAddress(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="address",null=True,blank=True)
+    address = models.CharField(max_length=100,null=True,blank=True)
+    city = models.CharField(max_length=50,null=True,blank=True)
+    state = models.CharField(max_length=50,null=True,blank=True)
+    zip_code = models.CharField(max_length=50,null=True,blank=True)
+    country = models.CharField(max_length=50, default='India',blank=True)
+    default_address = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username+""+self.address
+
+
+    class Meta:
+        verbose_name_plural = "Shipping Address"

@@ -446,6 +446,8 @@ document.addEventListener('DOMContentLoaded', function () {
           const ramValueAnchor = document.createElement('a');
           ramValueAnchor.href = `/product/${variant.id}/`; // Replace with the actual URL
           ramValueAnchor.textContent = variant.ram;
+          ramValueAnchor.style.color = '#333333';          // Set text color to #333333
+          ramValueAnchor.style.textDecoration = 'none'; 
 
           const storageLabel = document.createElement('label');
           storageLabel.textContent = 'Storage:';
@@ -453,6 +455,8 @@ document.addEventListener('DOMContentLoaded', function () {
           const storageValueAnchor = document.createElement('a');
          storageValueAnchor.href = `/product/${variant.id}/`; // Replace with the actual URL
          storageValueAnchor.textContent = variant.storage;
+         storageValueAnchor.style.color = '#333333';          // Set text color to #333333
+          storageValueAnchor.style.textDecoration = 'none'; 
 
           
 

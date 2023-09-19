@@ -151,7 +151,7 @@
   
 <div id="customToast" class="toast  d-none" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
   <div class="toast-header">
-      <img src="..." class="rounded me-2" alt="...">
+     
     
 
       <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -323,6 +323,16 @@ widgetElements.forEach(function(element) {
   if (wishlist_id){
     wishlist_id.style.textDecoration='none';
   }
+
+ if (window.location.pathname.startsWith('/product/')){
+  var links = document.querySelectorAll('a');
+
+// Apply CSS styles to each <a> tag
+for (var i = 0; i < links.length; i++) {
+    links[i].style.color = '#333333';          // Set text color to #333333
+    links[i].style.textDecoration = 'none';    // Remove text decoration
+}
+}
 
  
 </script>
