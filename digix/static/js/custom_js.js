@@ -1030,7 +1030,229 @@ const maxStock = parseInt(qtyInput.getAttribute("max_stock"));
   })
 
   //----------------------------------------------------------------------------------------------------
+//user account details update
 
+if (window.location.pathname === '/account_details'){
+
+  // console.log('in sign up form page')
+
+function clear_div(name){
+
+  if (name.charAt(0) === '#'){
+      element = document.querySelector(name+"-error")
+      element.textContent=''
+  }else{
+      element = document.querySelectorAll(name)
+      elements.forEach(element => {
+      // Set the text content to an empty string
+      element.textContent = '';
+  });
+  }
+  
+}
+
+//empty the form errors before submitting then only if again occurs the div will be empty
+sign_up_form=document.getElementById('user_account_update_form')
+
+if (sign_up_form){
+
+  //console.log('gets the form')
+
+  addEventListener('submit', (e) => {
+    if ((document.getElementById('username-error').textContent === '') &&
+(document.getElementById('phone-error').textContent === '') &&
+(document.getElementById('email-error').textContent === '') &&
+(document.getElementById('phone1-error').textContent === '') 
+){
+  clear_div('.error-container');
+      console.log('No error');
+      showNotification('Account Details update successfully' ,'text-success')
+
+}else{
+  e.preventDefault();
+  console.log('Error');
+}
+    // const elements = document.querySelectorAll('.error-container')
+    // // Loop through the selected elements
+    // clear_div('.error-container')
+
+    
+  })
+}
+
+
+
+//form handling
+document.addEventListener('DOMContentLoaded', function () {
+  // Function to check if value and some another validation  in the database
+
+  user_id = document.getElementById('id_bs')
+  // console.log(user_id.textContent)
+
+  async function checkExists(fieldName, fieldValue) {
+
+      const response = await fetch(`/user_account_details_update_value/?user_id=${user_id.textContent}&field_name=${fieldName}&field_value=${fieldValue}`);
+      const data = await response.json();
+
+      if (data.exists) {
+
+          // 'data.errors' is an object with the structure like { field_name: error_list (it is a string) }
+
+
+          const errors = data.errors;
+          // const fieldN = data.errors.field_name;
+          // console.log(fieldN)
+
+
+
+          for (const field_name in errors) {
+
+              if (errors.hasOwnProperty(field_name)) {
+
+                  const error_list = errors[field_name];
+                  
+                  //console.log("Field Name: " + field_name + "Error List: " + error_list);
+                  
+                  //getting the div element to display error
+                  errorContainer = document.getElementById(fieldName + '-error')
+
+                  //If error_list is an array, you can loop through its items
+                  //checking if any element in list is ''
+                  arr = error_list.split(',').filter(item => item !== '');
+                  
+
+                  if (arr) {
+
+                      for (let i = 0; i < arr.length; i++) {
+
+                          const errorLine = document.createElement('p');
+                          //console.log(error_list[i])
+                          errorLine.textContent = arr[i]
+                          errorLine.classList.add('text-danger','m-0', 'ml-5', 'mt-1');
+                          errorContainer.appendChild(errorLine);
+                          //console.log("Error " + (i + 1) + ": " + error_list[i]);
+                      }
+                  }
+              }
+          }
+
+
+
+
+
+         
+      } else {
+          document.getElementById(fieldName + '-error').textContent = '';
+      }
+  }
+
+//function to check if phone field contains any charecters
+  function containsNonNumericChars(inputString) {
+    //console.log(inputString)
+    const result = parseInt(inputString)
+    // console.log(typeof result,result)
+    return isNaN(result);  //return result=== Nan won't work nan special type 
+  }
+
+
+
+
+//console.log('passoword2 field ',password2)
+
+  // Event listeners for each input field
+  //id of input ta
+  id_username=document.getElementById('id_username')
+  if (id_username){
+
+    id_username.addEventListener('blur', function () {
+
+      //clear the div element again focusing on input element
+      
+      clear_div('#username')
+
+      //check the value 
+      checkExists('username', this.value); //this.value or document.getElementById('id_username').value
+  });
+  }
+ 
+
+  id_email=document.getElementById('id_email')
+  if(  id_email){
+    document.getElementById('id_email').addEventListener('blur', function () {
+      clear_div('#email')
+      checkExists('email', document.getElementById('id_email').value);
+  });
+  }
+
+if(  document.getElementById('id_phone')){
+
+  document.getElementById('id_phone').addEventListener('blur', function () {
+
+    clear_div('#phone')
+
+    document.getElementById('phone1-error').textContent=''
+
+    checkExists('phone', document.getElementById('id_phone').value);
+
+    containsNonNumericChars(document.getElementById('id_phone').value)
+
+    const digits_check = containsNonNumericChars(document.getElementById('id_phone').value)
+      //console.log(digits_check)
+
+      if (digits_check){
+
+        errorContainer = document.getElementById('phone1-error')
+         
+          const errorLine = document.createElement('p');
+          //console.log(error_list[i])
+          errorLine.textContent = "Phone number want to be numbers"
+          errorLine.classList.add('text-danger','m-0', 'ml-5', 'mt-1');
+          errorContainer.appendChild(errorLine);
+
+      }
+
+});
+}
+});
+
+}
+
+//user profile password update
+//otp focus change
+
+if ((window.location.pathname === '/profile_password_update/') || (window.location.pathname === '/verify_otp/')){
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const otpInputs = document.querySelectorAll(".otp-input");
+    
+    otpInputs.forEach(function (input, index) {
+        input.addEventListener("input", function (e) {
+            const currentValue = e.target.value;
+
+            if (currentValue.length === 1) {
+                // Move focus to the next input if a character is entered
+                if (index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            } else if (currentValue.length === 0) {
+                // Move focus to the previous input if Backspace is pressed
+                if (index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            }
+        });
+
+        input.addEventListener("keydown", function (e) {
+            // Prevent default Backspace behavior when the input is empty
+            if (e.key === "Backspace" && !input.value) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+
+
+}
   
 
 

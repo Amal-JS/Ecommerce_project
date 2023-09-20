@@ -325,7 +325,8 @@ widgetElements.forEach(function(element) {
   }
 
  if (window.location.pathname.startsWith('/product/')){
-  var links = document.querySelectorAll('a');
+  //avoid headers in nav and description section
+  var links = document.querySelectorAll('a:not(.header a):not(.product-details-tab a)');
 
 // Apply CSS styles to each <a> tag
 for (var i = 0; i < links.length; i++) {

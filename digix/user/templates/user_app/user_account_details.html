@@ -40,40 +40,129 @@
 									
 
 								    <div >
-								    	<form action="#">
-			                				<div class="row">
+
+										{% if password_change and password_input %}
+
+										<form method="POST">
+												{% csrf_token %}
+											<div class="row">
 			                					<div class="col-sm-6">
-			                						<label>First Name *</label>
-			                						<input type="text" class="form-control" required>
+			                						<label>Password *</label>
+			                						<input type="password" class="form-control" name="password1">
 			                					</div><!-- End .col-sm-6 -->
 
 			                					<div class="col-sm-6">
-			                						<label>Last Name *</label>
-			                						<input type="text" class="form-control" required>
+			                						<label>Confirm Password *</label>
+			                						<input type="password" class="form-control" name="password2">
 			                					</div><!-- End .col-sm-6 -->
 			                				</div><!-- End .row -->
+											<button type="submit" class="btn btn-dark mt-5">
+			                					<span>Update password</span>
+			            						<i class="icon-long-arrow-right"></i>
+			                				</button>
+										</form>
 
-		            						<label>Display Name *</label>
-		            						<input type="text" class="form-control" required>
-		            						<small class="form-text">This will be how your name will be displayed in the account section and in reviews</small>
+										{% elif password_change %}
 
-		                					<label>Email address *</label>
-		        							<input type="email" class="form-control" required>
+										<form method="POST">
 
-		            						<label>Current password (leave blank to leave unchanged)</label>
-		            						<input type="password" class="form-control">
+											{% csrf_token %}
 
-		            						<label>New password (leave blank to leave unchanged)</label>
-		            						<input type="password" class="form-control">
+											<div class="row">
+												<span id="id_bs" style="display:none;" >{{request.user.id}}</span>
+			                					<div class="col-sm-6">
+			                						<label>Enter Otp *</label>
 
-		            						<label>Confirm new password</label>
-		            						<input type="password" class="form-control mb-2">
+													<div class="d-flex justify-content-center">
+														<div class="d-flex w-50" style="border:1px solid #333333;">
+							
+															<input type="text" class="form-control h-100 m-0 otp-input" maxlength="1" id="exampleInputOtp"   aria-describedby="emailHelp"   onfocus="this.style.borderColor = 'green';this.style.borderWidth = '2px';" 
+														onblur="this.style.borderColor = '#ced4da';" name="otp1">
+							
+														<input type="text" class="form-control h-100 m-0 otp-input" maxlength="1" id="exampleInputOtp"   aria-describedby="emailHelp"   onfocus="this.style.borderColor = 'green';this.style.borderWidth = '2px';" 
+												  onblur="this.style.borderColor = '#ced4da';" name="otp2">
+							
+												  <input type="text" class="form-control h-100 m-0 otp-input" maxlength="1" id="exampleInputOtp"   aria-describedby="emailHelp"   onfocus="this.style.borderColor = 'green';this.style.borderWidth = '2px';" 
+												  onblur="this.style.borderColor = '#ced4da';" name="otp3">
+							
+												  <input type="text" class="form-control h-100 m-0 otp-input" maxlength="1" id="exampleInputOtp"   aria-describedby="emailHelp"   onfocus="this.style.borderColor = 'green';this.style.borderWidth = '2px';" 
+												  onblur="this.style.borderColor = '#ced4da';" name="otp4">
+														</div>
+													</div>
+												</div><!-- End .col-sm-6 -->
 
-		                					<button type="submit" class="btn btn-outline-primary-2">
+			                				</div><!-- End .row -->
+
+											{% if resend_btn %}
+		            						<div class="text-start mt-2">
+												<a href="{% url 'user:user_profile_password_update' %}">Resend Otp</a>
+											</div>
+											{% endif %}
+
+		                					<button type="submit" class="btn btn-dark mt-5">
+			                					<span>Verify Otp</span>
+			            						<i class="icon-long-arrow-right"></i>
+			                				</button>
+										</form>
+
+
+										{% else %}
+
+										<form method="POST" id="user_account_update_form">
+
+											{% csrf_token %}
+
+			                				<div class="row">
+												<span id="id_bs" style="display:none;" >{{request.user.id}}</span>
+			                					<div class="col-sm-6">
+			                						<label>Username *</label>
+
+			                						<input type="text" id='id_username' class="form-control" name="username" value="{{ username }}" >
+													<div class="error-container" id="username-error"></div>
+												</div><!-- End .col-sm-6 -->
+
+			                					<div class="col-sm-6">
+			                						<label>Email *</label>
+			                						<input type="email" id="id_email" class="form-control" name="email" value="{{ email }}"> 
+													<div class="error-container" id="email-error"></div>
+			                					</div><!-- End .col-sm-6 -->
+
+												<div class="col-sm-6">
+			                						<label>Phone *</label>
+			                						<input type="text" class="form-control" name="phone" id='id_phone' value="{{ phone }}" >
+													<div class="error-container" id="phone-error"></div>
+           											 <div class="error-container" id="phone1-error"></div>
+			                					</div><!-- End .col-sm-6 -->
+
+			                				</div><!-- End .row -->
+
+		            						
+
+		                					<button type="submit" class="btn btn-dark mt-5">
 			                					<span>SAVE CHANGES</span>
 			            						<i class="icon-long-arrow-right"></i>
 			                				</button>
+
+
+											
 			                			</form>
+
+
+										{% endif %}
+								    	{% if not password_change %}
+										<a class="btn btn-dark mt-2" href="{% url 'user:user_profile_password_update' %}">Change Password</a>
+										{% endif %}
+										<div class="text-center">
+											{% if messages %}
+											<div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %}">
+												{% for message in messages %}
+												<p {% if message.tags == 'error' %} class="text-danger" {% elif message.tags == 'success' %} class="text-success" {% endif %} >{{ message }}</p>
+												{% endfor %}
+											</div>
+											{% endif %}
+											</div>
+
+
 								    </div><!-- .End .tab-pane -->
 
 

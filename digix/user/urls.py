@@ -82,7 +82,18 @@ path('checkout/',views.user_checkout,name='user_checkout'),
 path('dashboard/',views.user_profile_dashboard,name='user_profile_dashboard'),
 path('orders/',views.user_profile_order,name='user_profile_orders'),
 path('address/',views.user_profile_address,name='user_profile_address'),
+
+#view handle update user details except password update
 path('account_details',views.user_profile_account_details,name='user_profile_account_details'),
+
+#update password
+path('profile_password_update/',views.user_profile_password_update,name='user_profile_password_update'),
+
+#password change validating form
+ path('account_password_update/', views.user_account_password_update, name='user_account_password_update'),
+
+#user sign up , fetch , dyanmic field value checking
+path('user_account_details_update_value/',views.user_account_details_update_value,name='user_account_details_update_value'),
 
 
 #add new address 

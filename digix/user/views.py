@@ -1,6 +1,7 @@
 import re
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 #Form for user creation
 from . forms import UserCreationForm , ShippingAddressForm
 #display form validation errors
@@ -644,10 +645,7 @@ def user_profile_address(request):
     return render(request,'user_app/user_address.html',context)
 
 
-#check user authenticated  before user profile account details
-@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
-def user_profile_account_details(request):
-    return render(request,'user_app/user_account_details.html')
+
 
 
 @user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
@@ -729,3 +727,173 @@ def default_address(request,id):
 
     print(address,address.default_address)
     return redirect('user:user_profile_address')
+
+
+
+
+#check user authenticated  before user profile account details
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def user_profile_account_details(request):
+
+    user = CustomUser.objects.get(id=request.user.id)
+    context ={'username':user.username,'phone':user.phone,'email':user.email}
+    
+    if request.method == 'POST':
+        
+        if request.POST['username'] == '' or request.POST['phone'] == '' or request.POST['email'] == '':
+            messages.error(request,"Empty form cannot be validated.All fields need to be filled")
+            render(request,'user_app/user_account_details.html',context)
+
+        user.username=request.POST['username']
+        user.emai=request.POST['email']
+        user.phone=request.POST['phone']
+        user.save()
+        messages.success(request,'Updated Successfully')
+        return redirect('user:user_profile_account_details')
+
+    return render(request,'user_app/user_account_details.html',context)
+
+# #helper function
+@user_passes_test(is_user_authenticated,login_url='user:user_login')
+def user_account_password_update(request):
+
+    if request.method == 'POST':
+        if 'password1' in request.POST and 'password2' in request.POST:
+            password1 = request.POST['password1']
+            password2 = request.POST['password2']
+
+            if password1 == '' or password2 == '':
+                messages.error(request, "Both fields require values")
+                return render(request, 'user_app/user_account_details.html', {'password_change': True, 'password_input': True})
+
+            if password1 != password2:
+                messages.error(request, "Both fields do not match")
+                return render(request, 'user_app/user_account_details.html', {'password_change': True, 'password_input': True})
+
+            user_id = request.user.id
+            user = CustomUser.objects.get(id=user_id)
+            user.password = user.make_password(password1)
+            user.save()
+            messages.success(request, "Password changed successfully")
+            return redirect('user:user_profile_account_details')
+    return render(request, 'user_app/user_account_details.html', {'password_change': True, 'password_input': True})
+
+#password update
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def user_profile_password_update(request):
+
+    if 'user_account_resend_otp' in request.session:
+
+        otp = request.session['user_account_resend_otp']
+        request.session['otp'] = otp
+        
+    else:
+        if 'otp' not in request.session:
+            otp = str(random.randint(1000,9999))
+
+            request.session['otp'] = otp
+
+    
+    #send_otp(otp)
+    print('----------------------user account update otp---------------',request.session['otp'])
+    if request.method == 'POST':
+
+       #getting the otp
+        entered_otp = f"{request.POST['otp1']}{request.POST['otp2']}{request.POST['otp3']}{request.POST['otp4']}"
+        print(f"entered otp : {entered_otp} , user profile account update otp : {request.session['otp']}")
+       
+        if entered_otp == request.session['otp']:
+            if 'user_account_resend_otp' in request.session:
+                #delete only the resend otp value
+                del request.session['user_account_resend_otp']
+            if 'otp' in request.session:
+                del request.session['otp']
+            print('resend otp matches at account profile')
+            # Redirect to 'user_account_password_update' using GET method
+            return redirect('user:user_account_password_update')
+            
+        else:
+            messages.error(request,"Entered otp wrong")
+            new_otp = str(random.randint(1000,9999))
+            print(f'new_otp---------------------{new_otp}')
+            request.session['user_account_resend_otp'] = new_otp
+            return render(request,'user_app/user_account_details.html',{'password_change':True,'resend_btn':True})
+
+
+
+    return render(request,'user_app/user_account_details.html',{'password_change':True})
+
+#function to handle user sign dynamic value checking
+
+def user_account_details_update_value(request):
+
+    #getting the field name and value
+    user_id = request.GET.get('user_id',None)
+    field_name = request.GET.get('field_name',None)
+    field_value = request.GET.get('field_value',None)
+    error_list=''
+    user = CustomUser.objects.get(id=user_id)
+    
+
+    if field_name == 'username':
+
+
+        if field_value == '':
+            error_list += ',Username required'
+
+        elif len(field_value)<5:
+                error_list += ",Username atleast 5 characters"
+
+
+        if len(field_value)>0 :
+                    
+                    if field_value != user.username and CustomUser.objects.filter(username=field_value).exists():
+                        error_list = "Username already exists"
+        
+        if not bool(re.match(r'^[a-zA-Z0-9]+$', field_value)):
+                print('slkfjsldf')
+                error_list = "Username can't contain special charecters"
+
+    #check email field
+    elif field_name == 'email':
+
+        if field_value == '':
+            error_list += 'Email required'
+
+        elif '@' not in field_value or '.' not in field_value:
+            error_list += ",Enter valid Email"
+        
+        if len(field_value) >0:
+            if field_value != user.email and  CustomUser.objects.filter(email=field_value).exists():
+                error_list += ",Email already exists"
+        
+           
+    #phone field validation
+    elif field_name == 'phone':
+
+        if field_value == '':
+            error_list += ',Phone Number required'
+         
+        elif (len(str(field_value))>0 and len(str(field_value))<10) or (len(str(field_value))>0 and len(str(field_value))>10):
+            error_list += ",Phone Number must have 10 numbers"
+    elif field_name == 'password':
+
+        if field_value =='':
+            error_list += ',Password required'
+    elif field_name == 'password2':
+        if field_value=='':
+            error_list += ',Confirm password required'
+
+    if len(field_value) >0 :
+            if field_value != user.phone and CustomUser.objects.filter(phone=field_value).exists():
+                error_list += ",Phone Number already exists"
+        
+    
+    if error_list == '':  
+        return JsonResponse({'exists':False})
+    
+        
+    else:
+        errors = { field_name:error_list }
+        return JsonResponse({'exists':True,'errors':errors})
+

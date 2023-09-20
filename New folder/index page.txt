@@ -11,6 +11,7 @@ get all variants
     <h1>Variant List</h1>
     <ul>
         {% for variant in variants_with_images|slice:":10" %}
+		{% if variant.product.category.name == 'Smart Phone' %}
             <li>
                 <strong>Name:</strong> {{ variant.name }}<br>
                 <strong>Product:</strong> {{ variant.product.name }}<br>
@@ -27,6 +28,7 @@ get all variants
                 </ul>
             </li>
             <hr>
+		{% endif %}
         {% endfor %}
     </ul>
 </body>

@@ -1,0 +1,48 @@
+<script>
+       $(function () {
+    // Define the min and max price values for your products
+    var minPrice = 0;
+    var maxPrice = 20000; // Set this value based on your maximum product price
+
+    // Initialize the price slider
+    $("#price-range").slider({
+        range: true,
+        min: minPrice,
+        max: maxPrice,
+        values: [minPrice, maxPrice],
+        slide: function (event, ui) {
+            $("#price-range").val("$" + ui.values[0] + " - $" + ui.values[1]);
+            filterProducts(ui.values[0], ui.values[1]);
+        }
+    });
+
+    // Set the initial value of the price range input
+    $("#price-range").val("$" + minPrice + " - $" + maxPrice);
+
+    // Function to filter products based on the selected price range
+    function filterProducts(min, max) {
+        // Example: Update the product list based on the selected price range
+        // Replace this with your own logic to filter and display products
+        $("#product-list").empty(); // Clear existing products
+
+        // Loop through your products and display those within the price range
+        // {% for variant in variants_with_images|slice:"2:" %}
+        //     if (variant.product.category.name === 'Smart Phone' && variant.selling_price >= min && variant.selling_price <= max) {
+        //         // Create and append product HTML elements here
+        //         var productHTML = '<div class="product">';
+        //         // Add product details to productHTML
+        //         // ...
+        //         // Append productHTML to the product list
+        //         $("#product-list").append(productHTML);
+        //     }
+        // {% endfor %}
+    }
+
+    // Initial product filtering based on the default price range
+    filterProducts(minPrice, maxPrice);
+});
+
+    </script>
+
+</body>
+</html>
