@@ -988,38 +988,7 @@ suggestionsContainer.style.padding = '20px'
   });
 
 //====================================================================================================
-//show product qty and increment decrement management
 
-
-if (window.location.pathname.startsWith('/product/')){
-const minusIcon = document.getElementById("minus_icon");
-const plusIcon = document.getElementById("plus_icon");
-const qtyInput = document.getElementById("show_qty");
-const maxStock = parseInt(qtyInput.getAttribute("max_stock"));
-
-
- // Event listener for the minus icon
- minusIcon.addEventListener("click", function () {
-  let currentValue = parseInt(qtyInput.value);
-  if (!isNaN(currentValue) && currentValue > 1) {
-      qtyInput.value = (currentValue - 1).toString();
-      showNotification(`Number of stocks removed: ${currentValue - 1}`, 'text-danger');
-      
-  }
-});
-
- // Event listener for the plus icon
- plusIcon.addEventListener("click", function () {
-  let currentValue = parseInt(qtyInput.value);
-  if (!isNaN(currentValue) && currentValue < maxStock) {
-      qtyInput.value = (currentValue + 1).toString();
-      showNotification(`Number of stocks : ${currentValue + 1}`, 'text-success');
-        }
-    });
-
-
-   
-}
   //---------------------------------------------------------------------------------------------------
   //shopping cart icon
 
