@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 import hashlib
-# Create your models here.
+
 
 
 #custom user model with phone field
@@ -70,3 +70,7 @@ class ShippingAddress(models.Model):
 
     class Meta:
         verbose_name_plural = "Shipping Address"
+
+
+
+
