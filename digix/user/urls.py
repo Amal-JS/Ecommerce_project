@@ -104,4 +104,15 @@ path('update_address/<int:id>/',views.update_address,name='update_address'),
 path('delete_address/<int:id>/',views.delete_address,name='delete_address'),
 #set default address
 path('default_address/<int:id>/',views.default_address,name='default_address'),
+
+#checking user authenticated , already in wishlist  and already in cart
+path('user_logged_in_status/',views.user_logged_in_status),
+path('variant_in_wishlist_status/',views.variant_in_wishlist_status),
+
+#product adding in wish list
+path('add_to_wishlist/<int:id>/',views.add_to_wishlist,name='add_to_wishlist'),
+#remove product from wishlist
+path('remove_from_wishlist/<int:id>/',views.remove_from_wishlist,name='remove_from_wishlist'),
+#wishlist product count
+path('wishlist_product_count/',views.wishlist_product_count,),
 ]

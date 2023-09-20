@@ -1223,6 +1223,132 @@ if ((window.location.pathname === '/profile_password_update/') || (window.locati
 
 }
   
+//=========================================================================================================================
+//get wishlist product count
+
+const wishlist_count = document.getElementById('wishlist_count_badge')
+if (wishlist_count){
+
+  fetch('/wishlist_product_count/')
+  .then(response=>response.json())
+  .then((data)=>{
+    wishlist_count.textContent=data.wishlist_product_count
+  })
+  .catch(error=>console.log('wishlist count error'))
+}
 
 
+//=====================================================================================
+//events for handling wishlist and add to cart click event
+
+
+document.addEventListener("DOMContentLoaded", function() {
+
+  // Find all elements with the class "btn-cart"
+  var cartButtons = document.querySelectorAll(".btn-cart");
+
+  // Add a click event listener to "btn-cart" buttons
+
+  cartButtons.forEach(function(button) {
+      button.addEventListener("click", function(event) {
+          // Prevent the default behavior of the anchor tag
+          event.preventDefault();
+
+          
+
+
+
+          // Retrieve the value of the "data-variant" attribute
+          var dataVariant = button.getAttribute("data-variant");
+          // Print the value to the console
+          console.log("data-variant value for btn-wishlist:", dataVariant);
+          fetch('/user_logged_in_status/')
+          .then(response=>response.json())
+          .then(data=>console.log('user authenticated: ',data.user_authenticated))
+          .catch(error=>console.log(error))
+
+          // Print the value to the console
+          console.log("data-variant value for btn-cart:", dataVariant);
+      });
+  });
+
+  // Find all elements with the class "btn-wishlist"
+  var wishlistButtons = document.querySelectorAll(".btn-wishlist");
+
+  // Add a click event listener to "btn-wishlist" buttons
+  wishlistButtons.forEach(function(button) {
+
+
+      button.addEventListener("click", function(event) {
+
+
+        
+          // Prevent the default behavior of the anchor tag
+          event.preventDefault();
+
+          // Retrieve the value of the "data-variant" attribute
+          var dataVariant = button.getAttribute("data-variant");
+
+          fetch('/user_logged_in_status/')
+
+          .then(response => response.json())
+
+          .then(async (data) => {
+
+            
+
+            if (!data.user_authenticated) {
+
+              showNotification('User should be logged in', 'text-danger');
+
+            } else {
+
+              const response = await fetch(`/variant_in_wishlist_status/?variant_id=${dataVariant}`);
+              const wishlistData = await response.json();
+        
+              if (wishlistData.variant_in_wishlist) {
+
+                showNotification('Product already in wishlist', 'text-danger');
+
+              }  else {
+                try {
+                  const response = await fetch(`/add_to_wishlist/${dataVariant}/`);
+                  const data = await response.json();
+              
+                  if (data.added) {
+                    showNotification('Product added to wishlist', 'text-success');
+                    const wishlist_count = document.getElementById('wishlist_count_badge')
+                    if (wishlist_count){
+
+                      fetch('/wishlist_product_count/')
+                      .then(response=>response.json())
+                      .then((data)=>{
+                        wishlist_count.textContent=data.wishlist_product_count
+                      })
+                      .catch(error=>console.log('wishlist count error'))
+                    }
+                  }
+                  else{
+                    showNotification("Product couldn't be added",'text-danger')
+                  }
+                } catch (error) {
+                  console.log('add to wishlist error: ', error);
+                }
+                  }
+
+                }
+
+
+              })
+              .catch(error=>console.log('variant in wishlist error  :',error))
+
+            }
+          
+          
+          )
+          
+
+          
+      });
+  });
 
