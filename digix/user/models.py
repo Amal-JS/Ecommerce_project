@@ -1,7 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 import hashlib
+<<<<<<< HEAD
 
+=======
+#import Variant from products
+from products.models import Variant
+>>>>>>> wishlist
 
 
 #custom user model with phone field
@@ -74,3 +79,16 @@ class ShippingAddress(models.Model):
 
 
 
+<<<<<<< HEAD
+=======
+class Wishlist(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="wishlist",null=True,blank=True)
+    variant = models.ForeignKey(Variant,on_delete=models.CASCADE,related_name='variant')
+
+    def __str__(self):
+        return self.user.username+""+self.address
+
+
+    class Meta:
+        verbose_name_plural = "Wishlist"
+>>>>>>> wishlist

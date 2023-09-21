@@ -9,11 +9,11 @@ from django.contrib import messages
 #check user authentication , login and logout (adding and removing user in session )
 from django.contrib.auth import authenticate, login,logout
 #import Variant model for index.html
-from products.models import Variant,Category
+from products.models import Variant,Category,Variant_Images
 #pagination
 from django.core.paginator import Paginator
 #custom user model import
-from . models import CustomUser
+from . models import CustomUser , Wishlist 
 
 
 from django.contrib.auth import login,logout,authenticate
@@ -605,19 +605,19 @@ def is_user_authenticated(user):
 
 
 #user profile
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
 def user_profile(request):
     return render(request,'user_app/dashboard.html',)
 
 
-#user wishlist
-def user_wishlist(request):
-    return render(request,'user_app/wishlist.html')
 
 #user cart
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
 def user_cart(request):
     return render(request,'user_app/cart.html')
 
 #user checkout
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
 def user_checkout(request):
     return render(request,'user_app/checkout.html')
 
@@ -896,4 +896,80 @@ def user_account_details_update_value(request):
     else:
         errors = { field_name:error_list }
         return JsonResponse({'exists':True,'errors':errors})
+
+#-----------------------------------------------------------------------------------------------------------------------------
+#checking user logged in or already in wishlist or already in cart
+
+def user_logged_in_status(request):
+
+    
+    value =request.user.is_authenticated
+
+    return JsonResponse({'user_authenticated':value},safe=False)
+
+
+
+
+#user wishlist
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def user_wishlist(request):
+     # Retrieve the user's wishlist
+    wishlist_items = Wishlist.objects.filter(user=request.user)
+
+    # Retrieve variant details and images for the wishlist items
+
+    variants_with_images = []
+    for wishlist_item in wishlist_items:
+        variant = wishlist_item.variant
+        variant_images = Variant_Images.objects.filter(variant=variant)
+        variants_with_images.append({'variant': variant, 'images': variant_images})
+
+    # Pass the data to the template
+    return render(request, 'user_app/wishlist.html', {'variants_with_images': variants_with_images})
+
+#check variant in wishlist
+def variant_in_wishlist_status(request):
+    variant_id = request.GET.get('variant_id',None)
+    if variant_id:
+        variant = Variant.objects.get(id=variant_id)
+        if Wishlist.objects.filter(variant=variant).exists():
+            return JsonResponse({'variant_in_wishlist':True},safe=False)
+        else:
+            return JsonResponse({'variant_in_wishlist':False},safe=False)
+
+
+
+    
+
+
+
+#Wish list
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def add_to_wishlist(request,id):
+    #getting user id from session
+    user_id = request.user.id
+    user=CustomUser.objects.get(id=user_id)
+    
+    variant_id = Variant.objects.get(id=id)
+    wishlist_object = Wishlist(user=user,variant=variant_id)
+    wishlist_object.save()
+    print(JsonResponse({'added':True},safe=False))
+    return JsonResponse({'added':True},safe=False)
+
+#remove product from wishlist
+
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def remove_from_wishlist(request,id):
+    variant=Variant.objects.get(id=id)
+    wishlist_object = Wishlist.objects.get(variant=variant)
+    wishlist_object.delete()
+    return redirect('user:user_wishlist')
+    
+
+def wishlist_product_count(request):
+    # Get the count of items in the Wishlist model
+    wishlist_count = Wishlist.objects.count()
+
+
+    return JsonResponse({'wishlist_product_count':wishlist_count},safe=False)
 
