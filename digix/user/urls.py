@@ -67,13 +67,6 @@ path('profile/',views.user_profile,name='user_profile'),
 #wishlist page
 path('wishlist/',views.user_wishlist,name='user_wishlist'),
 
-
-
-#cart page
-path('cart/',views.user_cart,name='user_cart'),
-
-
-
 #checkout page
 path('checkout/',views.user_checkout,name='user_checkout'),
 
@@ -115,4 +108,25 @@ path('add_to_wishlist/<int:id>/',views.add_to_wishlist,name='add_to_wishlist'),
 path('remove_from_wishlist/<int:id>/',views.remove_from_wishlist,name='remove_from_wishlist'),
 #wishlist product count
 path('wishlist_product_count/',views.wishlist_product_count,),
+
+#cart
+#cart page
+path('cart/',views.user_cart,name='user_cart'),
+#cart product count
+path('variant_in_cart_status/',views.variant_in_cart_status),
+
+#product adding in wish list
+path('add_to_cart/<int:id>/',views.add_to_cart,name='add_to_cart'),
+#remove product from cart
+path('remove_from_cart/<int:id>/',views.remove_from_cart,name='remove_from_cart'),
+#cart product count
+path('cart_product_count/',views.cart_product_count,),
+#cart product qty update
+path('cart_variant_qty_update/<int:id>/<int:quantity>/',views.cart_variant_qty_update),
+
+
+
+
+
+
 ]

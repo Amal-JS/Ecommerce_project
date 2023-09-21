@@ -1237,11 +1237,23 @@ if (wishlist_count){
   .catch(error=>console.log('wishlist count error'))
 }
 
+//get cart product count
+const cart_count = document.getElementById('cart_count_badge')
+if (cart_count){
+
+  fetch('/cart_product_count/')
+  .then(response=>response.json())
+  .then((data)=>{
+    cart_count.textContent=data.cart_product_count
+    
+  })
+  .catch(error=>console.log('cart count error'))
+}
 
 //=====================================================================================
 //events for handling wishlist and add to cart click event
 
-
+//wishlist
 document.addEventListener("DOMContentLoaded", function() {
 
   // Find all elements with the class "btn-cart"
@@ -1252,25 +1264,77 @@ document.addEventListener("DOMContentLoaded", function() {
   cartButtons.forEach(function(button) {
       button.addEventListener("click", function(event) {
           // Prevent the default behavior of the anchor tag
+         
+         
+          // Prevent the default behavior of the anchor tag
           event.preventDefault();
-
-          
-
-
 
           // Retrieve the value of the "data-variant" attribute
           var dataVariant = button.getAttribute("data-variant");
-          // Print the value to the console
-          console.log("data-variant value for btn-wishlist:", dataVariant);
-          fetch('/user_logged_in_status/')
-          .then(response=>response.json())
-          .then(data=>console.log('user authenticated: ',data.user_authenticated))
-          .catch(error=>console.log(error))
 
-          // Print the value to the console
-          console.log("data-variant value for btn-cart:", dataVariant);
+          fetch('/user_logged_in_status/')
+
+          .then(response => response.json())
+
+          .then(async (data) => {
+
+            
+
+            if (!data.user_authenticated) {
+
+              showNotification('User should be logged in', 'text-danger');
+
+            } else {
+
+              const response = await fetch(`/variant_in_cart_status/?variant_id=${dataVariant}`);
+              const cartData = await response.json();
+        
+              if (cartData.variant_in_cart) {
+
+                showNotification('Product already in cart', 'text-danger');
+
+              }  else {
+                try {
+                  const response = await fetch(`/add_to_cart/${dataVariant}/`);
+                  const data = await response.json();
+              
+                  if (data.added) {
+                    showNotification('Product added to cart', 'text-success');
+                    const cart_count = document.getElementById('cart_count_badge')
+                    if (cart_count){
+
+                      fetch('/cart_product_count/')
+                      .then(response=>response.json())
+                      .then((data)=>{
+                        cart_count.textContent=data.cart_product_count
+                        console.log(cart_count)
+                      })
+                      .catch(error=>console.log('cart count error'))
+                    }
+                  }
+                  else{
+                    showNotification("Product couldn't be added in cart",'text-danger')
+                  }
+                } catch (error) {
+                  console.log('add to cart error: ', error);
+                }
+                  }
+
+                }
+
+
+              })
+              .catch(error=>console.log('variant in cart error  :',error))
+
+            }
+          
+          
+          )
+          
+
+          
       });
-  });
+ 
 
   // Find all elements with the class "btn-wishlist"
   var wishlistButtons = document.querySelectorAll(".btn-wishlist");
@@ -1351,4 +1415,123 @@ document.addEventListener("DOMContentLoaded", function() {
           
       });
   });
+
+  //---------------------==============================================================================================
+  //-------------------------------------------------CART Page --------------------------------------------------------
+
+
+//show product qty and increment decrement management
+
+
+if (window.location.pathname.startsWith('/cart/')){
+
+  document.addEventListener("DOMContentLoaded", function () {
+
+  const minusIcons = document.querySelectorAll(".minus_icon");
+    const plusIcons = document.querySelectorAll(".plus_icon");
+    const qtyInputs = document.querySelectorAll(".show_qty");
+    const variantTotalPrices = document.querySelectorAll('.variant-total-price');
+    const variantPrices = document.querySelectorAll('.variant-price');
+    const subtotal = document.getElementById('subtotal')
+    
+      //function to set subtotal in cart
+
+      function setSubTotal(){
+        
+        let total = 0;
+        for (let index=0 ;index<variantTotalPrices.length;index++){
+          const price = parseFloat(variantTotalPrices[index].innerText.replace(/[^\d.]+/g, '')); // Clean and parse price
+          total += price ;
+          console.log(variantTotalPrices[index].innerText,parseFloat(variantTotalPrices[index].innerText.replace(/[^\d.]+/g, '')))
+        }
+        console.log('total :',total)
+        subtotal.innerHTML = total.toFixed(2); // Update subtotal
+      }
+      
+  
+      // Function to calculate and set initial total prices
+      function setInitialTotalPrices() {
+        for (let index = 0; index < variantTotalPrices.length; index++) {
+            const quantity = parseInt(qtyInputs[index].value);
+            const price = parseFloat(variantPrices[index].innerText.replace(/[^\d.]+/g, '')); // Clean and parse price
+            const total = quantity * price;
+            
+            variantTotalPrices[index].innerHTML = total.toFixed(2); // Set total with two decimal places
+            
+        }
+        
+    }
+
+    setInitialTotalPrices()
+    setSubTotal()
+
+
+   // Event listener for the minus icon
+
+   if (minusIcons && plusIcons && qtyInputs ){
+    
+
+      // Add event listeners for each variant
+      minusIcons.forEach((minusIcon, index) => {
+
+        minusIcon.addEventListener("click", function () {
+          
+            let currentValue = parseInt(qtyInputs[index].value);
+            
+            if (!isNaN(currentValue) && currentValue > 1) {
+              
+                qtyInputs[index].value = (currentValue - 1).toString();
+                variant_id =parseInt(qtyInputs[index].getAttribute('data-var'))
+
+                fetch(`/cart_variant_qty_update/${variant_id}/${qtyInputs[index].value}`)
+                .then(response=>response.json())
+                .then(response=>console.log(response.response))
+                .catch(error=>console.log('error in variant qty update in cart ',error))
+                
+                // console.log('parseInt(qtyInputs[index].value) :',parseInt(qtyInputs[index].value),'-----','parseInt(variantPrices[index].innerHTML)) :',variantPrices[index].innerText)
+                const cleanedPriceText = variantPrices[index].innerText.replace(/[^\d.]+/g, '') + '.00'; 
+                const final_price =parseInt(qtyInputs[index].value) * parseInt(cleanedPriceText);
+                variantTotalPrices[index].innerHTML = String(final_price)+'.00'
+                setSubTotal();
+            }
+        });
+    });
+
+    plusIcons.forEach((plusIcon, index) => {
+        plusIcon.addEventListener("click", function () {
+            let currentValue = parseInt(qtyInputs[index].value);
+
+            if (!isNaN(currentValue) && currentValue < parseInt(qtyInputs[index].getAttribute("max_stock"))) {
+              
+                qtyInputs[index].value = (currentValue + 1).toString();
+
+                variant_id =parseInt(qtyInputs[index].getAttribute('data-var'))
+                
+                fetch(`/cart_variant_qty_update/${variant_id}/${qtyInputs[index].value}`)
+                .then(response=>response.json())
+                .then(response=>console.log(response.response))
+                .catch(error=>console.log('error in variant qty update in cart ',error))
+                
+                // console.log('parseInt(qtyInputs[index].value) :',parseInt(qtyInputs[index].value),'-----','parseInt(variantPrices[index].innerHTML)) :',variantPrices[index].innerText)
+                const cleanedPriceText = variantPrices[index].innerText.replace(/[^\d.]+/g, '') + '.00'; 
+                const final_price =parseInt(qtyInputs[index].value) * parseInt(cleanedPriceText);
+                variantTotalPrices[index].innerHTML = String(final_price)+'.00'
+                setSubTotal()
+            }
+            
+        });
+    });
+
+   } 
+
+
+
+
+//variant qty update in cart
+
+  }
+
+  )};
+  
+ //======================================================================================================================
 

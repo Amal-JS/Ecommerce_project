@@ -15,6 +15,8 @@ from django.core.paginator import Paginator
 #custom user model import
 from . models import CustomUser , Wishlist 
 
+#cart model
+from orders.models import Cart
 
 from django.contrib.auth import login,logout,authenticate
 
@@ -611,10 +613,7 @@ def user_profile(request):
 
 
 
-#user cart
-@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
-def user_cart(request):
-    return render(request,'user_app/cart.html')
+
 
 #user checkout
 @user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
@@ -953,7 +952,7 @@ def add_to_wishlist(request,id):
     variant_id = Variant.objects.get(id=id)
     wishlist_object = Wishlist(user=user,variant=variant_id)
     wishlist_object.save()
-    print(JsonResponse({'added':True},safe=False))
+    
     return JsonResponse({'added':True},safe=False)
 
 #remove product from wishlist
@@ -961,15 +960,106 @@ def add_to_wishlist(request,id):
 @user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
 def remove_from_wishlist(request,id):
     variant=Variant.objects.get(id=id)
-    wishlist_object = Wishlist.objects.get(variant=variant)
+    wishlist_object = Wishlist.objects.filter(user=request.user,variant=variant)
     wishlist_object.delete()
     return redirect('user:user_wishlist')
     
 
 def wishlist_product_count(request):
     # Get the count of items in the Wishlist model
-    wishlist_count = Wishlist.objects.count()
+    if request.user.is_authenticated:
+        user_id =request.user.id
+        user=CustomUser.objects.get(id=user_id)
+        wishlist_count = Wishlist.objects.filter(user=user).count()
+    else:
+        wishlist_count=0
 
 
     return JsonResponse({'wishlist_product_count':wishlist_count},safe=False)
 
+
+#======================================================================================================================
+#========================================cart==========================================================================
+#user cart
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def user_cart(request):
+    
+# Retrieve the user's cart with the 'quantity' attribute
+    cart_items = Cart.objects.filter(user=request.user).select_related('variant')
+
+    # Retrieve variant details and images for the cart items
+    variants_with_images = []
+
+    for cart_item in cart_items:
+        variant = cart_item.variant
+        variant_images = Variant_Images.objects.filter(variant=variant)
+        variants_with_images.append({'variant': variant, 'images': variant_images, 'quantity': cart_item.quantity})
+
+    # Pass the data to the template
+    return render(request, 'user_app/cart.html', {'variants_with_images': variants_with_images})
+    
+
+
+#add product to cart
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def add_to_cart(request,id):
+    user_id=request.user.id
+    user=CustomUser.objects.get(id=user_id)
+    variant= Variant.objects.get(id=id)
+    cart = Cart(user=user,variant=variant)
+    cart.save()
+    
+    return JsonResponse({'added':True},safe=False)
+
+
+
+
+
+
+#check variant in cart
+def variant_in_cart_status(request):
+    variant_id = request.GET.get('variant_id',None)
+    if variant_id:
+        variant = Variant.objects.get(id=variant_id)
+        if Cart.objects.filter(user=request.user,variant=variant).exists():
+            return JsonResponse({'variant_in_cart':True},safe=False)
+        else:
+            return JsonResponse({'variant_in_cart':False},safe=False)
+        
+
+
+#remove product from cart
+
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def remove_from_cart(request,id):
+    variant=Variant.objects.get(id=id)
+    cart_object = Cart.objects.filter(user=request.user,variant=variant)
+    cart_object.delete()
+    return redirect('user:user_cart')
+    
+#get product count in cart
+def cart_product_count(request):
+    # Get the count of items in the Wishlist model
+    if request.user.is_authenticated:
+        user_id =request.user.id
+        user=CustomUser.objects.get(id=user_id)
+        cart_count = Cart.objects.filter(user=user).count()
+    else:
+        cart_count=0
+
+
+    return JsonResponse({'cart_product_count':cart_count},safe=False)
+
+#set the qty of variant in cart
+def cart_variant_qty_update(request,id,quantity):
+    variant=Variant.objects.get(id=id)
+    cart_item = Cart.objects.filter(variant=variant).first()  # Retrieve the first cart item if it exists
+    '''In this case, using .first() to retrieve the first item is a valid approach, 
+    as it ensures that you are working with a 
+    single item if it exists.'''
+    if cart_item:
+        cart_item.quantity = quantity
+        cart_item.save()
+        return JsonResponse({'response': f'{variant} : {quantity} updated'})
+    else:
+        return JsonResponse({'response': f'Cart item not found for variant with ID: {id}'})
