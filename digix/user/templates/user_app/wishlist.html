@@ -47,8 +47,8 @@
 			  
 						  <td class="stock-col"><span class="in-stock">In Stock</span></td>
 						  <td class="action-col">
-							<button class="btn btn-block btn-dark"><i class="icon-cart-plus"></i>Add to Cart</button>
-						  </td>
+							<a href="#" class="btn-product btn-cart" title="Add to cart" data-variant="{{variant.variant.id}}" data-value="{{variant.stock}}"><span>add to cart</span></a>
+						</td>
 						  {% else %}
 			  
 						  <td class="stock-col"><span class="out-of-stock">Out of stock</span></td>
@@ -58,7 +58,7 @@
 			  
 						  {% endif %}
 			  
-						  <td class="remove-col"><a class="btn-remove text-dark" href="{% url 'user:remove_from_wishlist' variant.variant.id  %}"><i class="icon-close"></i></a></td>
+						  <td class="remove-col"><a class="btn-remove text-dark " href="{% url 'user:remove_from_wishlist' variant.variant.id  %}"><i class="icon-close"></i></a></td>
 						</tr>
 						{% empty %}
 						<tr>

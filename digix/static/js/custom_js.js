@@ -1293,7 +1293,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 showNotification('Product already in cart', 'text-danger');
 
-              }  else {
+              }else if ( parseInt(button.getAttribute("data-value")) === 0 ) {
+
+                showNotification('Product not in stock', 'text-danger');
+
+              }
+              else {
                 try {
                   const response = await fetch(`/add_to_cart/${dataVariant}/`);
                   const data = await response.json();
