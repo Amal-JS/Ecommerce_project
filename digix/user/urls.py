@@ -126,6 +126,20 @@ path('cart_variant_qty_update/<int:id>/<int:quantity>/',views.cart_variant_qty_u
 
 
 
+#add new address 
+path('add_new_address_cart/',views.add_new_address_cart,name='add_new_address_cart'),
+#update address
+path('update_address_cart/<int:id>/',views.update_address_cart,name='update_address_cart'),
+#delete address
+path('delete_address_cart/<int:id>/',views.delete_address_cart,name='delete_address_cart'),
+#set default address
+path('default_address_cart/<int:id>/',views.default_address_cart,name='default_address_cart'),
+
+#check variant qty for checkout page
+path('get_variant_stock/<int:variant_id>/',views.get_variant_stock),
+
+
+
 
 
 

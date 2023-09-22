@@ -1,3 +1,4 @@
+import json
 import re
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
@@ -38,7 +39,7 @@ from django.contrib.auth.decorators import user_passes_test
 from . models import ShippingAddress
 
 
-
+from django.core.serializers.json import DjangoJSONEncoder  # Import DjangoJSONEncoder
 
 #home page
 def index(request):
@@ -615,10 +616,6 @@ def user_profile(request):
 
 
 
-#user checkout
-@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
-def user_checkout(request):
-    return render(request,'user_app/checkout.html')
 
 
 
@@ -1063,3 +1060,168 @@ def cart_variant_qty_update(request,id,quantity):
         return JsonResponse({'response': f'{variant} : {quantity} updated'})
     else:
         return JsonResponse({'response': f'Cart item not found for variant with ID: {id}'})
+    
+
+#-----------------------------------------------------------------------------------------
+#user checkout
+
+#checkout view
+
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def user_checkout(request):
+    # Retrieve the Cart objects for the current user
+    user = request.user
+    cart_items = Cart.objects.filter(user=user)
+
+    # # Convert Decimal fields to float for serialization
+    # cart_items_list = list(cart_items.values())
+    
+    # for item in cart_items_list:
+    #     item['total'] = float(item['total'])
+        
+
+    
+    # Convert Decimal fields to float for serialization
+    cart_items_list = []
+    
+    for item in cart_items:
+        cart_items_list.append({'variant_name':item.variant.name,'variant_id':item.variant.id,'quantity':item.quantity})
+
+    # Serialize the cart_items as a JSON string
+    cart_items_json = json.dumps(cart_items_list, cls=DjangoJSONEncoder)
+    
+    # Check if there is at least one item in the cart
+    if not cart_items.exists():
+        # Redirect the user to the cart page if the cart is empty
+        return redirect('user:user_cart')
+
+    # Calculate the total for each item in the cart
+    for item in cart_items:
+        item.total = item.quantity * item.variant.selling_price
+
+    # Calculate the overall total for all items in the cart
+    overall_total = sum(item.total for item in cart_items)
+
+    # Calculate the total number of items in the cart
+    total_items_in_cart = sum(item.quantity for item in cart_items)
+
+     # Retrieve the user's shipping addresses
+    shipping_addresses = ShippingAddress.objects.filter(user=user)
+
+    context = {
+        'cart_items': cart_items,
+        'overall_total': overall_total,
+        'total_items_in_cart': total_items_in_cart,
+        'shipping_addresses': shipping_addresses,  # Add this to the context
+        'cart_items_json':cart_items_json
+    }
+    print('comes here')
+    return render(request, 'user_app/checkout.html', context)
+
+
+
+#address adding updating default in cart page
+
+
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def add_new_address_cart(request):
+
+    # Retrieve the user's shipping addresses
+    shipping_addresses = ShippingAddress.objects.filter(user=request.user)
+
+    if request.method == 'POST':
+                # Form is not valid, handle the case when all fields are empty
+        if request.POST['city'] == '' or request.POST['address'] == '' or request.POST['zip_code'] == '' or request.POST['country'] == '' :
+            messages.error(request, 'Empty form cannot be submitted.')
+            form = ShippingAddressForm()
+  
+            return render(request,'user_app/checkout.html',{'form':form,'shipping_addresses': shipping_addresses,'add_new_address':True})
+
+
+        form = ShippingAddressForm(request.POST)
+
+        if form.is_valid():
+
+             # Create a new ShippingAddress instance with the form data
+            shipping_address = form.save(commit=False)
+            shipping_address.user = request.user  # Assuming you have authentication in place
+            form.save()
+
+            return redirect('user:user_checkout')
+        else:
+            messages.error(request,form.errors)
+            return render(request,'user_app/checkout.html',{'form':form,'add_new_address':True,'shipping_addresses': shipping_addresses})
+        
+
+    form = ShippingAddressForm()
+  
+    return render(request,'user_app/checkout.html',{'form':form,'shipping_addresses': shipping_addresses,'add_new_address':True})
+
+
+
+#update address
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def update_address_cart(request,id):
+    print('cart update address view')
+    
+# Retrieve the user's shipping addresses
+    shipping_addresses = ShippingAddress.objects.filter(user=request.user)
+
+    address = ShippingAddress.objects.get(id=id)
+    
+
+    if request.method == 'POST':
+        print('post request is coming')
+        form = ShippingAddressForm(request.POST,instance= address)
+        
+
+        if form.is_valid():
+             # Create a new ShippingAddress instance with the form data
+            shipping_address = form.save(commit=False)
+            shipping_address.user = request.user  # Assuming you have authentication in place
+            form.save()
+            
+            return redirect('user:user_checkout')
+        else:
+            messages.error(request,form.errors)
+            print(form.errors)
+            return render(request,'user_app/checkout.html',{'form':form,'update_address':True,'address':address,'shipping_addresses': shipping_addresses})
+        
+    form = ShippingAddressForm(instance = address)
+    
+    
+    return render(request,'user_app/checkout.html',{'form':form,'update_address':True,'address':address,'shipping_addresses': shipping_addresses})
+
+
+#delete address
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def delete_address_cart(request,id):
+    address=ShippingAddress.objects.get(id=id)
+    address.delete()
+    return redirect('user:user_checkout')
+
+#default address
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def default_address_cart(request,id):
+
+    address=ShippingAddress.objects.get(id=id)
+
+    address.default_address = True
+    address.save()
+    # Clear default address for other addresses of the user
+    ShippingAddress.objects.filter(user=request.user).exclude(id=address.id).update(default_address=False)
+
+    print(address,address.default_address)
+    return redirect('user:user_checkout')
+
+
+#get variant quantity for the checkout page when placing order
+
+def get_variant_stock(request, variant_id):
+    try:
+        variant = Variant.objects.get(pk=variant_id)
+        stock_quantity = variant.stock
+        return JsonResponse({'stock_quantity': stock_quantity})
+    except Variant.DoesNotExist:
+        return JsonResponse({'error': 'Variant not found'}, status=404)
+

@@ -5,7 +5,9 @@
 {% block body %}
 
         <main class="main">
-        	<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+
+			{{ cart_items_json | json_script  }}
+        	<div class="page-header text-center" >
         		<div class="container">
         			<h1 class="page-title">Checkout</h1>
         		</div><!-- End .container -->
@@ -15,78 +17,150 @@
             	<div class="checkout">
 	                <div class="container">
             			<div class="checkout-discount">
-            				<form action="#">
+            				<div>
         						<input type="text" class="form-control" required id="checkout-discount-input">
             					<label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
-            				</form>
+            				</div>
             			</div><!-- End .checkout-discount -->
-            			<form action="#">
+            			
 		                	<div class="row">
-		                		<div class="col-lg-9">
-		                			<h2 class="checkout-title">Billing Details</h2><!-- End .checkout-title -->
+		                		<div class="col-lg-6">
+		                			<h2 class="checkout-title">User Details</h2><!-- End .checkout-title -->
 		                				<div class="row">
 		                					<div class="col-sm-6">
-		                						<label>First Name *</label>
-		                						<input type="text" class="form-control" required>
+												<div class="d-flex justify-content-center">
+													<label class="mx-2">Name :</label>
+													<label>{{request.user.username}}</label>
+												</div>
+		                						
+		                						
 		                					</div><!-- End .col-sm-6 -->
 
 		                					<div class="col-sm-6">
-		                						<label>Last Name *</label>
-		                						<input type="text" class="form-control" required>
+												<div class="d-flex justify-content-center">
+													<label class="mx-2">Phone :</label>
+													<label>{{request.user.phone}}</label>
+												</div>
+		                						
+		                						
 		                					</div><!-- End .col-sm-6 -->
 		                				</div><!-- End .row -->
 
-	            						<label>Company Name (Optional)</label>
-	            						<input type="text" class="form-control">
 
-	            						<label>Country *</label>
-	            						<input type="text" class="form-control" required>
+										<div class="row">
+										{% if form %}
+										<h2 class="checkout-title">
+											{% if update_address %}  Update  {% else %}
+                                                    Add  {% endif %}
+											
+											
+											Address</h2><!-- End .checkout-title -->
+										<!-- user address adding updating form -->
+                                        
+                                            <!-- action="{% url 'user:add_new_address' %}" -->
+                                            <form method="POST" >
+                                                {% csrf_token %}
+                                                <div class="row">
+                                                    <div class="col-sm-6">
+                                                        <label>House Name *</label>
+                                                        <input type="text" class="form-control" name="address" {% if form.address.value %} value="{{ form.address.value }}" {% endif %}>
+                                                    </div><!-- End .col-sm-6 -->
+    
+                                                    <div class="col-sm-6">
+                                                        <label>Locality/Street/City *</label>
+                                                        <input type="text" class="form-control" name="city" {% if form.city.value %}value="{{ form.city.value }}" {% endif %}>
+                                                    </div><!-- End .col-sm-6 -->
+                                                
+                                                <div class="col-sm-6">
+                                                    <label>State *</label>
+                                                    <input type="text" class="form-control" name="state" {% if form.state.value %}value="{{ form.state.value }}" {% endif %}>
+                                                </div><!-- End .col-sm-6 -->
+                                            
+                                                <div class="col-sm-6">
+                                                    <label>Zip code *</label>
+                                                    <input type="text" class="form-control" name="zip_code" {% if form.zip_code.value %}value="{{ form.zip_code.value }}" {% endif %}>
+                                                </div><!-- End .col-sm-6 -->
+                                            
+                                               
 
-	            						<label>Street address *</label>
-	            						<input type="text" class="form-control" placeholder="House number and Street name" required>
-	            						<input type="text" class="form-control" placeholder="Appartments, suite, unit etc ..." required>
+                                                 <div class="col-sm-6">
+                                                    <label>Country *</label>
+                                                    <input type="text" class="form-control" name="country" {% if form.country.value %}value="{{ form.country.value }}" {% endif %}>
+                                                </div><!-- End .col-sm-6 -->
+                                            </div><!-- End .row -->
+                                               
+                                               
+                                                
+                                                <button type="submit" class="btn btn-dark">
+                                                    {% if update_address %}  Update Address {% else %}
+                                                    Add address {% endif %}
+                                                    <i class="icon-long-arrow-right"></i>
+                                                </button>
+                                            </form>
+                                        </div>
 
-	            						<div class="row">
-		                					<div class="col-sm-6">
-		                						<label>Town / City *</label>
-		                						<input type="text" class="form-control" required>
-		                					</div><!-- End .col-sm-6 -->
 
-		                					<div class="col-sm-6">
-		                						<label>State / County *</label>
-		                						<input type="text" class="form-control" required>
-		                					</div><!-- End .col-sm-6 -->
-		                				</div><!-- End .row -->
+                                        <div class="text-center">
 
-		                				<div class="row">
-		                					<div class="col-sm-6">
-		                						<label>Postcode / ZIP *</label>
-		                						<input type="text" class="form-control" required>
-		                					</div><!-- End .col-sm-6 -->
+                                        
+                                        {% if messages %}
+                                        <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %}">
+                                            {% for message in messages %}
+                                            <p class="text-danger">{{ message }}</p>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
 
-		                					<div class="col-sm-6">
-		                						<label>Phone *</label>
-		                						<input type="tel" class="form-control" required>
-		                					</div><!-- End .col-sm-6 -->
-		                				</div><!-- End .row -->
 
-	                					<label>Email address *</label>
-	        							<input type="email" class="form-control" required>
 
-	        							<div class="custom-control custom-checkbox">
-											<input type="checkbox" class="custom-control-input" id="checkout-create-acc">
-											<label class="custom-control-label" for="checkout-create-acc">Create an account?</label>
-										</div><!-- End .custom-checkbox -->
+                                        {% endif %}
 
-										<div class="custom-control custom-checkbox">
-											<input type="checkbox" class="custom-control-input" id="checkout-diff-address">
-											<label class="custom-control-label" for="checkout-diff-address">Ship to a different address?</label>
-										</div><!-- End .custom-checkbox -->
 
-	                					<label>Order notes (optional)</label>
-	        							<textarea class="form-control" cols="30" rows="4" placeholder="Notes about your order, e.g. special notes for delivery"></textarea>
-		                		</div><!-- End .col-lg-9 -->
-		                		<aside class="col-lg-3">
+
+										<h2 class="checkout-title">User Addresses</h2><!-- End .checkout-title -->
+	            						
+										{% for ship_address in shipping_addresses %}
+										<div class="card card-dashboard">
+											<div class="card-body p-2" style="border: {% if ship_address.default_address %} 2px solid #AAFF00; {% else %} 1px solid black; {% endif %}">
+												<input type="radio" name="selected_address" value="{{ ship_address.id }}" {% if ship_address.default_address %}checked{% endif %}>
+												<label for="selected_address_{{ ship_address.id }}">
+													{% if ship_address.default_address %}
+													Default
+													{% endif %}
+													
+												</label>
+												<p class="text-dark">
+													{{ ship_address.address }}, {{ ship_address.city }}, {{ ship_address.zip_code }}, {{ ship_address.country }}
+												</p>
+												<div class="d-flex justify-content-between">
+													<a href="{% url 'user:update_address_cart' ship_address.id %}" class="btn-dark btn">Edit <i class="icon-edit"></i></a>
+													{% if not ship_address.default_address %}
+													<a href="{% url 'user:default_address_cart' ship_address.id %}" class="btn-dark p-2">Make address default</a>
+													{% endif %}
+													<a href="{% url 'user:delete_address_cart' ship_address.id %}">
+														<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash text-dark" viewBox="0 0 16 16">
+															<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6a.5.5 0 0 0-1 0Z"/>
+															<path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+														</svg>
+													</a>
+												</div>
+											</div><!-- End .card-body -->
+										</div><!-- End .card-dashboard -->
+										{% empty %}
+										<h1 class="f-2 text-center mt-5 mb-3">No address added</h1>
+										<p class="f-3">Add an address and continue to place the order</p>
+										{% endfor %}
+											</div>								
+
+							<div class="m-3">
+								{% if not form %}
+								<a href="{% url 'user:add_new_address_cart' %}" class="btn btn-primary">Add new address</a>
+                                        {% endif %}        
+							</div>
+									</div><!-- End .col-lg-9 -->
+									{% if  update_address or  add_new_address %}
+									{% else %}
+		                		<aside class="col-lg-5">
 		                			<div class="summary">
 		                				<h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
 
@@ -94,50 +168,42 @@
 		                					<thead>
 		                						<tr>
 		                							<th>Product</th>
+													<th>Quantity</th>
 		                							<th>Total</th>
 		                						</tr>
 		                					</thead>
 
 		                					<tbody>
+		                						
+												{% for cart_item in cart_items %}
 		                						<tr>
-		                							<td><a href="#">Beige knitted elastic runner shoes</a></td>
-		                							<td>$84.00</td>
+		                							<td><a href="#">{{ cart_item.variant|slice:":12" }}</a></td>
+		                							<td class="text-center">{{ cart_item.quantity }}</td>
+													<td>Rs :{{ cart_item.total }}</td>
 		                						</tr>
+												{% endfor %}
 
-		                						<tr>
-		                							<td><a href="#">Blue utility pinafore denimdress</a></td>
-		                							<td>$76,00</td>
-		                						</tr>
+												<tr class="summary-subtotal">
+		                							<td>Total number of items:</td>
+		                							<td>{{total_items_in_cart}}</td>
+		                						</tr><!-- End .summary-subtotal -->
 		                						<tr class="summary-subtotal">
 		                							<td>Subtotal:</td>
-		                							<td>$160.00</td>
+		                							<td>Rs {{overall_total}}</td>
 		                						</tr><!-- End .summary-subtotal -->
 		                						<tr>
 		                							<td>Shipping:</td>
 		                							<td>Free shipping</td>
 		                						</tr>
 		                						<tr class="summary-total">
-		                							<td>Total:</td>
-		                							<td>$160.00</td>
+		                							<td>Amount Payable:</td>
+		                							<td>Rs {{overall_total}}</td>
 		                						</tr><!-- End .summary-total -->
 		                					</tbody>
 		                				</table><!-- End .table table-summary -->
 
 		                				<div class="accordion-summary" id="accordion-payment">
-										    <div class="card">
-										        <div class="card-header" id="heading-1">
-										            <h2 class="card-title">
-										                <a role="button" data-toggle="collapse" href="#collapse-1" aria-expanded="true" aria-controls="collapse-1">
-										                    Paypal
-										                </a>
-										            </h2>
-										        </div><!-- End .card-header -->
-										        <div id="collapse-1" class="collapse show" aria-labelledby="heading-1" data-parent="#accordion-payment">
-										            <div class="card-body">
-										                Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.
-										            </div><!-- End .card-body -->
-										        </div><!-- End .collapse -->
-										    </div><!-- End .card -->
+										    
 
 										    <div class="card">
 										        <div class="card-header" id="heading-2">
@@ -173,17 +239,49 @@
 						
 										</div><!-- End .accordion -->
 
-		                				<button type="submit" class="btn btn-outline-primary-2 btn-order btn-block" style="border:1px solid #333333;width:100%;">
+		                				<button  class="btn btn-outline-primary-2 btn-order btn-block" style="border:1px solid #333333;width:100%;" id="placeOrderBtn">
 		                					<span class="btn-text p-2 " >Place Order</span>
-		                					<span class="btn-hover-text text-white">Proceed to Checkout</span>
+		                					<span class="btn-hover-text text-white">Place order</span>
 		                				</button>
 		                			</div><!-- End .summary -->
 		                		</aside><!-- End .col-lg-3 -->
+								{% endif %}
 		                	</div><!-- End .row -->
-            			</form>
+            			<span id="item_qty" data-t="{{ cart_items_json   }}"></span>
 	                </div><!-- End .container -->
                 </div><!-- End .checkout -->
             </div><!-- End .page-content -->
         </main><!-- End .main -->
 
+
+<!-- Button trigger modal -->
+
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"> <!-- Add these classes -->
+	  <div class="modal-content" style="width:1100px;">
+		<div class="modal-header">
+		  <h5 class="modal-title" id="exampleModalLabel">Insufficent stock list</h5>
+		  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<div class="modal-body" id="details">
+		 
+		</div>
+		<div class="modal-footer">
+			<div class="d-flex">
+				<a href="{% url 'user:user_cart' %}" class="btn btn-primary p-3">Go to cart</a>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					
+			</div>
+			
+		</div>
+	  </div>
+	</div>
+  </div>
+  
+	
        {% endblock %}
+
+	  
+	

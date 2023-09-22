@@ -117,7 +117,15 @@
     
   }
 
+  .header_nav {
+    background-color: #333; /* Set the background color of the navigation bar */
+    z-index: 900; /* Set a lower z-index value */
+  }
 
+  /* Style the toast to have a higher z-index value */
+  #liveToast {
+    z-index: 901; /* Set a higher z-index value to make it appear above the navigation bar */
+  }
 
   {% block priority_css_links %}
 {% endblock %}
@@ -134,7 +142,7 @@
   <!-- <div aria-live="polite" aria-atomic="true" style="position: relative;"></div> -->
 
 
-  <div class="position-fixed top-0 end-0 p-4" style="z-index: 11">
+  <div class="position-fixed top-0 end-0 mt-5" style="z-index:1000000000;">
     <div id="liveToast" class="toast hide " role="alert" aria-live="assertive" aria-atomic="true" style="height:80px;font-size:15px;border:1px solid #333333;border-radius: 13px;">
         <div class="toast-header p-2 bg-white">
             
@@ -337,7 +345,8 @@ for (var i = 0; i < links.length; i++) {
 
  
 </script>
-
+{% block importantjs %}
+{% endblock %}
 </body>
 
 </html>

@@ -1540,3 +1540,141 @@ if (window.location.pathname.startsWith('/cart/')){
   
  //======================================================================================================================
 
+//place order variant quantity check
+
+placeOrderBtn = document.getElementById('placeOrderBtn')
+
+if (placeOrderBtn){
+  
+  placeOrderBtn.addEventListener('click', placeOrder);
+}
+function placeOrder() {
+
+// Check if a shipping address is selected
+var selectedAddress = document.querySelector('input[name="selected_address"]:checked');
+if (!selectedAddress) {
+    showNotification('Please select an address','text-danger');
+    return; // Prevent order placement if no address is selected
+}
+//address selection is working
+// console.log(selectedAddress.value,selectedAddress)
+
+
+
+var razorPayAnchor = document.querySelector('[href="#collapse-2"]');
+var cashOnDeliveryAnchor = document.querySelector('[href="#collapse-3"]');
+
+
+//payment selection works
+if (razorPayAnchor.classList.contains('collapsed') && cashOnDeliveryAnchor.classList.contains('collapsed')) {
+  // Neither "Razor Pay" nor "Cash on Delivery" is selected
+  showNotification('Please select a payment method','text-danger');
+  return; // Prevent order placement if no payment method is selected
+}
+
+if (!razorPayAnchor.classList.contains('collapsed')) {
+  console.log('Selected payment method: Razor Pay , address id ',selectedAddress.value);
+} else {
+  console.log('Selected payment method: Cash on Delivery , address id ',selectedAddress.value);
+}
+
+
+c_element= document.getElementById('item_qty')
+c__items= c_element.getAttribute('data-t')
+cartItems=JSON.parse(c__items);
+
+
+
+let insufficientStock = false;
+let outOfStockVariants = [];
+
+ 
+  // Function to check stock for a variant
+  function checkStockForVariant(variant_id,variant_name, quantityInCart) {
+      // Send a fetch request to fetch the current stock quantity
+      
+     
+      fetch('/get_variant_stock/' + variant_id + '/')
+          .then(response => response.json())
+          .then(data => {
+              var stockQuantity = data.stock_quantity;
+              console.log(variant_name,' name ',quantity,'varinat cart qty ---------- response qty',stockQuantity)
+              // Check if quantity in cart is greater than available stock
+              if (quantityInCart < stockQuantity) {
+                  // Display an error message or console log
+                  //stock is enough
+              }
+              else{
+                console.log('Not enough stock available for ' + variant_name,)
+                insufficientStock = true; // Set the flag to true
+                outOfStockVariants.push(variant_name); // Add variant to the list of out of stock variants
+       
+              }
+
+
+              // Check if this is the last iteration of the loop
+        if (variant_id === cartItems[cartItems.length - 1].variant_id) {
+          // Proceed with order placement only if there is sufficient stock
+          if (!insufficientStock) {
+            console.log('Order placement logic goes here');
+          }else{
+            console.log("can't proceed the payment insufficent quantity")
+            // Display the out of stock variants in a modal
+          displayOutOfStockVariants(outOfStockVariants);
+          
+            return
+          }
+        }
+          })
+          .catch(error => {
+              console.log('Error fetching variant stock for ' + variant.name);
+          });
+  }
+
+  // Iterate through cart items and check stock for each variant
+  for (var i = 0; i < cartItems.length; i++) {
+      var cartItem = cartItems[i];
+      
+      var variant_id = cartItem.variant_id;
+      var variant_name = cartItem.variant_name;
+      var quantity = cartItem.quantity;
+ 
+      checkStockForVariant(variant_id, variant_name,quantity);
+  }
+
+  // Check if the flag is true and stop the loop
+    if (insufficientStock) {
+     
+    }
+  
+
+  
+
+
+  
+function displayOutOfStockVariants(variants) {
+  var modalBody = document.getElementById('details');
+  modalBody.innerHTML = ''; // Clear any previous content
+
+  for (var i = 0; i < variants.length; i++) {
+    var variantName = variants[i];
+    var variantElement = document.createElement('div');
+    const para = document.createElement('p')
+    para.classList.add('fs-3','m-2','text-dark')
+    para.textContent = variantName + ' is out of stock.';
+    variantElement.appendChild(para)
+    modalBody.appendChild(variantElement);
+  }
+
+  // Show the modal
+  var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+  modal.show();
+}
+
+
+
+
+
+
+}
+
