@@ -1,15 +1,27 @@
+# for getting random numbers
+import random
+#for getting alaphabetic characters
+import string
+
 from django.db import models
+
+#importing varaint , user and shipping address model
 from products.models import Variant
-from user.models import CustomUser
+from user.models import CustomUser,ShippingAddress
 
 
 #Cart
 
 class Cart(models.Model):
 
+    #which user , helps on filtering purpose
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,null=True, blank=True)
+    #which variant
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE, related_name='variants')
+    #how many variants selected ? default =1
+
     quantity = models.PositiveIntegerField(default=1)
+
     #on the checkout page there we need the total price of the product * quantity
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # New field for the total
 
@@ -24,3 +36,97 @@ class Cart(models.Model):
 
     def __str__(self):
         return self.variant.product.name+"---"+self.variant.ram+'----'+self.variant.storage+"---"+self.variant.color
+
+
+
+
+#order
+
+
+
+class Order(models.Model):
+
+    #payment choices 
+    PAYMENT_CHOICES = (
+        ('cash_on_delivery', 'Cash_on_Delivery'),
+        ('online_payment', 'Online_payment'),
+    )
+
+    #function for generating the order id
+    def generate_order_id():
+
+                # A - Z         and            0 - 9
+        chars = string.ascii_uppercase + string.digits
+                # chars contain a string which has all uppercase characters and full digits
+
+        return ''.join(random.choice(chars) for _ in range(10))
+
+    #which user
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    #which address
+    address = models.ForeignKey(ShippingAddress, on_delete=models.CASCADE, blank=True, null=True)
+    #date order created , automatically created
+    date_created = models.DateTimeField(auto_now=True)
+    #order num automatically genertated by the function
+    order_num = models.CharField(max_length=20, default=generate_order_id)
+    #type of payment given in choice 
+    payment_type = models.CharField(max_length=100, choices=PAYMENT_CHOICES, default="Cash on delivery")
+    #total price for the products in the single order
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def __str__(self):
+        return self.user.username+"---"+self.order_num
+
+
+#order detail model
+#for each product in cart each order detail will be created with the same order id
+
+class OrderDetail(models.Model):
+
+    #order status
+    ORDER_STATUS_CHOICES = (
+        ('order_pending', 'Order_Pending'),
+        ('order_confirmed', 'Order_Confirmed'),
+        ('shipped', 'Shipped'),
+        ('delivered', 'Delivered'),
+        ('returned', 'Returned'),
+        ('cancelled', 'Cancelled'),
+    )
+
+    #order instance
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
+    #which variant / product
+    variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
+    #quantity of the variant in the cart
+    quantity = models.IntegerField(default=1)
+    #total price for the variant , with quantity * price
+    total_price = models.DecimalField(max_digits=10,decimal_places=2, default=0)
+    #status of order when creating an order will be order pending
+    order_status = models.CharField(max_length=100, choices=ORDER_STATUS_CHOICES, default='order_pending')
+    #when returning the product the variable be true
+    is_returned = models.BooleanField(default=False)
+    #whether product delivered or not
+    is_delivered = models.BooleanField(default=False)
+    #date which will be added when product is delivered , default null
+    delivered_date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return self.order.user.username+"---"+self.variant.product.name+"---"+self.order_status
+
+
+
+# user purchased products
+
+class UserPurchasedProducts(models.Model):
+
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    #which variant
+    variant = models.ForeignKey(Variant,on_delete=models.SET_NULL,null=True)
+    #get the quantity
+    quantity = models.PositiveIntegerField()
+
+
+    def __str__(self):
+        return f" { self.user.username} -- {self.variant.product.name} -- Quantity :{self.quantity}"
+
+

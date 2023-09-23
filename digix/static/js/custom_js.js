@@ -1449,7 +1449,7 @@ if (window.location.pathname.startsWith('/cart/')){
           total += price ;
           console.log(variantTotalPrices[index].innerText,parseFloat(variantTotalPrices[index].innerText.replace(/[^\d.]+/g, '')))
         }
-        console.log('total :',total)
+        // console.log('total :',total)
         subtotal.innerHTML = total.toFixed(2); // Update subtotal
       }
       
@@ -1541,14 +1541,24 @@ if (window.location.pathname.startsWith('/cart/')){
  //======================================================================================================================
 
 //place order variant quantity check
-
+//getting the place order btn
 placeOrderBtn = document.getElementById('placeOrderBtn')
 
 if (placeOrderBtn){
   
   placeOrderBtn.addEventListener('click', placeOrder);
 }
+
+//calls when click the place order btn
 function placeOrder() {
+
+  const subtotal = document.getElementById('subtotal_cart').innerHTML
+   
+  if (subtotal === ''){
+    
+    showNotification('No item in cart','text-danger');
+    return; // Prevent order placement if no address is selected
+  }
 
 // Check if a shipping address is selected
 var selectedAddress = document.querySelector('input[name="selected_address"]:checked');
@@ -1556,74 +1566,120 @@ if (!selectedAddress) {
     showNotification('Please select an address','text-danger');
     return; // Prevent order placement if no address is selected
 }
+
+//get address id 
+const address_id = selectedAddress.value;
 //address selection is working
 // console.log(selectedAddress.value,selectedAddress)
 
-
-
 var razorPayAnchor = document.querySelector('[href="#collapse-2"]');
 var cashOnDeliveryAnchor = document.querySelector('[href="#collapse-3"]');
-
+let payment_method = null;
 
 //payment selection works
 if (razorPayAnchor.classList.contains('collapsed') && cashOnDeliveryAnchor.classList.contains('collapsed')) {
+
   // Neither "Razor Pay" nor "Cash on Delivery" is selected
   showNotification('Please select a payment method','text-danger');
   return; // Prevent order placement if no payment method is selected
 }
 
+//which means razor pay or the online payment method is selected
 if (!razorPayAnchor.classList.contains('collapsed')) {
-  console.log('Selected payment method: Razor Pay , address id ',selectedAddress.value);
+
+    payment_method = 'online_payment';
+  // console.log('Selected payment method: Razor Pay , address id ',selectedAddress.value);
+
 } else {
-  console.log('Selected payment method: Cash on Delivery , address id ',selectedAddress.value);
+  payment_method = 'cash_on_delivery';
+  // console.log('Selected payment method: Cash on Delivery , address id ',selectedAddress.value);
 }
 
+//getting the cart items 
 
 c_element= document.getElementById('item_qty')
 c__items= c_element.getAttribute('data-t')
+//parse to js object
 cartItems=JSON.parse(c__items);
 
 
 
-let insufficientStock = false;
+//array which is gonna hold which products are outof stock
 let outOfStockVariants = [];
 
  
   // Function to check stock for a variant
+
+
   function checkStockForVariant(variant_id,variant_name, quantityInCart) {
       // Send a fetch request to fetch the current stock quantity
       
      
       fetch('/get_variant_stock/' + variant_id + '/')
+
           .then(response => response.json())
+
           .then(data => {
+
               var stockQuantity = data.stock_quantity;
-              console.log(variant_name,' name ',quantity,'varinat cart qty ---------- response qty',stockQuantity)
+
+              // console.log(variant_name,' name ',quantity,'varinat cart qty ---------- response qty',stockQuantity)
               // Check if quantity in cart is greater than available stock
+
               if (quantityInCart <= stockQuantity) {
-                  // Display an error message or console log
+                  
                   //stock is enough
               }
               else{
-                console.log('Not enough stock available for ' + variant_name,)
-                insufficientStock = true; // Set the flag to true
+                //console.log('Not enough stock available for ' + variant_name,)
+                
                 outOfStockVariants.push(variant_name); // Add variant to the list of out of stock variants
        
               }
 
 
               // Check if this is the last iteration of the loop
+              //due to fetch check in normal flow won't work
         if (variant_id === cartItems[cartItems.length - 1].variant_id) {
+
           // Proceed with order placement only if there is sufficient stock
-          if (!insufficientStock) {
-            console.log('Order placement logic goes here');
-          }else{
-            console.log("can't proceed the payment insufficent quantity")
-            // Display the out of stock variants in a modal
-          displayOutOfStockVariants(outOfStockVariants);
+          if (!outOfStockVariants.length) {
+            // Build the URL with query parameters
+                  const url = `/order_confirm/?selected_address=${address_id}&payment_method=${payment_method}`;
           
-            return
-          }
+                  // Make a GET request to the order_confirm view
+                  fetch(url, {
+                      method: 'GET', // Use the GET method for fetching data
+                      
+                  })
+
+
+                  .then(response => response.json())
+
+                  .then(data => {
+                    
+                                if (data.order_num) {
+
+                                  console.log(data.order_num)
+                            // If the order_confirm request is successful (status code 200), make a GET request to order_success
+                            window.location.href = `/order_success/${data.order_num}/`;
+
+                            // if (window.location.pathname.startsWith('/checkout/')){
+
+                            //   window.location.href = '/checkout/';
+                            // }
+                      
+                              }
+                    })
+                    .catch(error => {
+                      console.log('Error fetching order num');
+                  });
+
+
+        } else {
+            // Display the out-of-stock variants in a modal
+            displayOutOfStockVariants(outOfStockVariants);
+        }
         }
           })
           .catch(error => {
@@ -1633,26 +1689,24 @@ let outOfStockVariants = [];
 
   // Iterate through cart items and check stock for each variant
   for (var i = 0; i < cartItems.length; i++) {
+
       var cartItem = cartItems[i];
       
+      //variant name
       var variant_id = cartItem.variant_id;
+      //variant name
       var variant_name = cartItem.variant_name;
+      //quantity
       var quantity = cartItem.quantity;
  
+      //check quantity for each variant exist in  inventory
       checkStockForVariant(variant_id, variant_name,quantity);
   }
 
-  // Check if the flag is true and stop the loop
-    if (insufficientStock) {
-     
-    }
-  
 
-  
-
-
-  
+//function to display the variants which are out of stock
 function displayOutOfStockVariants(variants) {
+
   var modalBody = document.getElementById('details');
   modalBody.innerHTML = ''; // Clear any previous content
 

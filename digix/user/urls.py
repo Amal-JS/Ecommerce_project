@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+from orders.views import order_confirm,order_success
+
 app_name='user'
 
 urlpatterns =[
@@ -137,6 +139,14 @@ path('default_address_cart/<int:id>/',views.default_address_cart,name='default_a
 
 #check variant qty for checkout page
 path('get_variant_stock/<int:variant_id>/',views.get_variant_stock),
+
+
+#orders
+#order confirm
+path('order_confirm/',order_confirm),
+#order success 
+path('order_success/<str:order_num>/',order_success),
+
 
 
 
