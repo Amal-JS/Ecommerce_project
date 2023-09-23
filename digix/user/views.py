@@ -133,7 +133,7 @@ def get_variants(request,id):
 
 def send_otp(otp):
     account_sid = 'AC929a8e4f621fb41ffd6aaf88b0042071'
-    auth_token = 'bf99032ef3ee29284d3118533ccc4c67'
+    auth_token = 'ad6369caa0198f43c05ac26ebb7d8f5f'
     client = Client(account_sid, auth_token)
 
     message = client.messages.create(

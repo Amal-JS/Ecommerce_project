@@ -1600,7 +1600,7 @@ let outOfStockVariants = [];
               var stockQuantity = data.stock_quantity;
               console.log(variant_name,' name ',quantity,'varinat cart qty ---------- response qty',stockQuantity)
               // Check if quantity in cart is greater than available stock
-              if (quantityInCart < stockQuantity) {
+              if (quantityInCart <= stockQuantity) {
                   // Display an error message or console log
                   //stock is enough
               }
