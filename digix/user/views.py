@@ -1,7 +1,7 @@
 import json
 import re
 from django.http import JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 #Form for user creation
 from . forms import UserCreationForm , ShippingAddressForm
@@ -31,15 +31,15 @@ from django.shortcuts import render, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from twilio.rest import Client
 import random
-
+from django.db.models import Count
 
 from django.contrib.auth.decorators import user_passes_test
 
 #import shipping address model
 from . models import ShippingAddress
-
-
 from django.core.serializers.json import DjangoJSONEncoder  # Import DjangoJSONEncoder
+#import Order, order detail
+from orders.models import Order,OrderDetail
 
 #home page
 def index(request):
@@ -625,17 +625,13 @@ def user_profile_dashboard(request):
     return render(request,'user_app/dashboard.html')
 
 
-#check user authenticated  before user profile order
-@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
-def user_profile_order(request):
-    return render(request,'user_app/orders.html')
 
 
 #check user authenticated  before user profile address
 @user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
 def user_profile_address(request):
 
-    address_objects = ShippingAddress.objects.all()
+    address_objects = ShippingAddress.objects.filter(user=request.user)
     
     context = {'addresses':address_objects}
     return render(request,'user_app/user_address.html',context)
@@ -650,7 +646,7 @@ def add_new_address(request):
     if request.method == 'POST':
                 # Form is not valid, handle the case when all fields are empty
         if request.POST['city'] == '' or request.POST['address'] == '' or request.POST['zip_code'] == '' or request.POST['country'] == '' :
-            messages.error(request, 'Empty form cannot be submitted.')
+            messages.error(request, 'All fields are required.')
             return redirect('user:add_new_address')
 
         form = ShippingAddressForm(request.POST)
@@ -665,12 +661,12 @@ def add_new_address(request):
             return redirect('user:user_profile_address')
         else:
             messages.error(request,form.errors)
-            return render(request,'user_app/user_address.html',{'form':form})
+            return render(request,'user_app/user_address.html',{'form':form,'new_address':True})
         
 
     form = ShippingAddressForm()
   
-    return render(request,'user_app/user_address.html',{'form':form})
+    return render(request,'user_app/user_address.html',{'form':form,'new_address':True})
 
 
 
@@ -903,7 +899,20 @@ def user_logged_in_status(request):
 
     return JsonResponse({'user_authenticated':value},safe=False)
 
+#cart empty or not 
+def user_cart_status(request):
 
+    cart_empty = ''
+    
+    cart = Cart.objects.filter(user=request.user).count()
+    if cart == 0:
+        cart_empty = True
+    else:
+        cart_empty = False
+    print(cart_empty)
+      
+
+    return JsonResponse({'cart_empty': cart_empty})
 
 
 #user wishlist
@@ -1225,3 +1234,32 @@ def get_variant_stock(request, variant_id):
     except Variant.DoesNotExist:
         return JsonResponse({'error': 'Variant not found'}, status=404)
 
+# user profile orders 
+#check user authenticated  before user profile order
+
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def user_profile_order(request):
+    user_orders = Order.objects.filter(user=request.user).prefetch_related('order_items__variant__variant_images')
+    # Annotate each order with the count of order items
+    order_count = Order.objects.filter(user=request.user).count()
+    
+    return render(request, 'user_app/orders.html', {'user_orders': user_orders,'order_count':order_count})
+
+#order detail
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def order_detail(request,order_id,variant_id):
+
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order_item = get_object_or_404(OrderDetail, order=order, variant__id=variant_id)
+
+    # Retrieve the first image associated with the variant
+    variant_image = order_item.variant.variant_images.first()
+
+    context = {
+        'order': order,
+        'order_item': order_item,
+        'variant_image': variant_image,  # Add the variant image to the context
+    }
+  
+
+    return render(request, 'user_app/order.html', context)

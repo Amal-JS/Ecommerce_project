@@ -17,6 +17,9 @@ from django.utils.safestring import mark_safe
 
 from django.contrib.auth.decorators import user_passes_test
 
+#import Orders
+from orders.models import OrderDetail,Order
+from django.utils.text import capfirst
 def is_user_authenticated(user):
     return user.is_authenticated
 
@@ -355,3 +358,41 @@ def variant_update(request, id):
 
     # Render the form page for updating the variant
     return render(request, 'digix_admin/add_form.html', {'form': form, 'element': 'Variant', 'update': True})
+
+
+#admin orders page
+
+@user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
+def orders(request):
+    # Use select_related() to fetch related Order and User data
+    all_orders = OrderDetail.objects.select_related('order__user').all()
+
+    # Use prefetch_related() to fetch related Variant data
+    all_orders = all_orders.prefetch_related('variant')
+
+    # Create a list to store modified order objects for rendering
+    orders = []
+
+    # Loop through the orders and update order_status for rendering
+    for order in all_orders:
+        # Transform the order_status value and create a copy of the order detail
+        modified_order = order
+        modified_order.order_status = capfirst(order.order_status.replace('_', ' '))
+        orders.append(modified_order)
+
+    # Count the number of orders
+    count = all_orders.count()
+
+    return render(request, 'digix_admin/admin_orders.html', {'orders': orders, 'count': count})
+
+
+#admin orders page
+
+def change_order_status(request, id, value):
+    try:
+        order = OrderDetail.objects.get(id=id)
+        order.order_status = value
+        order.save()
+        return JsonResponse({'order_status_changed': True, 'new_status': value})
+    except Exception as e:
+        return JsonResponse({'order_status_changed': False, 'response_error': str(e)})

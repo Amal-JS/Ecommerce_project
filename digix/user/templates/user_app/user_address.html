@@ -120,7 +120,7 @@
 							
 								    	<div class="row mt-5">
                                            
-                                            {% if not update_address %}
+                                            {% if not update_address and not new_address%}
                                             <h2 class="card-title">Billing Addresses</h2>
                                             {% endif %}
 
@@ -168,7 +168,7 @@
 
                                             {% empty %}
 
-                                            {% if not update_address %}
+                                            {% if not update_address and not new_address %}
                                             <div class="col-lg-6">
 								    			<div class="card card-dashboard">
 								    				<div class="card-body">

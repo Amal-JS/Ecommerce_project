@@ -1,0 +1,158 @@
+{% extends 'digix_admin/base.html' %}
+{% load static %}
+
+{% block title %}Orders{% endblock %}
+
+{% block priority_css_links %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<style src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"></style>
+<style src="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"></style>
+<link rel="stylesheet" href="{% static 'admin/assets/css/style.css' %}">
+<style>
+    
+</style>
+{% endblock %}
+
+{% block body %}
+   
+
+<div class="content-wrapper" id="content_wrapper_div">
+  
+
+        
+    <table id="example" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th></th>
+                    <th>Order number</th>
+                    <th>User Phone</th>
+                    <th>Product Name</th>
+                    <th>
+                    Quantity
+                    </th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Change Status</th>
+            </tr>
+        </thead>
+        <tbody>
+         
+           
+        {% for order in orders %}
+       
+            <tr>
+                <td style="width:100px;">
+                    {% with variant_image=order.variant.variant_images.first %}
+                        {% if variant_image %}
+                            <img src="{{ variant_image.image.url }}" alt="{{ order_item.variant.name }} Image" style="width:99px;height:101px;">
+                        {% endif %}
+                    {% endwith %}
+                </td>
+                <td style="font-weight:500;">{{ order.order.order_num }}</td>
+                <td style="font-weight:500;">{{ order.order.user.phone }}</td>
+                <td style="font-weight:500;">{{ order.variant.product.name }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.order.date_created }}</td>
+                <td class="text-dark changed_status" data-order-id="{{ order.id }}" style="font-weight:500;" >{{ order.order_status }}</td>
+                <td > <select class="status_select" data-order-id="{{ order.id }}"  style="border: 1px solid #333333;
+                    background: white;">
+                         
+                    <option value="order_pending">Pending</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="order_confirmed">Confirmed</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="returned">Returned</option>
+                </select></td>
+            </tr>
+       
+    {% endfor %}
+        </tbody>
+        
+    </table>
+
+        <!-- <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Order number</th>
+                    <th>User Phone</th>
+                    <th>Product Name</th>
+                    <th>
+                    Quantity
+                    </th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+              {{order.user.username}}
+            
+                {% for order_item in order.order_items.all %}
+                    <tr>
+                        <td style="width:100px;">
+                            {% with variant_image=order_item.variant.variant_images.first %}
+                                <img src="{{ variant_image.image.url }}" alt="{{ order_item.variant.name }} Image" style="width:99px;height:101px;">
+                            {% endwith %}
+                        </td>
+                        <td style="font-weight:500;">{{ order.order.order_num }}</td>
+                        <td style="font-weight:500;">{{ order.order.user.username }}</td>
+                        <td style="font-weight:500;"> <a href="{% url 'user:order_detail' order.id order_item.variant.id %}" class="text-dark text-decoration-none">{{ order_item.variant.name }}</a></td>
+                        <td>{{ order_item.quantity }}</td>
+                        <td>{{ order.order.date_created }}</td>
+                        <td class="text-dark" style="font-weight:500;">{{ order_item.order_status }}</td>
+                    </tr>
+                {% endfor %}
+                
+                {% endfor %}
+            
+               
+            </tbody>
+        </table>
+     -->
+
+
+ {% if count == 0 %}
+
+
+    <div class="row" >
+        <p>No order has been made yet.</p>
+        <a href="{% url 'user:index' %}" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+    </div><!-- .End .tab-pane -->
+
+
+{% endif %}
+
+
+    
+    
+
+    
+   
+
+</div>
+
+
+{% endblock %}
+
+{% block priority_js_links %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+	   <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+	   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+	   <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+	   <script>
+        table=new DataTable('#example');
+       // Get the odd rows using DataTables API
+var oddRows = table.rows('.odd');
+
+// Loop through the odd rows and change their background color to white
+oddRows.every(function () {
+    $(this.node()).css('background-color', 'white');
+});
+
+
+        </script>
+        <script src ="{% static 'admin/custom_admin.js' %}"></script>
+{% endblock %}

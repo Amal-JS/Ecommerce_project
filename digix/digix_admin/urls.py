@@ -35,6 +35,10 @@ urlpatterns = [
 
     path('all_users/',views.all_users,name='all_users'),
 
+    path('all_orders/',views.orders,name='orders'),
+    
+    path('change_order_status/<int:id>/<str:value>/',views.change_order_status,name='change_order_status')
+
     
 
 ]

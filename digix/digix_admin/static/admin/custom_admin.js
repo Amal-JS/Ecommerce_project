@@ -458,3 +458,69 @@ if ( (window.location.pathname.startsWith('/admin/add')) || ( (window.location.p
 
 //--------------------------------------------------------------------------------------------------------
 
+//order status change
+
+if (window.location.pathname.startsWith('/admin/all_orders/')){
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // Initialize the DataTable
+    var table = $('#example').DataTable(); // Replace 'yourDataTable' with your table's ID or other selector
+    
+    // Function to add event listeners to select elements
+    function addEventListenersToSelects() {
+        var selectElements = document.querySelectorAll(".status_select");
+
+        selectElements.forEach(function (selectElement) {
+            selectElement.addEventListener("change", function () {
+                var selectedValue = selectElement.value;
+                var orderId = selectElement.getAttribute("data-order-id");
+                var statusTd = document.querySelector(`.changed_status[data-order-id="${orderId}"]`);
+                var url = "/admin/change_order_status/" + orderId + "/" + selectedValue + "/";
+
+                fetch(url, {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json",
+                    },
+                })
+                .then(function (response) {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        console.log("Error updating order status:", response.statusText);
+                        throw new Error("Failed to update order status");
+                    }
+                })
+                .then(function (data) {
+                    if (data.order_status_changed) {
+                        //working perfectly
+                        // Convert to first letter uppercase and remove underscores
+                      var formattedValue = data.new_status.toString().replace(/_/g, ' ').replace(/\w\S*/g, function (text) {
+                        return text.charAt(0).toUpperCase() + text.slice(1);
+                    });
+                    statusTd.innerHTML = formattedValue;
+                        console.log("Order status updated successfully");
+                    } else {
+                        console.log("Error updating order status:", data.response_error);
+                    }
+                })
+                .catch(function (error) {
+                    console.error("Fetch error:", error);
+                });
+            });
+        });
+    }
+
+    // Call the function to add event listeners after DataTable initialization
+    addEventListenersToSelects();
+
+    // Add event listener to DataTable's 'draw.dt' event
+    table.on('draw.dt', function () {
+        // Call the function again to add event listeners to any newly added <select> elements
+        addEventListenersToSelects();
+    });
+});
+
+
+
+}

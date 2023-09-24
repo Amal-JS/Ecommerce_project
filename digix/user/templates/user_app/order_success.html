@@ -4,12 +4,154 @@
 
 {% block body %}
 
-<div class="container">
+<div class="container shadow-lg p-3 mb-5 bg-white rounded">
     <div class="row">
-        <div class="col-12 text-center mt-5 mb-3" >
+        <div class="col-12 text-center mt-5 mb-1" >
+            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-check2-circle my-5 text-success" viewBox="0 0 16 16">
+                <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
+                <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
+              </svg>
             <p class="fs-1 text-dark">Order placed successfully</p>
+            <a href="{% url 'user:generate_pdf' order.order_num %}" class="btn btn-primary mt-5">Generate PDF</a>
+
+        </div>
+        <div class="col-12 text-center mt-5 mb-3" >
+            
         </div>
     </div>
+</div>
+<div class="container shadow-lg p-3 mb-5 bg-white rounded">
+    <div class="row">
+       
+        <div class="col-6 text-center">
+            
+
+    <!-- Display order information -->
+    <h2 class="mt-5">Order Information</h2>
+    <p  class="font-weight-normal text-dark mt-4">Order Number: {{ order.order_num }}</p>
+    <p class="font-weight-normal text-dark">Total Amount: Rs {{ order.total }}</p>
+    <p class="font-weight-normal text-dark">Payment Type: {% if order.get_payment_type_display == 'Online_payment' %}
+        Online Payment
+        {% else %}
+        Cash on delivery
+        {% endif %}
+    </p>
+        </div>
+        <div class="col-6 text-center">
+            <h1 class="mt-5">Shipping Address</h1>
+            <!-- Display order information -->
+    
+    <p  class="font-weight-normal text-dark mt-4">Address: {{ order.address.address }}</p>
+    <p class="font-weight-normal text-dark">City:  {{ order.address.city }}</p>
+    <p class="font-weight-normal text-dark">Pincode: {{ order.address.zipcode }}</p>
+    <p class="font-weight-normal text-dark">State: {{ order.address.state }}</p>
+    <p class="font-weight-normal text-dark">Country: {{ order.address.country }}</p>
+        </div>
+    </div>
+    
+
+    <!-- Display purchased variants -->
+    <h2 class="m-5">Purchased Products</h2>
+    <!-- <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Variant</th>
+                    <th>Image</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th>
+                    <th>Order Status</th>
+                    <th>Returned</th>
+                    <th>Delivered</th>
+                    <th>Delivery Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for variant_info in purchased_variants %}
+                    <tr>
+                        <td  class="fs-3 font-weight-normal">{{ variant_info.variant.product.name }}</td>
+                        <td>
+                            {% if variant_info.image %}
+                                <img src="{{ variant_info.image }}" alt="{{ variant_info.variant.product.name }} Image" style="width: 100px; height: 100px;">
+                            {% else %}
+                                No Image
+                            {% endif %}
+                        </td>
+                        <td class="fs-3 font-weight-normal">{{ variant_info.quantity }}</td>
+                        <td class="fs-3 font-weight-normal">Rs {{ variant_info.total_price }}</td>
+                        <td class="fs-3 font-weight-normal">
+
+                            {% if variant_info.order_status == 'order_pending' %}
+                           Order Pending
+                            {% else %}
+                            {{ variant_info.order_status }}
+                            {% endif %}
+
+                        </td>
+                        <td class="fs-3 font-weight-normal">
+
+                            {% if vvariant_info.is_returned == False %}
+                            Not Delivered
+                            {% else %}
+                            {{ variant_info.is_returned }}
+                            {% endif %}
+
+                            
+                        </td>
+                        <td class="fs-3 font-weight-normal">
+                            {% if variant_info.is_delivered == False %}
+                            Not Delivered
+                            {% else %}
+                            {{ variant_info.is_delivered }}
+                            {% endif %}
+
+                        </td>
+                        <td class="fs-3 font-weight-normal">
+                            {% if variant_info.delivered_date == None %}
+                            Not Delivered
+                            {% else %}
+                            {{ variant_info.delivered_date }}
+                            {% endif %}
+                            
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table> -->
+
+        
+            <div class="container">
+                <div class="row">
+                    
+                            {% for variant_info in purchased_variants %}
+                            <div class="col-12 m-3" >
+                                <div class=" d-flex" style="width: 100%;">
+                            <div class="w-50">
+                                {% if variant_info.image %}
+                                <img src="{{ variant_info.image }}" class="card-img-top  border-dark border-top mb-1 mt-2" alt="{{ variant_info.variant.product.name }} Image" style="width: 100px; height: 100px;">
+                            {% else %}
+                                No Image
+                            {% endif %}
+                            </div>
+                               
+                                <div class="card-body" class="w-50">
+                                  <h5 class="card-title m-1">{{ variant_info.variant.product.name }}</h5>
+                                  <p class="card-text mb-1">Quantity : {{ variant_info.quantity }}</p>
+                                  <p class="card-text mb-1">Rs {{ variant_info.total_price }}</p>
+                                  
+                                  
+                                </div>
+                            </div>
+                        </div>
+                            {% endfor %}
+        
+                          
+                    </div>
+                </div>
+           
+        </div>
+    </div>
+    
 </div>
 
 

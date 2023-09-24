@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 
-from orders.views import order_confirm,order_success
+from orders.views import order_confirm,order_success,return_order,cancel_order,generate_pdf
 
 app_name='user'
 
@@ -126,6 +126,8 @@ path('cart_product_count/',views.cart_product_count,),
 #cart product qty update
 path('cart_variant_qty_update/<int:id>/<int:quantity>/',views.cart_variant_qty_update),
 
+#cart status
+path('user_cart_status/',views.user_cart_status),
 
 
 #add new address 
@@ -146,7 +148,15 @@ path('get_variant_stock/<int:variant_id>/',views.get_variant_stock),
 path('order_confirm/',order_confirm),
 #order success 
 path('order_success/<str:order_num>/',order_success),
+#cancel order
+path('cancel_order/<int:id>/',cancel_order),
+#return order
+path('return_order/<int:id>/',return_order),
+#order detail
+path('order_detail/<int:order_id>/<int:variant_id>/',views.order_detail,name='order_detail'),
 
+#generate pdf
+ path('generate_pdf/<str:order_num>/', generate_pdf, name='generate_pdf'),
 
 
 
