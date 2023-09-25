@@ -22,11 +22,33 @@ p{
                 <p class="text-dark fw-normal fs-3">Phone : {{order.user.phone}}</p>
             </div>
             <div class="col-6 text-center">
-                <p class="text-dark fw-bold fs-3">Status : {{order_item.order_status}}</p>
+                <p class="text-dark fw-bold fs-3">Status :
+                    {% if order_item.order_status == 'order_pending' %}
+                    Order Pending
+                    {% elif order_item.order_status == 'returned' %}
+                    Order Returned
+                    {% elif order_item.order_status == 'order_confirmed' %}
+                    Order Confirmed
+                    {% elif order_item.order_status == 'shipped' %}
+                    Order Shipped
+                    {% elif order_item.order_status == 'delivered' %}
+                    Delivered
+                    {% else %}
+                    Cancelled
+                {% endif %}
+
+                
+                
+                </p>
                 <p class="text-dark fw-bold fs-3"> Total Price : {{order_item.total_price}}</p>
                <div class="d-block">
-                <a href="{}" class="btn btn-warning mt-5">Cancel</a>
-                <a href="#" class="btn btn-info mt-5">Download Invoice</a>
+                {% if order_item.order_status != 'cancelled' and order_item.order_status != 'delivered' %}
+    <a href="{% url 'user:cancel_order' order_item.order.id order_item.variant.id %}" class="btn btn-warning mt-5">Cancel</a>
+{% endif %}
+                {% if order_item.order_status == 'delivered' %}
+                <a href="" id='returnBtn' class="btn btn-secondary mt-5" data-bs-toggle="modal" data-bs-target="#returnModal">Return</a>
+                {% endif %}
+                <!-- <a href="#" class="btn btn-info mt-5">Download Invoice</a> -->
                </div>
                 
             
@@ -50,6 +72,26 @@ p{
     
     </div>
        </div>
+
+       
+<!-- Modal -->
+<div class="modal fade" id="returnModal" tabindex="-1" data-bs-backdrop="false" aria-labelledby="returnModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border:2px solid #333333;min-height: 250px;">
+        <div class="modal-header">
+          <h5 class="modal-title" id="returnModalLabel">Enter Return Reason</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="returnReasonInput" class="form-control" placeholder="Enter the return reason" style="font-size:16px;">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary p-3" data-bs-dismiss="modal">Close</button>
+          <a class="btn btn-primary p-3" id="sendReasonBtn" href="{% url 'user:return_order' order_item.id %}">Send</a>
+        </div>
+      </div>
+    </div>
+  </div>
        {% endblock %}
 
 	   {% block importantjs %}

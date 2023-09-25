@@ -149,14 +149,17 @@ path('order_confirm/',order_confirm),
 #order success 
 path('order_success/<str:order_num>/',order_success),
 #cancel order
-path('cancel_order/<int:id>/',cancel_order),
+path('cancel_order/<int:order_id>/<int:variant_id>/',cancel_order,name='cancel_order'),
 #return order
-path('return_order/<int:id>/',return_order),
+path('return_order/<int:id>/',return_order,name='return_order'),
 #order detail
 path('order_detail/<int:order_id>/<int:variant_id>/',views.order_detail,name='order_detail'),
 
 #generate pdf
  path('generate_pdf/<str:order_num>/', generate_pdf, name='generate_pdf'),
+
+ #get rasor pay instance
+ path('razor_pay_instance/',views.razor_pay_instance),
 
 
 

@@ -284,12 +284,17 @@ widgetElements.forEach(function(element) {
   });
 });
 </script>
+
+
+
+
+
 {% else %}
 
 
 <script src="{% static 'user/assets/js/jquery.min.js' %}"></script>
 <script src="{% static 'user/assets/js/bootstrap.bundle.min.js' %}"></script>
-
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script src="{% static 'user/assets/js/jquery.waypoints.min.js' %}"></script>
 
@@ -349,6 +354,8 @@ for (var i = 0; i < links.length; i++) {
 </script>
 {% block importantjs %}
 {% endblock %}
+
+
 </body>
 
 </html>

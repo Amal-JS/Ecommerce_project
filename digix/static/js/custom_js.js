@@ -79,6 +79,8 @@ document.addEventListener("DOMContentLoaded", function () {
 //category fetch
 
  // Get references to the checkbox elements
+
+
  const SmartPhoneCheckbox = document.getElementById('Smart PhoneCheckbox');
  const LaptopCheckbox = document.getElementById('LaptopCheckbox');
  const SmartTVCheckbox = document.getElementById('Smart TVCheckbox');
@@ -1450,6 +1452,7 @@ if (window.location.pathname.startsWith('/cart/')){
 //getting the place order btn
 placeOrderBtn = document.getElementById('placeOrderBtn')
 
+
 if (placeOrderBtn){
   
   placeOrderBtn.addEventListener('click', placeOrder);
@@ -1564,6 +1567,62 @@ let outOfStockVariants = [];
           // Proceed with order placement only if there is sufficient stock
           if (!outOfStockVariants.length) {
             // Build the URL with query parameters
+
+
+            if (payment_method === 'online_payment'){
+
+              try {
+                // Make a fetch request to the razor_pay_instance URL
+                fetch('/razor_pay_instance/')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Define your Razorpay options
+                            var options = {
+                              "key": "rzp_test_JVNu2LgSFIq4MX",
+                              "amount": `${data.payment.amount}`,
+                              "currency": "INR",
+                              "name": "Digix Store",
+                              "description": "Product Purchase",
+                              "image": "https://example.com/your_logo",
+                              "order_id": `${data.payment.id}`,
+                              "theme": {
+                                  "color": "#333333"
+                              }
+                            };
+                            console.log(options)
+
+                            var rzp1 = new Razorpay(options);
+
+                            rzp1.on('payment.failed', function (response) {
+                              alert(response.error.code);
+                              alert(response.error.description);
+                              alert(response.error.source);
+                              alert(response.error.step);
+                              alert(response.error.reason);
+                              alert(response.error.metadata.order_id);
+                              alert(response.error.metadata.payment_id);
+                            });
+
+                            // Open the Razorpay payment dialog
+                rzp1.open();
+                    })
+                    .catch(error => {
+                        console.log('There was a problem with the fetch operation:', error);
+                    });
+            } catch (error) {
+                console.log('An error occurred:', error);
+            }
+
+            }
+
+
+
+
                   const url = `/order_confirm/?selected_address=${address_id}&payment_method=${payment_method}`;
           
                   // Make a GET request to the order_confirm view
@@ -1651,3 +1710,34 @@ function displayOutOfStockVariants(variants) {
 
 }
 
+//=====================================================================================================
+//return reason modal 
+if (window.location.pathname.startsWith('/order_detail/')){
+  document.addEventListener("DOMContentLoaded", function () {
+    // Get references to the elements
+    var returnBtn = document.getElementById("returnBtn");
+    var returnModal = document.getElementById("returnModal");
+    var sendReasonBtn = document.getElementById("sendReasonBtn");
+    var returnReasonInput = document.getElementById("returnReasonInput");
+  
+    // When the "Return" button is clicked, show the modal
+    returnBtn.addEventListener("click", function () {
+      returnModal.style.display = "block";
+    });
+  
+    // When the "Send" button inside the modal is clicked
+    sendReasonBtn.addEventListener("click", function () {
+      // Get the return reason entered by the user
+      var returnReason = returnReasonInput.value;
+  
+      // You can now send the return reason to your server or perform any necessary action with it
+      // For demonstration, we'll just display an alert
+      alert("Return Reason: " + returnReason);
+  
+      // Close the modal by hiding it
+      returnModal.style.display = "none";
+      // Now, navigate to the specified URL
+    window.location.href = sendReasonBtn.href;
+    });
+  });
+}

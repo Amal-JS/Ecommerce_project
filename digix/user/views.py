@@ -1,3 +1,4 @@
+from decimal import Decimal
 import json
 import re
 from django.http import JsonResponse
@@ -40,6 +41,13 @@ from . models import ShippingAddress
 from django.core.serializers.json import DjangoJSONEncoder  # Import DjangoJSONEncoder
 #import Order, order detail
 from orders.models import Order,OrderDetail
+
+#razor pay
+from django.conf import settings
+import razorpay
+
+from django.db.models import Sum
+
 
 #home page
 def index(request):
@@ -1078,18 +1086,11 @@ def cart_variant_qty_update(request,id,quantity):
 
 @user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
 def user_checkout(request):
+
     # Retrieve the Cart objects for the current user
     user = request.user
     cart_items = Cart.objects.filter(user=user)
 
-    # # Convert Decimal fields to float for serialization
-    # cart_items_list = list(cart_items.values())
-    
-    # for item in cart_items_list:
-    #     item['total'] = float(item['total'])
-        
-
-    
     # Convert Decimal fields to float for serialization
     cart_items_list = []
     
@@ -1109,7 +1110,7 @@ def user_checkout(request):
         item.total = item.quantity * item.variant.selling_price
 
     # Calculate the overall total for all items in the cart
-    overall_total = sum(item.total for item in cart_items)
+    overall_total = sum(item.total for item in cart_items) 
 
     # Calculate the total number of items in the cart
     total_items_in_cart = sum(item.quantity for item in cart_items)
@@ -1117,14 +1118,17 @@ def user_checkout(request):
      # Retrieve the user's shipping addresses
     shipping_addresses = ShippingAddress.objects.filter(user=user)
 
+    
+
     context = {
         'cart_items': cart_items,
         'overall_total': overall_total,
         'total_items_in_cart': total_items_in_cart,
         'shipping_addresses': shipping_addresses,  # Add this to the context
-        'cart_items_json':cart_items_json
+        'cart_items_json':cart_items_json,
+       
     }
-    print('comes here')
+    
     return render(request, 'user_app/checkout.html', context)
 
 
@@ -1263,3 +1267,17 @@ def order_detail(request,order_id,variant_id):
   
 
     return render(request, 'user_app/order.html', context)
+
+#razor pay order instance
+def razor_pay_instance(request):
+    user = request.user
+
+    # Calculate the total price of items in the cart for the specified user
+    overall_total = Cart.objects.filter(user=user).aggregate(Sum('total'))['total__sum'] or Decimal('0.00')
+
+     # Razorpay
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    payment = client.order.create({'amount': float(overall_total)*100, 'currency': 'INR', 'payment_capture': 1})
+    print(payment)
+   
+    return JsonResponse({'payment':payment})

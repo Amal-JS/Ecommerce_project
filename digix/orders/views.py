@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 
@@ -21,6 +22,8 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 
+
+
 #order confirm
 
 def order_confirm(request):
@@ -35,7 +38,6 @@ def order_confirm(request):
             # Retrieve cart items for the user
             cart_items = Cart.objects.filter(user=user)
 
-        
             with transaction.atomic():
 
                 # Create the order 
@@ -254,26 +256,30 @@ def generate_pdf(request, order_num):
 
     return response
 
-    
-   
 
 
-def cancel_order(request, id):
+#cancel order
+def cancel_order(request, order_id, variant_id):
 
-    item = OrderDetail.objects.get(id=id)
-    if item.order_status != 'cancelled' and item.order_status != 'delivered':
+    item = OrderDetail.objects.filter(order=order_id, variant=variant_id).first()
+    print(item.variant.name,' : ',item.variant.stock)
+
+    variant = Variant.objects.get(id=variant_id)
+    variant.stock += item.quantity
+    variant.save()
+    print(variant.name,' : ',variant.stock)
+
+    if item and item.order_status != 'cancelled' and item.order_status != 'delivered':
         item.order_status = 'cancelled'
         item.save()
 
-    return redirect('user:user_profile_orders')
-
+    # Redirect to the order_detail view with the appropriate order_id and variant_id
+    return redirect('user:order_detail', order_id=order_id, variant_id=variant_id)
 
 def return_order(request, id):
     item = OrderDetail.objects.get(id=id)
-    if request.method == 'POST':
+   
+    if item.order_status == 'delivered':
         item.order_status = 'returned'
         item.save()
         return redirect('user:user_profile_orders')
-
-    if item.order_status == 'delivered':
-        return render(request, 'pages/return_reason.html', {'item': item})

@@ -349,7 +349,7 @@ def variant_update(request, id):
             return redirect('digix_admin:all_variants')
         else:
             # If the form is not valid, display form errors and return to the form
-            messages(request, form.errors)
+            messages.error(request, form.errors)
             return render(request, 'digix_admin/add_form.html', {'form': form, 'element': 'Variant', 'update': True})
 
     else:

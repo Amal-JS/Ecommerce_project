@@ -75,7 +75,19 @@
 
 													<td style="font-weight:500;"> <a href="{% url 'user:order_detail' order.id order_item.variant.id %}" class="text-dark text-decoration-none">{{ order_item.variant.name }}</a></td>
 													<td>{{ order.date_created }}</td>
-													<td class="text-dark" style="font-weight:500;">{{ order_item.order_status }}</td>
+													<td class="text-dark" style="font-weight:500;">{% if order_item.order_status == 'order_pending' %}
+														Order Pending
+														{% elif order_item.order_status == 'returned' %}
+														Order Returned
+														{% elif order_item.order_status == 'order_confirmed' %}
+														Order Confirmed
+														{% elif order_item.order_status == 'shipped' %}
+														Order Shipped
+														{% elif order_item.order_status == 'delivered' %}
+														Delivered
+														{% else %}
+														Cancelled
+													{% endif %}</td>
 											
 												</tr>
 												

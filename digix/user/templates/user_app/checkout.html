@@ -248,6 +248,7 @@
 								{% endif %}
 		                	</div><!-- End .row -->
             			<span id="item_qty" data-t="{{ cart_items_json   }}"></span>
+						{{payment}}
 	                </div><!-- End .container -->
                 </div><!-- End .checkout -->
             </div><!-- End .page-content -->
@@ -284,4 +285,14 @@
        {% endblock %}
 
 	  
-	
+	   {% block importantjs %}
+	   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+	   <script>
+  		
+
+
+
+</script>
+
+
+	   {% endblock %}
