@@ -1753,6 +1753,7 @@ function displayOutOfStockVariants(variants) {
 //=====================================================================================================
 //return reason modal 
 if (window.location.pathname.startsWith('/order_detail/')){
+
   document.addEventListener("DOMContentLoaded", function () {
     // Get references to the elements
     var returnBtn = document.getElementById("returnBtn");
@@ -1783,4 +1784,142 @@ if (window.location.pathname.startsWith('/order_detail/')){
     window.location.href = sendReasonBtn.href;
     });
   });
+}
+
+
+//=====================================================================================================
+//star rating in product page
+if (window.location.pathname.startsWith('/product/')) {
+
+  const starRating = document.getElementById("starRating");
+  const starRatingValue = document.getElementById("starRatingValue");
+
+  let review_id = null;
+  let variant_id=null;
+
+  if (starRating && starRatingValue) { // Check if both elements exist
+    starRating.addEventListener("input", function () {
+      const ratingValue = (this.value - 1) * 30; // Convert to percentage
+      starRatingValue.style.width = ratingValue + "%";
+    });
+  }
+
+  const reviewForm = document.getElementById("reviewForm");
+  if (reviewForm) {
+    reviewForm.addEventListener("submit", function (e) {
+      // Append the star rating value as a hidden input field before submitting
+      const starRatingInput = document.createElement("input");
+      starRatingInput.type = "hidden";
+      starRatingInput.name = "star_rating";
+      starRatingInput.value = starRating.value;
+      this.appendChild(starRatingInput);
+    });
+  }
+
+  
+    
+    
+  // ...
+
+const updateReviewButtons = document.querySelectorAll('.update-review-btn');
+
+if (updateReviewButtons) {
+  // Check if updateReviewButtons exist
+  updateReviewButtons.forEach(button => {
+    button.addEventListener('click', function (event) {
+      event.preventDefault();
+
+      const variantid = this.getAttribute('data-variant-id');
+      const reviewId = this.getAttribute('data-review-id');
+
+      // Get the star rating from the review container
+      const ratingsValElement = this.closest('.review').querySelector('.ratings-val');
+      const starRatingWidth = ratingsValElement.style.width;
+      const starRating = parseInt(starRatingWidth) / 20; // Assuming each star represents 20% width
+
+      // Get the review text from the review container
+      const reviewTextElement = this.closest('.review').querySelector('.text-dark.fs-4');
+      const reviewText = reviewTextElement.textContent;
+
+      const reviewUpdateContainer = document.getElementById('review-container');
+
+      // Create the review update form dynamically
+      const reviewUpdateForm = document.createElement('form');
+      reviewUpdateForm.id = 'reviewUpdateForm';
+
+      // Create input elements for star rating and review text
+      const starRatingInput = document.createElement('input');
+      starRatingInput.type = 'range';
+      starRatingInput.min = '1';
+      starRatingInput.max = '5';
+      starRatingInput.step = '1';
+      starRatingInput.value = starRating;
+      starRatingInput.id = `star_rating`;
+      starRatingInput.name = 'star_rating';
+
+      const reviewTextInput = document.createElement('textarea');
+      reviewTextInput.className = 'form-control';
+      reviewTextInput.name = 'review';
+      reviewTextInput.id = `review_update`;
+      reviewTextInput.textContent = reviewText;
+
+      // Create a submit button
+      const submitButton = document.createElement('button');
+      submitButton.type = 'submit';
+      submitButton.className = 'btn btn-dark';
+      submitButton.textContent = 'Update Review';
+
+      // Append input elements and submit button to the form
+      reviewUpdateForm.appendChild(starRatingInput);
+      reviewUpdateForm.appendChild(reviewTextInput);
+      reviewUpdateForm.appendChild(submitButton);
+
+      reviewUpdateContainer.innerHTML = '';
+      reviewUpdateContainer.appendChild(reviewUpdateForm);
+
+      // Update the scope of these variables for the reviewUForm event listener
+      const reviewIdForForm = reviewId;
+      const variantIdForForm = variantid;
+      const reviewTextForForm = reviewText;
+
+      const reviewUForm = document.getElementById("reviewUpdateForm");
+      if (reviewUForm) {
+        reviewUForm.addEventListener("submit", function (e) {
+          e.preventDefault(); // Prevent the default form submission
+        // Get the star rating and review text from the form elements
+          const starRating = document.getElementById('star_rating').value;
+          const reviewText = encodeURIComponent(document.getElementById('review_update').value);
+          const decodedReviewText = decodeURIComponent(reviewText);
+          const url = `/update_review/${reviewIdForForm}/${variantIdForForm}/?star_rating=${starRating}&review=${encodeURIComponent(decodedReviewText)}`;
+
+          // Send a POST request using fetch
+          fetch(url, {
+            method: 'GET', // Use GET for the URL with query parameters
+          })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.json(); // Assuming the server returns JSON
+            })
+            .then(data => {
+              window.location.href=`/product/${variantIdForForm}/`
+            })
+            .catch(error => {
+              // Handle errors (e.g., display an error message)
+              const errorDiv = document.getElementById('error-div');
+              errorDiv.textContent = 'An error occurred: ' + error.message;
+            });
+        });
+      }
+    });
+  });
+}
+
+// ...
+
+
+  
+
+
 }

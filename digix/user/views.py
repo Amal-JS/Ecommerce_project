@@ -40,7 +40,7 @@ from django.contrib.auth.decorators import user_passes_test
 from . models import ShippingAddress
 from django.core.serializers.json import DjangoJSONEncoder  # Import DjangoJSONEncoder
 #import Order, order detail
-from orders.models import Order,OrderDetail
+from orders.models import Order,OrderDetail ,UserPurchasedProducts
 
 #razor pay
 from django.conf import settings
@@ -48,6 +48,8 @@ import razorpay
 
 from django.db.models import Sum
 
+#import Review model
+from review.models import Review
 
 #home page
 def index(request):
@@ -119,7 +121,32 @@ def supporter_filter_sort(request,variants_with_images):
 def product(request,id):
     variant = Variant.objects.prefetch_related('variant_images').get(id=id)
     simillar_products = Variant.objects.prefetch_related('variant_images').filter(product__category__name=variant.product.category.name)[:8]
-    return render(request,'user_app/product.html',{'product_page':True,'variant':variant,'simillar_products':simillar_products})
+    #get all reviews for the product
+
+    reviews = Review.objects.filter(variant=variant)
+    review_count = reviews.count()
+
+    #can user add review or not 
+    value=False
+    if request.user.is_authenticated:
+        # Check if the user has already reviewed the product
+        user_has_reviewed = Review.objects.filter(user=request.user, variant=variant).exists()
+
+        if not user_has_reviewed:
+            value = True
+
+    context = {
+
+        'product_page':True,'variant':variant,
+        'simillar_products':simillar_products,
+        'review_count':review_count,
+        'reviews':reviews,
+        'user_can_add_review':value
+
+    }
+ 
+   
+    return render(request,'user_app/product.html',context)
 
 
 #get variants for a particular product

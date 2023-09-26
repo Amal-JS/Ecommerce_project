@@ -1,7 +1,12 @@
 from django.urls import path
 from . import views
 
+#order views
 from orders.views import order_confirm,order_success,return_order,cancel_order,generate_pdf
+#review views 
+from review.views import add_review,delete_review,update_review
+
+
 
 app_name='user'
 
@@ -160,6 +165,14 @@ path('order_detail/<int:order_id>/<int:variant_id>/',views.order_detail,name='or
 
  #get rasor pay instance
  path('razor_pay_instance/',views.razor_pay_instance),
+
+ #review 
+ path('add_review/<int:variant_id>/',add_review,name="add_review"),
+
+ path('delete_review/<int:id>/<int:variant_id>/',delete_review,name='delete_review'),
+
+ path('update_review/<int:id>/<int:variant_id>/',update_review),
+
 
 
 
