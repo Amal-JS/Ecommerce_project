@@ -732,7 +732,7 @@ def default_address(request,id):
 
 
 #check user authenticated  before user profile account details
-@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+@user_passes_test(is_user_authenticated, login_url='user:user_login')
 def user_profile_account_details(request):
 
     user = CustomUser.objects.get(id=request.user.id)
@@ -792,9 +792,9 @@ def user_profile_password_update(request):
             otp = str(random.randint(1000,9999))
 
             request.session['otp'] = otp
-
+            
     
-    #send_otp(otp)
+    send_otp(request.session['otp'])
     print('----------------------user account update otp---------------',request.session['otp'])
     if request.method == 'POST':
 
@@ -806,6 +806,7 @@ def user_profile_password_update(request):
             if 'user_account_resend_otp' in request.session:
                 #delete only the resend otp value
                 del request.session['user_account_resend_otp']
+
             if 'otp' in request.session:
                 del request.session['otp']
             print('resend otp matches at account profile')
@@ -1273,8 +1274,11 @@ def razor_pay_instance(request):
     user = request.user
 
     # Calculate the total price of items in the cart for the specified user
-    overall_total = Cart.objects.filter(user=user).aggregate(Sum('total'))['total__sum'] or Decimal('0.00')
-
+    overall_total = Cart.objects.filter(user=user).aggregate(Sum('total'))['total__sum'] 
+    print(overall_total)
+    if overall_total > 65000:
+        overall_total /= 100
+    print(overall_total)
      # Razorpay
     client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
     payment = client.order.create({'amount': float(overall_total)*100, 'currency': 'INR', 'payment_capture': 1})

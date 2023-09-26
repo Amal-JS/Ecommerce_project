@@ -32,7 +32,7 @@ def order_confirm(request):
 
         address_id = request.GET.get('selected_address',None)
         payment_method = request.GET.get('payment_method',None)
-
+        print('payment method :',payment_method)
         if not address_id is None or payment_method is None:
 
             # Retrieve cart items for the user
@@ -61,7 +61,8 @@ def order_confirm(request):
                     order=order,  #order created above
                     variant=variant, #each variant in the cart
                     quantity=cart_item.quantity,  # quantity of each variant
-                    total_price=variant.selling_price * cart_item.quantity  #total price for each variant with corresponding quantity
+                    total_price=variant.selling_price * cart_item.quantity,  #total price for each variant with corresponding quantity
+                    order_status = 'order_confirmed'
                 )
                     
 

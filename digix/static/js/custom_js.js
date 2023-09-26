@@ -1565,95 +1565,135 @@ let outOfStockVariants = [];
         if (variant_id === cartItems[cartItems.length - 1].variant_id) {
 
           // Proceed with order placement only if there is sufficient stock
-          if (!outOfStockVariants.length) {
-            // Build the URL with query parameters
-
-
-            if (payment_method === 'online_payment'){
-
-              try {
-                // Make a fetch request to the razor_pay_instance URL
-                fetch('/razor_pay_instance/')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        // Define your Razorpay options
-                            var options = {
-                              "key": "rzp_test_JVNu2LgSFIq4MX",
-                              "amount": `${data.payment.amount}`,
-                              "currency": "INR",
-                              "name": "Digix Store",
-                              "description": "Product Purchase",
-                              "image": "https://example.com/your_logo",
-                              "order_id": `${data.payment.id}`,
-                              "theme": {
-                                  "color": "#333333"
-                              }
-                            };
-                            console.log(options)
-
-                            var rzp1 = new Razorpay(options);
-
-                            rzp1.on('payment.failed', function (response) {
-                              alert(response.error.code);
-                              alert(response.error.description);
-                              alert(response.error.source);
-                              alert(response.error.step);
-                              alert(response.error.reason);
-                              alert(response.error.metadata.order_id);
-                              alert(response.error.metadata.payment_id);
-                            });
-
-                            // Open the Razorpay payment dialog
-                rzp1.open();
-                    })
-                    .catch(error => {
-                        console.log('There was a problem with the fetch operation:', error);
-                    });
-            } catch (error) {
-                console.log('An error occurred:', error);
+          function redirectToOrderSuccess(orderNum) {
+            if (orderNum) {
+                console.log(orderNum);
+                // If the order_confirm request is successful, redirect to the order success page
+                window.location.href = `/order_success/${orderNum}/`;
             }
-
-            }
-
+        }
 
 
+        async function fetchRazorPayData() {
+          try {
+              const razorPayResponse = await fetch('/razor_pay_instance/');
+              if (!razorPayResponse.ok) {
+                  throw new Error('Network response was not ok');
+              }
+              return await razorPayResponse.json();
+          } catch (error) {
+              console.log('Error fetching Razorpay data:', error);
+              throw error;
+          }
+      }
+      
+      async function makePayment(razorPayData) {
+          // Define your Razorpay options
+          var options = {
+              "key": "rzp_test_JVNu2LgSFIq4MX",
+              "amount": `${razorPayData.payment.amount}`,
+              "currency": "INR",
+              "name": "Digix Store",
+              "description": "Product Purchase",
+              "image": "https://example.com/your_logo",
+              "order_id": `${razorPayData.payment.id}`,
+              "theme": {
+                  "color": "#333333",
+             
 
-                  const url = `/order_confirm/?selected_address=${address_id}&payment_method=${payment_method}`;
+              },
+
+              // Specify the callback URL for redirect after successful payment
+        "handler": function (response) {
+          console.log('comes into the instance', response);
+
+          // Handle successful payment
+
+          // Instead of using 'window.location.href', you can use a fetch request
+          const successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method;
+          fetch(successUrl, {
+              method: 'GET'
+          })
+          .then(response => response.json())
+          .then(data => {
+              // Call the order confirmation function
+              redirectToOrderSuccess(data.order_num);
+          })
+          .catch(error => {
+              console.log('Error fetching order num:', error);
+          });
+      }
+          };
+          console.log(options);
+      
+          var rzp1 = new Razorpay(options);
+          console.log('instance ==========================',rzp1)
+      
+          rzp1.on('payment.success', function (response) {
+            console.log('comes into the instance',response)
+              // Handle successful payment
+              const url = `/order_confirm/?selected_address=${address_id}&payment_method=${payment_method}`;
+              fetch(url, {
+                  method: 'GET'
+              })
+              .then(response => response.json())
+              .then(data => {
+                  // Call the order confirmation function
+                  redirectToOrderSuccess(data.order_num);
+              })
+              .catch(error => {
+                  console.log('Error fetching order num:', error);
+              });
+          });
+      
+          rzp1.on('payment.failed', function (response) {
+              // Handle payment failure
+              alert(response.error.code);
+              alert(response.error.description);
+              alert(response.error.source);
+              alert(response.error.step);
+              alert(response.error.reason);
+              alert(response.error.metadata.order_id);
+              alert(response.error.metadata.payment_id);
+          });
+      
+          // Open the Razorpay payment dialog
+          rzp1.open();
+      }
+        
+        if (!outOfStockVariants.length) {
+
+
+
           
-                  // Make a GET request to the order_confirm view
-                  fetch(url, {
-                      method: 'GET', // Use the GET method for fetching data
-                      
-                  })
+            // Check if the payment method is 'online_payment'
+            if (payment_method === 'online_payment') {
 
-
-                  .then(response => response.json())
-
-                  .then(data => {
-                    
-                                if (data.order_num) {
-
-                                  console.log(data.order_num)
-                            // If the order_confirm request is successful (status code 200), make a GET request to order_success
-                            window.location.href = `/order_success/${data.order_num}/`;
-
-                            // if (window.location.pathname.startsWith('/checkout/')){
-
-                            //   window.location.href = '/checkout/';
-                            // }
-                      
-                              }
-                    })
-                    .catch(error => {
-                      console.log('Error fetching order num');
-                  });
-
-
+              async function main(){
+                try {
+                  const razorPayData = await fetchRazorPayData();
+                  makePayment(razorPayData);
+              } catch (error) {
+                  console.log('An error occurred during online payment:', error);
+              }
+              }
+              main()
+             
+          } else {
+                // If payment method is not 'online_payment', directly proceed to order confirmation
+                const url = `/order_confirm/?selected_address=${address_id}&payment_method=${payment_method}`;
+                fetch(url, {
+                    method: 'GET'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Call the order confirmation function
+                    redirectToOrderSuccess(data.order_num);
+                })
+                .catch(error => {
+                    console.log('Error fetching order num on cash on delivery');
+                });
+            }
         } else {
             // Display the out-of-stock variants in a modal
             displayOutOfStockVariants(outOfStockVariants);
@@ -1720,10 +1760,13 @@ if (window.location.pathname.startsWith('/order_detail/')){
     var sendReasonBtn = document.getElementById("sendReasonBtn");
     var returnReasonInput = document.getElementById("returnReasonInput");
   
-    // When the "Return" button is clicked, show the modal
-    returnBtn.addEventListener("click", function () {
-      returnModal.style.display = "block";
-    });
+    if (returnBtn){
+ // When the "Return" button is clicked, show the modal
+ returnBtn.addEventListener("click", function () {
+  returnModal.style.display = "block";
+});
+    }
+   
   
     // When the "Send" button inside the modal is clicked
     sendReasonBtn.addEventListener("click", function () {
