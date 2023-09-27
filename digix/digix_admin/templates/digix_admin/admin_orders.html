@@ -9,7 +9,23 @@
 <style src="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"></style>
 <link rel="stylesheet" href="{% static 'admin/assets/css/style.css' %}">
 <style>
-    
+    /* Change background color of pagination buttons */
+.dataTables_paginate .paginate_button {
+    background-color: #fff;
+    color: black;
+}
+
+/* Change text color of pagination buttons on hover */
+.dataTables_paginate .paginate_button:hover {
+    background-color: #333333;
+    color: white;
+}
+
+/* Change text color of active page button */
+.dataTables_paginate .paginate_button.current {
+    background-color: #fff;
+    color: black;
+}
 </style>
 {% endblock %}
 
@@ -53,7 +69,7 @@
                 <td style="font-weight:500;">{{ order.variant.product.name }}</td>
                 <td>{{ order.quantity }}</td>
                 <td>{{ order.order.date_created }}</td>
-                <td class="text-dark changed_status" data-order-id="{{ order.id }}" style="font-weight:500;" >
+                <td class="text-dark changed_status" data-order-id="{{ order.id }}" data-status="{{ order.order_status }}" style="font-weight:500;" >
                     {% if order.order_status == 'Order pending' %}
                     Order Pending
                     {% elif order.order_status == 'Returned' %}
@@ -71,14 +87,15 @@
                 
                
                 </td>
-                <td > <select class="status_select" data-order-id="{{ order.id }}"  style="border: 1px solid #333333;
-                    background: white;">
+                <td > <select class="status_select" data-order-id="{{ order.id }}"  style="border: 0px solid #333333;background: white;box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2); ">
                          
-                    <option value="order_pending">Pending</option>
+                    <option value="order_pending" >Order pending</option>
+                    <option value="order_confirmed">Order confirmed</option>
+                    <option value ="shipped">Shipped</option>
                     <option value="cancelled">Cancelled</option>
                     <option value="delivered">Delivered</option>
-                    <option value="order_confirmed">Confirmed</option>
-                    <option value="shipped">Shipped</option>
+                    
+                    
                     <option value="returned">Returned</option>
                 </select></td>
             </tr>
@@ -166,10 +183,17 @@ var oddRows = table.rows('.odd');
 
 // Loop through the odd rows and change their background color to white
 oddRows.every(function () {
-    $(this.node()).css('background-color', 'white');
+    $(this.node()).css('background-color', 'transparent');
 });
-
-
+// Override pagination button styles
+$('.paginate_button').css('background-color', 'white');
+    $('.paginate_button').css('color', 'black');
+    // Override pagination button styles
+    $('.paginate_button, .page-item').css('background-color', 'white');
+    $('.paginate_button, .page-item').hover(function () {
+        // Remove hover effect by setting the same background color on hover
+        $(this).css('background-color', 'white');
+    });
         </script>
         <script src ="{% static 'admin/custom_admin.js' %}"></script>
 {% endblock %}

@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 
 #order views
-from orders.views import order_confirm,order_success,return_order,cancel_order,generate_pdf
+from orders.views import order_confirm,order_success,return_order,cancel_order,generate_pdf,generate_order_detail_pdf
 #review views 
 from review.views import add_review,delete_review,update_review
 
@@ -162,6 +162,9 @@ path('order_detail/<int:order_id>/<int:variant_id>/',views.order_detail,name='or
 
 #generate pdf
  path('generate_pdf/<str:order_num>/', generate_pdf, name='generate_pdf'),
+
+ #single order pdf generate
+ path('order_detail_pdf/<int:order_id>/<int:variant_id>/',generate_order_detail_pdf,name='generate_order_detail_pdf'),
 
  #get rasor pay instance
  path('razor_pay_instance/',views.razor_pay_instance),

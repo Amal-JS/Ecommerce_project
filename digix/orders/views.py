@@ -1,6 +1,6 @@
 from decimal import Decimal
 from django.http import JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 #importing variant and custom user models , cart
 from products.models import Variant
@@ -284,3 +284,106 @@ def return_order(request, id):
         item.order_status = 'returned'
         item.save()
         return redirect('user:user_profile_orders')
+    
+
+#specafic order pdf generate
+def generate_order_detail_pdf(request, order_id, variant_id):
+    # Retrieve the order and order item based on the IDs
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order_item = get_object_or_404(OrderDetail, order=order, variant__id=variant_id)
+
+    # Retrieve the shipping address associated with the order
+    shipping_address = order.address
+
+    # Format the date_created field as a date string
+    formatted_date_created = order.date_created.strftime('%Y-%m-%d')
+
+    # Create an HttpResponse object with PDF content type and a suggested filename
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename="order_detail_{order_id}_{variant_id}.pdf"'
+
+    # Create a PDF object using the response as its "file."
+    doc = SimpleDocTemplate(response, pagesize=letter)
+
+    # Create a list to hold the Story (elements that will be added to the PDF)
+    Story = []
+
+    # Define custom styles for the headings
+    styles = getSampleStyleSheet()
+    heading_style = styles['Heading1']
+    heading_style.alignment = 1  # Center alignment
+
+    # Add the heading "Digix" as a big centered text
+    Story.append(Paragraph("Digix", heading_style))
+    Story.append(Spacer(1, 12))  # Add some space below the heading
+
+    # Add a horizontal line separator
+    Story.append(Spacer(1, 12))
+    Story.append(Paragraph("<u>Order Detail</u>", styles['Normal']))
+    Story.append(Spacer(1, 12))  # Add some space below the separator
+
+    # Add shipping address information
+    shipping_address_info = [
+        [Paragraph("Shipping Address", styles['Normal']), shipping_address.address],
+        [Paragraph("City", styles['Normal']), shipping_address.city],
+        [Paragraph("Zip Code", styles['Normal']), shipping_address.zip_code],
+        [Paragraph("State", styles['Normal']), shipping_address.state],
+    ]
+
+    # Create a table for shipping address information
+    shipping_address_table = Table(shipping_address_info)
+    shipping_address_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('ALIGN', (1, 1), (-1, -1), 'LEFT'),
+    ]))
+
+    Story.append(shipping_address_table)
+    Story.append(Spacer(1, 12))  # Add some space below the shipping address table
+
+    # Add order item information
+    order_item_info = [
+        [Paragraph("Product Name", styles['Normal']), order_item.variant.product.name],
+        [Paragraph("Quantity", styles['Normal']), str(order_item.quantity)],
+        # Add more details as needed
+    ]
+
+    # Create a table for order item information
+    order_item_table = Table(order_item_info)
+    order_item_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('ALIGN', (1, 1), (-1, -1), 'LEFT'),
+    ]))
+
+    Story.append(order_item_table)
+    Story.append(Spacer(1, 12))  # Add some space below the order item table
+
+    # Add user information, including formatted date_created
+    user_info = [
+        [Paragraph("Consumer Name", styles['Normal']), request.user.username],
+        [Paragraph("Phone", styles['Normal']), request.user.phone],
+        [Paragraph("Order Date", styles['Normal']), formatted_date_created],  # Add formatted date_created
+    ]
+
+    # Create a table for user information
+    user_table = Table(user_info)
+    user_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('ALIGN', (1, 1), (-1, -1), 'LEFT'),
+    ]))
+
+    Story.append(user_table)
+    Story.append(Spacer(1, 12))  # Add some space below the user information
+
+    # Build the PDF document
+    doc.build(Story)
+
+    return response

@@ -1378,6 +1378,13 @@ if (window.location.pathname.startsWith('/cart/')){
     setInitialTotalPrices()
     setSubTotal()
 
+//hide '-' icon if 1 item
+// Check show_qty value and hide minus icon at the start
+qtyInputs.forEach((qtyInput, index) => {
+  if (parseInt(qtyInput.value) === 1) {
+      minusIcons[index].style.display = 'none';
+  }
+});
 
    // Event listener for the minus icon
 
@@ -1407,6 +1414,12 @@ if (window.location.pathname.startsWith('/cart/')){
                 variantTotalPrices[index].innerHTML = String(final_price)+'.00'
                 setSubTotal();
             }
+            // Hide the corresponding minus icon if show_qty is 1
+            if (parseInt(qtyInputs[index].value) === 1) {
+              minusIcon.style.display = 'none';
+          } else {
+              minusIcon.style.display = 'block';
+          }
         });
     });
 
@@ -1431,6 +1444,8 @@ if (window.location.pathname.startsWith('/cart/')){
                 variantTotalPrices[index].innerHTML = String(final_price)+'.00'
                 setSubTotal()
             }
+           // Show the corresponding minus icon
+           minusIcons[index].style.display = 'block';
             
         });
     });
@@ -1742,6 +1757,35 @@ function displayOutOfStockVariants(variants) {
   var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
   modal.show();
 }
+    }
+
+
+//----------------------------------------------------------------------------------------------------
+//wishlist cart page delete product modal confirm delete
+if (window.location.pathname.startsWith('/wishlist') || (window.location.pathname.startsWith('/cart'))){
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        
+       
+        
+        
+        // Handle click event on "Remove" buttons
+        var removeButtons = document.querySelectorAll('.btn-remove');
+
+        removeButtons.forEach(function(button) {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent the default behavior of the anchor element
+                var deleteLink = this.getAttribute('data-remove-url'); // Get the delete link
+                const deletebtn = document.querySelector('#deleteLink')
+                deletebtn.setAttribute('href',deleteLink)
+                
+            });
+
+         });
+    });
+
+
 
 
 
