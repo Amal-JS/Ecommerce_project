@@ -61,53 +61,53 @@
                                 <div class="row justify-content-center">
                             {% for variant in page %}
 		
-                            {% if variant.name != "APPLE iPhone 13 Pro (Silver, 128 GB)" and variant.name   != "APPLE iPhone 12 Pro (Gold, 512 GB)" %}
+                            {% if variant.variant.name != "APPLE iPhone 13 Pro (Silver, 128 GB)" and variant.variant.name   != "APPLE iPhone 12 Pro (Gold, 512 GB)" %}
                                 
                                     <div class="col-6 col-md-4 col-lg-4" style="border:1px solid black;">
                                         <div class="product product-7 text-center">
                                             <figure class="product-media mt-4">
                                                 <span class="product-label label-new">New</span>
-                                                <a href="{% url 'user:product' variant.id %}">
-                                                    <img src="{{ variant.variant_images.all.0.image.url }}" alt="Product image" class="product-image" >
+                                                <a href="{% url 'user:product' variant.variant.id %}">
+                                                    <img src="{{ variant.variant.variant_images.all.0.image.url }}" alt="Product image" class="product-image" >
                                                 </a>
 
                                                 <div class="product-action-vertical">
-                                                    <a href="#" data-variant="{{variant.id}}" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                                    <a href="#" data-variant.variant="{{variant.variant.id}}" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
                                                     
                                                 </div><!-- End .product-action-vertical -->
 
                                                 <div class="product-action">
-                                                    <a href="#" class="btn-product btn-cart" data-value="{{variant.stock}}" data-variant="{{variant.id}}"><span>add to cart</span></a>
+                                                    <a href="#" class="btn-product btn-cart" data-value="{{variant.variant.stock}}" data-variant.variant="{{variant.variant.id}}"><span>add to cart</span></a>
                                                 </div><!-- End .product-action -->
                                             </figure><!-- End .product-media -->
 
                                             <div class="product-body">
                                                 <div class="product-cat">
-                                                    <a href="#">{{variant.product.category.name}}</a>
+                                                    <a href="#" class="text-dark">{{variant.variant.product.category.name}}</a>
                                                 </div><!-- End .product-cat -->
-                                                <h3 class="product-title"><a href="{% url 'user:product' variant.id %}">{{variant.name|slice:"15"}}</a></h3><!-- End .product-title -->
+                                                <h3 class="product-title"><a href="{% url 'user:product' variant.variant.id %}">{{variant.variant.name|slice:"15"}}</a></h3><!-- End .product-title -->
                                                 <div class="product-price">
-                                                    {{variant.selling_price}}
+                                                    {{variant.variant.selling_price}}
                                                 </div><!-- End .product-price -->
                                                 <div class="ratings-container">
                                                     <div class="ratings">
-                                                        <div class="ratings-val" style="width: 20%;"></div><!-- End .ratings-val -->
-                                                    </div><!-- End .ratings -->
-                                                    <span class="ratings-text">( 2 Reviews )</span>
-                                                </div><!-- End .rating-container -->
+                    <div class="ratings-val" style="width:{% if variant.avg_rating %}{{variant.avg_rating}}{% else %}0{% endif %}%;"></div><!-- End .ratings-val -->
+                                                    </div><!-- End .{% if variant.avg_rating %}{{variant.avg_rating}}{% else %}0{% endif %}ngs -->
+                                                    <span class="ratings-text">{% if variant.review_count  > 0 %}{{variant.review_count}} {% else %} 0 {% endif %} Reviews</span>
+                                                    </div><!-- End .rating-container -->
 
                                                 <div class="product-nav product-nav-thumbs">
                                                     <a href="#" class="active">
-                                                        <img src="{{ variant.variant_images.all.1.image.url }}" alt="product desc">
+                                                        <img src="{{ variant.variant.variant_images.all.1.image.url }}" alt="product desc">
                                                     </a>
                                                     <a href="#">
-                                                        <img src="{{ variant.variant_images.all.2.image.url }}" alt="product desc">
+                                                        <img src="{{ variant.variant.variant_images.all.2.image.url }}" alt="product desc">
                                                     </a>
 
-                                                    <a href="#">
-                                                        {% if  variant.variant_images.all.0.image.url %}
-                                                        <img src="{{ variant.variant_images.all.3.image.url }}" alt="product desc">
-                                                        {% endif %}
+                                                    <a href="#" id="last-one">
+                                                        
+                                                        <img src="{{ variant.variant.variant_images.all.3.image.url }}" alt="product desc">
+                                                        
                                                     </a>
                                                 </div><!-- End .product-nav -->
                                             </div><!-- End .product-body -->

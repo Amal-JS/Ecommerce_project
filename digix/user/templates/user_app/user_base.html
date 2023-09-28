@@ -294,7 +294,9 @@ widgetElements.forEach(function(element) {
 
 <script src="{% static 'user/assets/js/jquery.min.js' %}"></script>
 <script src="{% static 'user/assets/js/bootstrap.bundle.min.js' %}"></script>
+{% if page_title == 'checkout' %}
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+{% endif %}
 
 <script src="{% static 'user/assets/js/jquery.waypoints.min.js' %}"></script>
 

@@ -46,7 +46,7 @@ from orders.models import Order,OrderDetail ,UserPurchasedProducts
 from django.conf import settings
 import razorpay
 
-from django.db.models import Sum
+from django.db.models import Sum,Avg
 
 #import Review model
 from review.models import Review
@@ -56,7 +56,19 @@ def index(request):
 
     #print(f" from index view ===>  session : {request.session} , user : { request.user}")
     variants_with_images = Variant.objects.prefetch_related('variant_images').all()
-    return render(request,'user_app/home.html',{'variants_with_images':variants_with_images})
+     # Calculate review count and average star rating for each variant
+    variants_with_ratings = []
+    for variant in variants_with_images:
+        variant_reviews = Review.objects.filter(variant=variant)
+        variant_review_count = variant_reviews.count()
+        variant_avg_rating = variant_reviews.aggregate(Avg('star_rating'))['star_rating__avg']
+
+        variants_with_ratings.append({
+            'variant': variant,
+            'review_count': variant_review_count,
+            'avg_rating': variant_avg_rating,
+        })
+    return render(request,'user_app/home.html',{'variants_with_images':variants_with_ratings})
 
 
 
@@ -93,10 +105,21 @@ def category_display_all_products(request,category=None,sort_option=None):
             #print('worked5')
             #filter value with brand name
             variants_with_images = variants_with_images.filter(product__brand=filter_value)
+    # Calculate review count and average star rating for each variant
+    variants_with_ratings = []
+    for variant in variants_with_images:
+        variant_reviews = Review.objects.filter(variant=variant)
+        variant_review_count = variant_reviews.count()
+        variant_avg_rating = variant_reviews.aggregate(Avg('star_rating'))['star_rating__avg']
 
+        variants_with_ratings.append({
+            'variant': variant,
+            'review_count': variant_review_count,
+            'avg_rating': variant_avg_rating,
+        })
         
 
-    return supporter_filter_sort(request,variants_with_images)
+    return supporter_filter_sort(request,variants_with_ratings)
 
 
 
@@ -126,6 +149,9 @@ def product(request,id):
     reviews = Review.objects.filter(variant=variant)
     review_count = reviews.count()
 
+      # Calculate the average star rating for the variant
+    avg_rating = reviews.aggregate(Avg('star_rating'))['star_rating__avg']
+
     #can user add review or not 
     value=False
     if request.user.is_authenticated:
@@ -135,16 +161,30 @@ def product(request,id):
         if not user_has_reviewed:
             value = True
 
+    # Calculate review count and average star rating for similar products
+    similar_products_with_ratings = []
+    for product in simillar_products:
+        product_reviews = Review.objects.filter(variant=product)
+        product_review_count = product_reviews.count()
+        product_avg_rating = product_reviews.aggregate(Avg('star_rating'))['star_rating__avg']
+
+        similar_products_with_ratings.append({
+            'product': product,
+            'review_count': product_review_count,
+            'avg_rating': product_avg_rating,
+        })
+        
     context = {
 
         'product_page':True,'variant':variant,
-        'simillar_products':simillar_products,
+        'simillar_products':similar_products_with_ratings,
         'review_count':review_count,
         'reviews':reviews,
-        'user_can_add_review':value
+        'user_can_add_review':value,
+        'avg_rating':avg_rating
 
     }
- 
+    
    
     return render(request,'user_app/product.html',context)
 
@@ -1154,6 +1194,7 @@ def user_checkout(request):
         'total_items_in_cart': total_items_in_cart,
         'shipping_addresses': shipping_addresses,  # Add this to the context
         'cart_items_json':cart_items_json,
+        'page_title': 'checkout'
        
     }
     

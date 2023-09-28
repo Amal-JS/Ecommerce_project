@@ -29,7 +29,7 @@ def add_review(request,variant_id):
         variant = Variant.objects.get(id=variant_id)
         #review object
         review_object = Review(user=user,variant=variant,review=request.POST['review'],
-        star_rating=int(request.POST['star_rating'])*10)
+        star_rating=int(request.POST['star_rating'])*20)
         
         review_object.save()
         return redirect('user:product',id=variant.id)
