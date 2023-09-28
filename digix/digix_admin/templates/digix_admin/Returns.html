@@ -185,8 +185,6 @@ var oddRows = table.rows('.odd');
 oddRows.every(function () {
     $(this.node()).css('background-color', 'transparent');
 });
-$(document).ready(function() {
-
 // Override pagination button styles
 $('.paginate_button').css('background-color', 'white');
     $('.paginate_button').css('color', 'black');
@@ -196,8 +194,6 @@ $('.paginate_button').css('background-color', 'white');
         // Remove hover effect by setting the same background color on hover
         $(this).css('background-color', 'white');
     });
-    $('.paginate_button, .page-item').css('background-color', 'white !important');
-});
         </script>
         <script src ="{% static 'admin/custom_admin.js' %}"></script>
 {% endblock %}

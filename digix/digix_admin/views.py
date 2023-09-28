@@ -396,3 +396,8 @@ def change_order_status(request, id, value):
         return JsonResponse({'order_status_changed': True, 'new_status': value})
     except Exception as e:
         return JsonResponse({'order_status_changed': False, 'response_error': str(e)})
+    
+
+
+def all_returns(request):
+    return render(request,'digix_admin/Returns.html')

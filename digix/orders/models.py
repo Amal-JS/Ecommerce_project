@@ -126,7 +126,48 @@ class UserPurchasedProducts(models.Model):
     quantity = models.PositiveIntegerField()
 
 
+
+
     def __str__(self):
         return f" { self.user.username} -- {self.variant.product.name} -- Quantity :{self.quantity}"
+
+
+
+
+#Return products info storing model
+class ReturnOrder(models.Model):
+
+    order = models.ForeignKey(Order,on_delete=models.CASCADE,related_name='return_orders')
+    variant = models.ForeignKey(Variant,on_delete=models.CASCADE)
+    qty = models.PositiveIntegerField(default=1)
+    order_request_date = models.DateTimeField(auto_now_add=True)
+    reason = models.CharField(max_length=300)
+    admin_approved = models.BooleanField(default=False)
+    recieved = models.BooleanField(default=False)
+    qty_updated = models.BooleanField(default=False)
+    payment_returned = models.BooleanField(default=False)
+    payment_initiated_date = models.DateTimeField(null=True,blank=True)
+    
+
+    def __str__(self) -> str:
+        return f"{self.order.user.username} {self.order.order_num}, {self.variant.name}"
+
+#wallet of user
+class Wallet(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='user_wallet')
+    amount = models.DecimalField(max_digits=10,decimal_places=2)
+
+    def __str__(self) -> str:
+        return f"{self.user.username} : balance => {self.amount}"
+
+#wallet usage
+class WalletUsage(models.Model):
+    wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE,related_name='user_wallet_usage')
+    amount = models.DecimalField(max_digits=10,decimal_places=2) 
+    order_num = models.ForeignKey(Order,on_delete=models.CASCADE)   
+    date_used = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"{self.user.username} {self.amount} {self.order_num}"
 
 
