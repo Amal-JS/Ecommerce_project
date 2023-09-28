@@ -7,6 +7,14 @@ p{
     
 
 }
+
+<style>
+  /* Style to remove border and shadow */
+  #returnSelect {
+    border: none; /* Remove the border */
+    box-shadow: none; /* Remove the shadow */
+  }
+</style>
 {% endblock %}
 {% block body %}
 
@@ -77,18 +85,34 @@ p{
        
 <!-- Modal -->
 <div class="modal fade" id="returnModal" tabindex="-1" data-bs-backdrop="false" aria-labelledby="returnModalLabel" aria-hidden="true" >
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="border:2px solid #333333;min-height: 250px;">
-        <div class="modal-header">
-          <h5 class="modal-title" id="returnModalLabel">Enter Return Reason</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-dialog-centered ">
+      <div class="modal-content bg-dark" style="border:2px solid #333333;min-height: 250px;">
+        <div class="modal-header" style="border-bottom:1px solid #fff;">
+          <h5 class="modal-title text-light" id="returnModalLabel">Enter Return Reason</h5>
+          <div >
+            
+          </div>
+          <button type="button" class="btn-close text-light bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <input type="text" id="returnReasonInput" class="form-control" placeholder="Enter the return reason" style="font-size:16px;">
+
+          <select id="returnSelect"class="form-select p-3 w-50 fs-4 mb-3" aria-label="Default select example">
+            <option selected class="fs-4 m-1">Select a choice</option>
+            <option value="Wrong item delivered" class="fs-4 m-1">Wrong item delivered</option>
+            <option value="Not working correctly" class="fs-4 m-1">Not working correctly</option>
+            <option value="Qualllity issue" class="fs-4 m-1">Qualllity issue</option>
+            <option value="Multiple issue" class="fs-4 m-1">Multiple issue</option>
+            <option value="Over priced" class="fs-4 m-1">Over priced</option>
+            <option value="Bought from somewhere" class="fs-4 m-1">Bought from somewhere</option>
+            <option value="Delivery time issue" class="fs-4 m-1">Delivery time issue</option>
+          </select>
+          <input type="text" id="returnReasonInput" class="form-control" placeholder="Enter return reason if not in options" style="font-size:16px;">
+        
+          
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary p-3" data-bs-dismiss="modal">Close</button>
-          <a class="btn btn-primary p-3" id="sendReasonBtn" href="{% url 'user:return_order' order_item.id %}">Send</a>
+          <button type="button" class="btn btn-danger text-white p-3" data-bs-dismiss="modal">Close</button>
+          <a class="btn btn-light p-3 text-dark" id="sendReasonBtn" href="{% url 'user:return_order' order_item.id %}">Send</a>
         </div>
       </div>
     </div>
