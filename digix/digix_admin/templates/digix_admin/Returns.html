@@ -26,6 +26,15 @@
     background-color: #fff;
     color: black;
 }
+
+.waiting-approval-row {
+    background: linear-gradient(to right, white, red);
+    /* Additional styles for text color, etc. */
+    color: black; /* Change text color as needed */
+}
+
+
+
 </style>
 {% endblock %}
 
@@ -36,50 +45,61 @@
   
 
         
-    <table id="example" class="table table-striped" style="width:100%">
+    <table id="example" class="table table-striped" style="
+        padding: 10px;
+        border-radius: 20px;
+        border: 2px solid #333333;
+       
+    ">
         <thead>
             <tr>
-                <th></th>
+                
                     <th>Order number</th>
-                    <th>User Phone</th>
+                    
                     <th>Product Name</th>
                     <th>
                     Quantity
                     </th>
                     <th>Date</th>
+                    <th>Reason</th>
                     <th>Status</th>
-                    <th>Change Status</th>
+                    <th>Order status</th>
+                    <th>Change order status</th>
+                   
+                    
             </tr>
         </thead>
         <tbody>
          
            
-        {% for order in orders %}
-       
-            <tr>
-                <td style="width:100px;">
-                    {% with variant_image=order.variant.variant_images.first %}
-                        {% if variant_image %}
-                            <img src="{{ variant_image.image.url }}" alt="{{ order_item.variant.name }} Image" style="width:99px;height:101px;">
-                        {% endif %}
-                    {% endwith %}
-                </td>
-                <td style="font-weight:500;">{{ order.order.order_num }}</td>
-                <td style="font-weight:500;">{{ order.order.user.phone }}</td>
+        {% for order in return_orders %}
+            
+            <tr class="{% if order.order.order_status == 'waiting_for_approval' %}waiting-approval-row{% endif %}">
+
+                <td style="font-weight:500;"><a href="{% url 'digix_admin:return_order' order.id %}" class=" text-dark">{{ order.order.order.order_num }}</a></td>
                 <td style="font-weight:500;">{{ order.variant.product.name }}</td>
-                <td>{{ order.quantity }}</td>
-                <td>{{ order.order.date_created }}</td>
-                <td class="text-dark changed_status" data-order-id="{{ order.id }}" data-status="{{ order.order_status }}" style="font-weight:500;" >
-                    {% if order.order_status == 'Order pending' %}
+                <td style="font-weight:500;">{{ order.qty }}</td>
+                <td>{{ order.order_request_date }}</td>
+                <td>{{ order.reason }}</td>
+
+                <td>{{ order.admin_approved }}</td>
+
+                
+                <td class="text-dark changed_status" data-order-id="{{ order.order.id }}" data-status="{{ order.order.order_status }}" style="font-weight:500;" >
+                    
+                    
+                    {% if order.order.order_status == 'order_pending' %}
                     Order Pending
-                    {% elif order.order_status == 'Returned' %}
+                    {% elif order.order.order_status == 'returned' %}
                     Order Returned
-                    {% elif order.order_status == 'Order confirmed' %}
+                    {% elif order.order.order_status == 'order_confirmed' %}
                     Order Confirmed
-                    {% elif order.order_status == 'Shipped' %}
+                    {% elif order.order.order_status == 'shipped' %}
                     Order Shipped
-                    {% elif order.order_status == 'Delivered' %}
+                    {% elif order.order.order_status == 'delivered' %}
                     Delivered
+                    {% elif order.order.order_status == 'waiting_for_approval' %}
+                   	Waiting for Approval
                     {% else %}
                     Cancelled
                 {% endif %}
@@ -87,7 +107,7 @@
                 
                
                 </td>
-                <td > <select class="status_select" data-order-id="{{ order.id }}"  style="border: 0px solid #333333;background: white;box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2); ">
+                <td > <select class="status_select" data-order-id="{{ order.order.id }}"  style="border: 0px solid #333333;background: white;box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2); ">
                          
                     <option value="order_pending" >Order pending</option>
                     <option value="order_confirmed">Order confirmed</option>
@@ -98,7 +118,12 @@
                     
                     <option value="returned">Returned</option>
                 </select></td>
+            
             </tr>
+
+      
+            {% empty %}
+            <p class="text-dark fs-2">No returns</p>
        
     {% endfor %}
         </tbody>
@@ -131,11 +156,11 @@
                                 <img src="{{ variant_image.image.url }}" alt="{{ order_item.variant.name }} Image" style="width:99px;height:101px;">
                             {% endwith %}
                         </td>
-                        <td style="font-weight:500;">{{ order.order.order_num }}</td>
-                        <td style="font-weight:500;">{{ order.order.user.username }}</td>
+                        <td style="font-weight:500;">{{ order.order_num }}</td>
+                        <td style="font-weight:500;">{{ order.user.username }}</td>
                         <td style="font-weight:500;"> <a href="{% url 'user:order_detail' order.id order_item.variant.id %}" class="text-dark text-decoration-none">{{ order_item.variant.name }}</a></td>
                         <td>{{ order_item.quantity }}</td>
-                        <td>{{ order.order.date_created }}</td>
+                        <td>{{ order.date_created }}</td>
                         <td class="text-dark" style="font-weight:500;">{{ order_item.order_status }}</td>
                     </tr>
                 {% endfor %}

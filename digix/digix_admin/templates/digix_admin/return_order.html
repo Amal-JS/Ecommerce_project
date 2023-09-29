@@ -1,0 +1,98 @@
+{% extends 'digix_admin/base.html' %}
+
+{% load static %}
+
+{% block title %}Return Order{% endblock %}
+
+{% block priority_css_links %}
+
+<link rel="stylesheet" href="{% static 'admin/assets/css/style.css' %}">
+<style>
+   
+</style>
+{% endblock %}
+
+{% block body %}
+   
+
+<div class="content-wrapper" id="content_wrapper_div">
+
+
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-12 text-center" style="border-radius:20px;border:2px solid black;">
+            <div class="text-left px-5 mt-3">
+               <p class="fs-3 text-dark">Order Number :<span class="fs-4 mx-3">{{return_order.order.order.order_num}}</span></p> 
+
+            </div>
+            <div class="text-left d-flex mx-5 px-5 " >
+                <div class="p-2  w-50"><p class="fs-4 text-primary">Product Name: <span class="fs-5 text-dark" >{{return_order.variant.name}}</span></p></div>
+                <div class="p-2  w-50"><p class="fs-4 text-primary">Order Quantity: <span class="fs-5 text-dark">{{return_order.qty}}</span></p></div>
+            </div>
+         
+             <div class="text-left d-flex mx-5 px-5 " >
+                <div class="p-2  w-50"><p class="fs-4 text-primary">Reason : <span class="fs-5 text-danger">{{return_order.reason}}</span></p></div>
+                <div class="p-2  w-50"><p class="fs-4 text-primary">Order request date :<span class="fs-5 text-dark" >{{return_order.order_request_date}}</span></p></div>
+               
+            </div>
+            {% if  not return_order.admin_approved %}
+            <div class="text-left  mx-5 px-5 " >
+                <div class="p-2  w-75 d-flex">
+
+                    {% if return_order.order.return_admin_response  == None %}
+                    <p class="fs-4 text-primary">Approve :</p>
+                    <div class=" d-flex">
+                        
+                            <div class="d-block p-2">
+                                <form method="POST" action="{% url 'digix_admin:return_reason_update' return_order.order.order.order_num return_order.variant.id return_order.id %}">
+                                    {% csrf_token %}
+                                <input type="text" name="reason" class="form-control  bg-light text-dark" style="width:280px;" placeholder="Reason for not accepting the request">
+                                    <p class="text-danger">{{msg}}</p>
+                                    <div class="d-flex">
+                                        <div class=" mx-2 p-2 ">
+                                            <a href="" class="btn btn-success">Yes</a></div>
+                                            <div class=" p-2 mx-2"><button type="submit" class="btn btn-danger">No</button></div>
+                                    
+                                    </div>
+                                    
+                                </form>
+                                </div>
+           
+                    </div>
+                            
+                {% else %}
+                <p class="fs-4 text-black">Responded with : {{return_order.order.return_admin_response}}</p>
+
+{% endif %}
+                </div>
+                
+               
+            </div>
+            {% endif %}
+            <div class="text-left d-flex mx-5 px-5 " >
+                <div class="p-2  w-50"><p class="fs-4 text-primary">Approved : <span class="fs-5 text-dark">{% if return_order.admin_approved %} Yes {% else %} No {% endif %}</span></p></div>
+                <div class="p-2  w-50"><p class="fs-4 text-primary">Product Recieved :<span class="fs-5 text-dark" >{% if return_order.recieved %} Yes {% else %} No {% endif %}</span></p></div>
+               
+            </div>
+            <div class="text-left d-flex mx-5 px-5 " >
+                <div class="p-2  w-50"><p class="fs-4 text-primary">Quantity Updated : <span class="fs-5 text-dark">{% if return_order.qty_updated %} Yes {% else %} No {% endif %}</span></p></div>
+                <div class="p-2  w-50"><p class="fs-4 text-primary">Payment Returned :<span class="fs-5 text-dark" >{% if return_order.payment_returned %} Yes {% else %} No {% endif %}</span></p></div>
+               
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+</div>
+
+
+{% endblock %}
+
+{% block priority_js_links %}
+ 
+        <script src ="{% static 'admin/custom_admin.js' %}"></script>
+{% endblock %}

@@ -573,3 +573,123 @@ selectElement.querySelectorAll("option").forEach(function (option, index) {
       });
   });
 }
+
+
+
+//--------------------------------------------------------------------------------------------------------
+
+// return order status change
+if (window.location.pathname.startsWith('/admin/returns/')) {
+  document.addEventListener("DOMContentLoaded", function () {
+      // Initialize the DataTable
+      var table = $('#example').DataTable(); // Replace 'yourDataTable' with your table's ID or other selector
+
+      // Function to update option availability based on the current status
+function updateOptionAvailability(selectElement, currentStatus) {
+  // Loop through the options and set the 'selected' attribute for the matching option
+  selectElement.querySelectorAll("option").forEach(function (option) {
+      // Enable all options
+      option.removeAttribute("disabled");
+    
+      // If the option's innerText matches the currentStatus, select it
+      if (option.innerText === currentStatus) {
+          option.setAttribute("selected", "selected");
+      }
+  });
+
+  
+ // Disable options based on the current status and order
+let disableOptions = true; // Flag to indicate when to start disabling options
+let start = 0;
+
+selectElement.querySelectorAll("option").forEach(function (option, index) {
+
+    if (option.innerText === currentStatus) {
+        start = index;
+        disableOptions = false; // Allow options after the current status to be enabled
+    }
+
+    if (disableOptions) {
+        // Set the 'disabled' attribute to true for options before the current status
+        option.setAttribute("disabled", "disabled");
+    }
+});
+}
+      // Function to add event listeners to select elements
+      function addEventListenersToSelects() {
+          var selectElements = document.querySelectorAll(".status_select");
+
+
+          
+          selectElements.forEach(function (selectElement,index) {
+              var orderId = selectElement.getAttribute("data-order-id");
+              var statusTd = document.querySelector(`.changed_status[data-order-id="${orderId}"]`);
+              var currentStatus = statusTd.getAttribute("data-status");
+              
+               // Loop through the options and set the 'selected' attribute for the matching option
+        selectElement.querySelectorAll("option").forEach(function (option) {
+          if (option.innerHTML === currentStatus) {
+              option.setAttribute("selected", "selected");
+
+
+          }
+      });
+      
+      
+              updateOptionAvailability(selectElement,currentStatus);
+
+              
+              selectElement.addEventListener("change", function () {
+                  var selectedValue = selectElement.value;
+                  var orderId = selectElement.getAttribute("data-order-id");
+              var statusTd = document.querySelector(`.changed_status[data-order-id="${orderId}"]`);
+            
+                  var url = "/admin/change_order_status/" + orderId + "/" + selectedValue + "/";
+
+                  fetch(url, {
+                      method: "GET",
+                      headers: {
+                          "Accept": "application/json",
+                      },
+                  })
+                  .then(function (response) {
+                      if (response.ok) {
+                          return response.json();
+                      } else {
+                          console.log("Error updating order status:", response.statusText);
+                          throw new Error("Failed to update order status");
+                      }
+                  })
+                  .then(function (data) {
+                      if (data.order_status_changed) {
+                          //working perfectly
+                          // Convert to first letter uppercase and remove underscores
+                          var formattedValue = data.new_status.toString().replace(/_/g, ' ').replace(/\w\S*/g, function (text) {
+                              return text.charAt(0).toUpperCase() + text.slice(1);
+                          });
+                          statusTd.innerHTML = formattedValue;
+                          
+                        updateOptionAvailability(selectElement,formattedValue)
+                      //     console.log("Order status updated successfully");
+                      
+                    } else {
+                          console.log("Error updating order status:", data.response_error);
+                      }
+                  })
+                  .catch(function (error) {
+                      console.error("Fetch error:", error);
+                  });
+              });
+          });
+      }
+
+      // Call the function to add event listeners after DataTable initialization
+      addEventListenersToSelects();
+
+      // Add event listener to DataTable's 'draw.dt' event
+      table.on('draw.dt', function () {
+          // Call the function again to add event listeners to any newly added <select> elements
+          addEventListenersToSelects();
+      });
+  });
+}

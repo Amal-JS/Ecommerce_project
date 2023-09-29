@@ -1,11 +1,13 @@
+
 from decimal import Decimal
+import time
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 #importing variant and custom user models , cart
 from products.models import Variant
 from user.models import CustomUser , ShippingAddress
-from  . models import Cart , Order , OrderDetail ,UserPurchasedProducts
+from  . models import Cart , Order , OrderDetail ,UserPurchasedProducts , ReturnOrder,Wallet,WalletUsage,DamagedProducts
 #import the function to check user authenticated
 
 from  user.views import user_passes_test,is_user_authenticated
@@ -21,7 +23,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
-
+from django.utils import timezone 
 
 
 #order confirm
@@ -133,8 +135,7 @@ def order_success(request,order_num=None):
                         'quantity': order_detail.quantity,
                         'total_price': order_detail.total_price,
                         'order_status': order_detail.order_status,
-                        'is_returned': order_detail.is_returned,
-                        'is_delivered': order_detail.is_delivered,
+                       
                         'delivered_date': order_detail.delivered_date,
                         # Add address details to the dictionary
                         'address': address.address,
@@ -277,13 +278,7 @@ def cancel_order(request, order_id, variant_id):
     # Redirect to the order_detail view with the appropriate order_id and variant_id
     return redirect('user:order_detail', order_id=order_id, variant_id=variant_id)
 
-def return_order(request, id):
-    item = OrderDetail.objects.get(id=id)
-   
-    if item.order_status == 'delivered':
-        item.order_status = 'returned'
-        item.save()
-        return redirect('user:user_profile_orders')
+
     
 
 #specafic order pdf generate
@@ -387,3 +382,120 @@ def generate_order_detail_pdf(request, order_id, variant_id):
     doc.build(Story)
 
     return response
+
+
+def return_order(request, id,reason):
+    
+    item = OrderDetail.objects.get(id=id)
+    #instant update
+    first_choice = ['Wrong item delivered','Over priced','Bought from somewhere','Delivery time issue']
+    #needs checking
+    second_choice = ['Not working correctly','Qualllity issue','Multiple issue']
+    
+    if reason in first_choice:
+
+        return_order = ReturnOrder(
+            order = item,
+            variant = item.variant,
+            qty = item.quantity,
+            reason=reason,
+            admin_approved=True,
+            recieved=True,
+            qty_updated=True,
+            payment_returned=True,
+            payment_initiated_date=timezone.now()
+
+        )
+        return_order.save()
+        #quantity updated
+        variant = Variant.objects.get(id=item.variant.id)
+        variant.stock += item.quantity
+        variant.save()
+
+        #amount adding in wallet
+
+        #Retrieve the user's wallet (assuming you have a way to identify the user)
+        user_wallet = Wallet.objects.filter(user=request.user).first()
+
+        if user_wallet:
+            # Update the wallet amount
+            user_wallet.amount += item.total_price
+            user_wallet.save()
+        else:
+            user_wallet=Wallet(user=request.user,amount=item.total_price)
+            user_wallet.save()
+
+        #change order status
+        item.order_status='returned'
+        item.save()
+        print(f"return order object : {return_order} user wallet :{user_wallet}" )
+        return JsonResponse({'response':'Request Approved.'})
+    
+    elif reason in second_choice: #second choice
+
+        return_order = ReturnOrder(
+            order = item,
+            variant = item.variant,
+            qty = item.quantity,
+            reason=reason,
+            admin_approved=True,
+            recieved=True,
+            qty_updated=True,
+            payment_returned=True,
+            payment_initiated_date=timezone.now()
+
+        )
+        return_order.save()
+        #quantity updated
+        
+        if DamagedProducts.objects.filter(variant=item.variant).exists():
+
+            damage_obj =DamagedProducts.objects.filter(variant=item.variant)
+            damage_obj.qty += item.quantity
+            damage_obj.save()
+        else:
+            object = DamagedProducts(variant=item.variant,qty=item.quantity)
+            object.save()
+
+        #amount adding in wallet
+        #Retrieve the user's wallet (assuming you have a way to identify the user)
+        user_wallet = Wallet.objects.filter(user=request.user).first()
+
+        if user_wallet:
+            # Update the wallet amount
+            user_wallet.amount += item.total_price
+            user_wallet.save()
+        else:
+            user_wallet=Wallet(user=request.user,amount=item.total_price)
+            user_wallet.save()
+
+        #change order status
+        item.order_status='returned'
+        item.save()
+        print(f"return order object : {return_order} user wallet :{user_wallet}" )
+        return JsonResponse({'response':'Request Approved.'})
+    
+    else:  # third option
+        return_order = ReturnOrder(
+            order = item,
+            variant = item.variant,
+            qty = item.quantity,
+            reason=reason,
+            admin_approved=False,
+            recieved=False,
+            qty_updated=False,
+            payment_returned=False,
+            
+        )
+        return_order.save()
+
+        #change order status
+        item.order_status='waiting_for_approval'
+        item.save()
+        print(item)
+        print(f"return order object : {return_order}" )
+        return JsonResponse({'response':'Request Sent.'})
+        return redirect('user:order_detail',order_id=item.order.id,variant_id=item.variant.id)
+
+
+   

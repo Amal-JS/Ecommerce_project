@@ -1796,39 +1796,39 @@ if (window.location.pathname.startsWith('/wishlist') || (window.location.pathnam
 
 //=====================================================================================================
 //return reason modal 
-if (window.location.pathname.startsWith('/order_detail/')){
+// if (window.location.pathname.startsWith('/order_detail/')){
 
-  document.addEventListener("DOMContentLoaded", function () {
-    // Get references to the elements
-    var returnBtn = document.getElementById("returnBtn");
-    var returnModal = document.getElementById("returnModal");
-    var sendReasonBtn = document.getElementById("sendReasonBtn");
-    var returnReasonInput = document.getElementById("returnReasonInput");
+//   document.addEventListener("DOMContentLoaded", function () {
+//     // Get references to the elements
+//     var returnBtn = document.getElementById("returnBtn");
+//     var returnModal = document.getElementById("returnModal");
+//     var sendReasonBtn = document.getElementById("sendReasonBtn");
+//     var returnReasonInput = document.getElementById("returnReasonInput");
   
-    if (returnBtn){
- // When the "Return" button is clicked, show the modal
- returnBtn.addEventListener("click", function () {
-  returnModal.style.display = "block";
-});
-    }
+//     if (returnBtn){
+//  // When the "Return" button is clicked, show the modal
+//  returnBtn.addEventListener("click", function () {
+//   returnModal.style.display = "block";
+// });
+//     }
    
   
-    // When the "Send" button inside the modal is clicked
-    sendReasonBtn.addEventListener("click", function () {
-      // Get the return reason entered by the user
-      var returnReason = returnReasonInput.value;
+//     // When the "Send" button inside the modal is clicked
+//     sendReasonBtn.addEventListener("click", function () {
+//       // Get the return reason entered by the user
+//       var returnReason = returnReasonInput.value;
   
-      // You can now send the return reason to your server or perform any necessary action with it
-      // For demonstration, we'll just display an alert
-      alert("Return Reason: " + returnReason);
+//       // You can now send the return reason to your server or perform any necessary action with it
+//       // For demonstration, we'll just display an alert
+//       alert("Return Reason: " + returnReason);
   
-      // Close the modal by hiding it
-      returnModal.style.display = "none";
-      // Now, navigate to the specified URL
-    window.location.href = sendReasonBtn.href;
-    });
-  });
-}
+//       // Close the modal by hiding it
+//       returnModal.style.display = "none";
+//       // Now, navigate to the specified URL
+//     window.location.href = sendReasonBtn.href;
+//     });
+//   });
+// }
 
 
 //=====================================================================================================
@@ -1965,5 +1965,56 @@ if (updateReviewButtons) {
 
   
 
+
+}
+
+//==========================================================================================================================
+//order page 
+//return reason 
+
+
+if (window.location.pathname.startsWith('/order_detail/')){
+
+  document.addEventListener("DOMContentLoaded", function () {
+   
+    // Get references to the elements
+    var returnBtn = document.getElementById("sendReasonBtn");
+    var returnReasonInput = document.getElementById("returnReasonInput");
+    var returnSelect = document.getElementById("returnSelect");
+    var orderDetailId = returnBtn.getAttribute('data-id')
+
+    // Add a click event listener to the "returnBtn" button
+    returnBtn.addEventListener("click", function () {
+      // Get the input value
+      var inputReason = returnReasonInput.value.trim();
+
+      // Get the selected option from the dropdown
+      var selectedOption = returnSelect.value;
+
+      // Check if the input has a value
+      if (inputReason.length > 0 || selectedOption !== "Select a choice") {
+        // Make a fetch request to your Django view
+        fetch(`/return_order/${orderDetailId}/${inputReason || selectedOption}/`)
+          .then(function (response) {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("Network response was not ok");
+            }
+          })
+          .then(function (data) {
+            // Display the response in a notification
+            showNotification(data.response, 'text-success');
+          })
+          .catch(function (error) {
+            // Handle any errors
+            showNotification("An error occurred", 'text-danger');
+          });
+      } else {
+        // Log a message to the console
+        showNotification("Select any option to continue",'text-danger');
+      }
+    });
+  });
 
 }

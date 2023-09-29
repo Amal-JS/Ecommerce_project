@@ -85,6 +85,8 @@
 														Order Shipped
 														{% elif order_item.order_status == 'delivered' %}
 														Delivered
+														{% elif order_item.order_status == 'waiting_for_approval' %}
+                   										 Waiting for Approval
 														{% else %}
 														Cancelled
 													{% endif %}</td>

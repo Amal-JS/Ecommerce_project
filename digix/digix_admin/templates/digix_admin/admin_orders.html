@@ -36,7 +36,12 @@
   
 
         
-    <table id="example" class="table table-striped" style="width:100%">
+    <table id="example" class="table table-striped" style="
+        padding: 20px;
+        border-radius: 20px;
+        border: 2px solid #333333;
+        width: 1312px;
+    ">
         <thead>
             <tr>
                 <th></th>
@@ -80,6 +85,8 @@
                     Order Shipped
                     {% elif order.order_status == 'Delivered' %}
                     Delivered
+                    {% elif order.order_status == 'Waiting for approval' %}
+                    Waiting for Approval
                     {% else %}
                     Cancelled
                 {% endif %}
@@ -95,7 +102,7 @@
                     <option value="cancelled">Cancelled</option>
                     <option value="delivered">Delivered</option>
                     
-                    
+                    <option value="waiting_for_approval">Waiting for approval</option>
                     <option value="returned">Returned</option>
                 </select></td>
             </tr>

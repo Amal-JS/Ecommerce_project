@@ -30,6 +30,11 @@ p{
                 <p class="text-dark fw-normal fs-3">Phone : {{order.user.phone}}</p>
             </div>
             <div class="col-6 text-center">
+              {% if not order_item.return_admin_response is None %}
+              <div style="border-bottom:2px solid red;" class="mb-3">
+              <p class="text-dark fw-bold fs-3">Admin responded : {{order_item.return_admin_response }}.Can't accept the return.</p>
+              </div>
+              {% endif %}
                 <p class="text-dark fw-bold fs-3">Status :
                     {% if order_item.order_status == 'order_pending' %}
                     Order Pending
@@ -41,6 +46,8 @@ p{
                     Order Shipped
                     {% elif order_item.order_status == 'delivered' %}
                     Delivered
+                    {% elif order_item.order_status == 'waiting_for_approval' %}
+                    Waiting for Approval
                     {% else %}
                     Cancelled
                 {% endif %}
@@ -51,7 +58,7 @@ p{
                 <p class="text-dark fw-bold fs-3"> Total Price : {{order_item.total_price}}</p>
                <div class="d-block">
                 <a href="{% url 'user:generate_order_detail_pdf' order_item.order.id order_item.variant.id  %}" class="btn btn-success mt-5 ">Download Invoice</a>
-                {% if order_item.order_status != 'cancelled' and order_item.order_status != 'delivered' %}
+                {% if order_item.order_status != 'cancelled' and order_item.order_status != 'delivered'  and order_item.order_status != 'waiting_for_approval' and order_item.order_status != 'returned' %}
     <a href="{% url 'user:cancel_order' order_item.order.id order_item.variant.id %}" class="btn btn-warning mt-5">Cancel</a>
 {% endif %}
                 {% if order_item.order_status == 'delivered' %}
@@ -112,7 +119,7 @@ p{
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger text-white p-3" data-bs-dismiss="modal">Close</button>
-          <a class="btn btn-light p-3 text-dark" id="sendReasonBtn" href="{% url 'user:return_order' order_item.id %}">Send</a>
+          <a class="btn btn-light p-3 text-dark" id="sendReasonBtn" data-id="{{order_item.id}}">Send</a>
         </div>
       </div>
     </div>

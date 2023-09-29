@@ -18,10 +18,10 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.decorators import user_passes_test
 
 #import Orders
-from orders.models import OrderDetail,Order
+from orders.models import OrderDetail,Order,ReturnOrder
 from django.utils.text import capfirst
 def is_user_authenticated(user):
-    return user.is_authenticated
+    return user.is_authenticated and user.is_superuser
 
 
 #admin home 
@@ -361,7 +361,6 @@ def variant_update(request, id):
 
 
 #admin orders page
-
 @user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def orders(request):
     # Use select_related() to fetch related Order and User data
@@ -398,6 +397,35 @@ def change_order_status(request, id, value):
         return JsonResponse({'order_status_changed': False, 'response_error': str(e)})
     
 
-
+@user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def all_returns(request):
-    return render(request,'digix_admin/Returns.html')
+    return_orders = ReturnOrder.objects.all()
+    return render(request,'digix_admin/Returns.html',{'return_orders':return_orders})
+
+
+@user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
+def return_order(request,id):
+    return_order =ReturnOrder.objects.get(id=id)
+    return render(request,'digix_admin/return_order.html',{'return_order':return_order})
+
+
+def return_reason_update(request,order_num,variant_id,return_order_id):
+
+    variant=Variant.objects.get(id=variant_id)
+    order = Order.objects.get(order_num=order_num)
+    item = OrderDetail.objects.filter(order=order,variant=variant).first()
+    return_order =ReturnOrder.objects.get(id=return_order_id)
+    #order detail item
+    if request.method == 'POST':
+        
+        if request.POST['reason'] == '':
+            
+            return render(request,'digix_admin/return_order.html',{'return_order':return_order,'msg':'Cannot validate empty form'})
+
+        item.return_approved = False
+        item.order_status = 'shipped'
+        item.return_admin_response = request.POST['reason'] 
+        print(f"request.POST['reason']  : {request.POST['reason'] } , item : {item.return_admin_response}")
+        item.save()
+
+    return redirect('digix_admin:return_order',id=return_order_id)

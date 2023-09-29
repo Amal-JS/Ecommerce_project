@@ -41,6 +41,8 @@ urlpatterns = [
 
     path('returns/',views.all_returns,name='returns'),
 
-    
+    path('return_order/<int:id>/',views.return_order,name='return_order'),
+
+    path('return_reason_update/<str:order_num>/<int:variant_id>/<int:return_order_id>/',views.return_reason_update,name='return_reason_update')
 
 ]

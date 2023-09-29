@@ -156,7 +156,7 @@ path('order_success/<str:order_num>/',order_success),
 #cancel order
 path('cancel_order/<int:order_id>/<int:variant_id>/',cancel_order,name='cancel_order'),
 #return order
-path('return_order/<int:id>/',return_order,name='return_order'),
+path('return_order/<int:id>/<str:reason>/',return_order,name='return_order'),
 #order detail
 path('order_detail/<int:order_id>/<int:variant_id>/',views.order_detail,name='order_detail'),
 

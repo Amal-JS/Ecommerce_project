@@ -41,9 +41,6 @@ class Cart(models.Model):
 
 
 #order
-
-
-
 class Order(models.Model):
 
     #payment choices 
@@ -88,9 +85,10 @@ class OrderDetail(models.Model):
         ('order_pending', 'Order_Pending'),
         ('order_confirmed', 'Order_Confirmed'),
         ('shipped', 'Shipped'),
-        ('delivered', 'Delivered'),
-        ('returned', 'Returned'),
         ('cancelled', 'Cancelled'),
+        ('delivered', 'Delivered'),
+        ('waiting_for_approval','Waiting_For_Approval'),
+        ('returned', 'Returned'),
     )
 
     #order instance
@@ -104,9 +102,9 @@ class OrderDetail(models.Model):
     #status of order when creating an order will be order pending
     order_status = models.CharField(max_length=100, choices=ORDER_STATUS_CHOICES, default='order_pending')
     #when returning the product the variable be true
-    is_returned = models.BooleanField(default=False)
-    #whether product delivered or not
-    is_delivered = models.BooleanField(default=False)
+    return_approved = models.BooleanField(default=False)
+    #whether admin reject return reason updated field
+    return_admin_response = models.CharField(max_length=300,null=True)
     #date which will be added when product is delivered , default null
     delivered_date = models.DateField(null=True, blank=True)
 
@@ -137,7 +135,7 @@ class UserPurchasedProducts(models.Model):
 #Return products info storing model
 class ReturnOrder(models.Model):
 
-    order = models.ForeignKey(Order,on_delete=models.CASCADE,related_name='return_orders')
+    order = models.ForeignKey(OrderDetail,on_delete=models.CASCADE,related_name='return_orders')
     variant = models.ForeignKey(Variant,on_delete=models.CASCADE)
     qty = models.PositiveIntegerField(default=1)
     order_request_date = models.DateTimeField(auto_now_add=True)
@@ -150,16 +148,24 @@ class ReturnOrder(models.Model):
     
 
     def __str__(self) -> str:
-        return f"{self.order.user.username} {self.order.order_num}, {self.variant.name}"
+        return f"{self.order.order.user.username} {self.order.order.order_num}, {self.variant.name}"
 
 #wallet of user
 class Wallet(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='user_wallet')
-    amount = models.DecimalField(max_digits=10,decimal_places=2)
+    amount = models.DecimalField(max_digits=10,decimal_places=2,default=0)
 
     def __str__(self) -> str:
         return f"{self.user.username} : balance => {self.amount}"
 
+#Damaged Products
+class DamagedProducts(models.Model):
+    
+    variant = models.ForeignKey(Variant,on_delete=models.CASCADE,related_name='damaged_products')
+    qty = models.PositiveIntegerField(default=0)
+    date_added = models.DateTimeField(auto_now_add=True)
+    def __str__(self) -> str:
+        return f"{self.order.order_num} {self.variant.name}  Qty : {self.qty}"
 #wallet usage
 class WalletUsage(models.Model):
     wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE,related_name='user_wallet_usage')
