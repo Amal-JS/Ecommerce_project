@@ -1,3 +1,4 @@
+from datetime import timedelta
 from decimal import Decimal
 import json
 import re
@@ -546,7 +547,7 @@ def user_sign_up_value(request):
                     error_list = "Username already exists"
         
         if not bool(re.match(r'^[a-zA-Z0-9]+$', field_value)):
-                print('slkfjsldf')
+                
                 error_list = "Username can't contain special charecters"
 
     #check email field
@@ -1328,12 +1329,38 @@ def order_detail(request,order_id,variant_id):
     # Retrieve the first image associated with the variant
     variant_image = order_item.variant.variant_images.first()
 
+    #delivery date ,we want to show the delivery or the return date
+    status =None
+    date = None
+    #work when order is confirmed , update the delivery date to 7 days from order created date
+    if order_item.order_status == 'order_confirmed':
+        #just for displaying purpose
+        status = 'Delivered'
+        #setting the date
+        date = order.date_created + timedelta(days=7)
+        #when status is returned
+    elif order_item.order_status == 'returned':
+
+        status = 'Returned'
+        # Handle the case when order_item.delivered_date is None
+        if order_item.delivered_date:
+            #order item has already has delivery date
+            date = order_item.delivered_date + timedelta(days=7)
+
+    #when order status is shipped
+    if order_item.delivered_date is  None:
+        order_item.delivered_date = date
+    # save the order_item
+    order_item.save()
     context = {
         'order': order,
         'order_item': order_item,
         'variant_image': variant_image,  # Add the variant image to the context
+        'status':status,
+        'date':date
     }
   
+    print(order_item,'delivered date :',order_item.delivered_date,'return date :',date)
 
     return render(request, 'user_app/order.html', context)
 

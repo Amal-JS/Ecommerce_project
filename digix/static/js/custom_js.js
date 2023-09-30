@@ -2005,6 +2005,11 @@ if (window.location.pathname.startsWith('/order_detail/')){
           .then(function (data) {
             // Display the response in a notification
             showNotification(data.response, 'text-success');
+             // Reload the page after a short delay (e.g., 1 second)
+      setTimeout(function () {
+        window.location.reload();
+      }, 1000); // Adjust the delay as needed
+  
           })
           .catch(function (error) {
             // Handle any errors

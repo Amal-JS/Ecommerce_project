@@ -43,6 +43,9 @@ urlpatterns = [
 
     path('return_order/<int:id>/',views.return_order,name='return_order'),
 
-    path('return_reason_update/<str:order_num>/<int:variant_id>/<int:return_order_id>/',views.return_reason_update,name='return_reason_update')
+    path('return_reason_update/<str:order_num>/<int:variant_id>/<int:return_order_id>/',views.return_reason_update,name='return_reason_update'),
+
+    path('accept_return_reason/<int:id>/',views.accept_return_reason,name='accept_return_reason'),
+    
 
 ]

@@ -1,6 +1,8 @@
+from datetime import datetime
 from django.forms import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from orders.models import Wallet
 from products.models import Variant_Images
 from products.forms import CategoryForm,ProductForm,VariantForm
 from django.contrib import messages
@@ -20,6 +22,7 @@ from django.contrib.auth.decorators import user_passes_test
 #import Orders
 from orders.models import OrderDetail,Order,ReturnOrder
 from django.utils.text import capfirst
+
 def is_user_authenticated(user):
     return user.is_authenticated and user.is_superuser
 
@@ -391,7 +394,11 @@ def change_order_status(request, id, value):
     try:
         order = OrderDetail.objects.get(id=id)
         order.order_status = value
+
+        if order.order_status == 'delivered':
+            order.delivered_date= datetime.now()
         order.save()
+        print(order,order.delivered_date)
         return JsonResponse({'order_status_changed': True, 'new_status': value})
     except Exception as e:
         return JsonResponse({'order_status_changed': False, 'response_error': str(e)})
@@ -409,6 +416,7 @@ def return_order(request,id):
     return render(request,'digix_admin/return_order.html',{'return_order':return_order})
 
 
+#admin update after reading the return reason 
 def return_reason_update(request,order_num,variant_id,return_order_id):
 
     variant=Variant.objects.get(id=variant_id)
@@ -429,3 +437,39 @@ def return_reason_update(request,order_num,variant_id,return_order_id):
         item.save()
 
     return redirect('digix_admin:return_order',id=return_order_id)
+
+#if return reason can be accepted  , return order id 
+def accept_return_reason(request,id):
+    return_order =ReturnOrder.objects.get(id=id)
+    order_detail = return_order.order
+    user= order_detail.order.user
+    variant = Variant.objects.get(id=order_detail.variant.id)
+
+    return_order.admin_approved = True #Admin approved
+    return_order.payment_returned = True #payment returned
+    return_order.qty_updated  = True #quantity updated
+    return_order.recieved  = True #recieved
+
+    order_detail.order_status = 'returned' #order status changed
+    print('order_detail.variant.stock',variant.stock)
+    #stock update
+    print('variant.stock += order_detail.quantity',variant.stock,order_detail.quantity,'order staus', order_detail.order_status)
+    variant.stock += order_detail.quantity
+    variant.save()
+    print('order_detail.variant.stock update',variant.stock)
+    #making the admin response 
+    order_detail.return_admin_response = 'Request Accepted'
+    order_detail.return_approved = True
+
+    #Wallet amount update
+    user_wallet = Wallet.objects.filter(user=order_detail.order.user).first()
+    
+    user_wallet.amount += order_detail.total_price
+    
+    user_wallet.save()
+    order_detail.save()
+    return_order.payment_initiated_date =datetime.now()
+    return_order.save()
+    
+
+    return redirect('digix_admin:return_order',id=id)
