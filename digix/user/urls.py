@@ -176,7 +176,8 @@ path('order_detail/<int:order_id>/<int:variant_id>/',views.order_detail,name='or
 
  path('update_review/<int:id>/<int:variant_id>/',update_review),
 
-
+#user profile wallet
+path('user_wallet/',views.user_wallet,name='user_wallet'),
 
 
 

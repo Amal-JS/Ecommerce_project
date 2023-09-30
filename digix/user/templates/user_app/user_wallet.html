@@ -1,0 +1,88 @@
+{% extends 'user_app/user_base.html' %}"
+{% load static %}
+{% block title %}Wallet{% endblock %}
+
+{% block body %}
+<main class="main">
+    <div class="page-header text-center" >
+        <div class="container">
+            <h1 class="page-title">My Account</h1>
+        </div><!-- End .container -->
+    </div><!-- End .page-header -->
+   
+
+    <div class="page-content">
+        <div class="dashboard">
+            <div class="container">
+                <div class="row">
+                    <aside class="col-md-4 col-lg-3">
+                        <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link " id="tab-dashboard-link"  href="{% url 'user:user_profile_dashboard' %}" >Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-orders-link"  href="{% url 'user:user_profile_orders' %}" >Orders</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link " id="tab-address-link"  href="{% url 'user:user_profile_address' %}" >Addresses</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link " id="tab-account-link"  href="{% url 'user:user_profile_account_details' %}" >Account Details</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link active" id="tab-account-link"  href="{% url 'user:user_wallet' %}" >Wallet</a>
+                            </li>
+
+                            
+                        </ul>
+                    </aside><!-- End .col-lg-3 -->
+
+                    <div class="col-md-8 col-lg-9">
+                        <div class="tab-content mt-5">
+                            
+
+                           
+
+                            <div class="" >
+                                <p>You can see the wallet amount and history here.</p>
+
+                            </div>
+
+
+
+                                <!-- normal page view -->
+                    
+                                <div class="row mt-5">
+                                   
+                                    <p class='fs-3'>Wallet</p>
+
+                                    
+                                    <div class="col-lg-6">
+                                        <div class="card card-dashboard">
+                                            <div class="card-body d-flex">
+                                                <h3 class="card-title p-4">Amount :</h3><!-- End .card-title -->
+
+                                                <p class="my-2 p-4 fw-bolder ">{{user_wallet.amount}}<br>
+                                                
+                                            </div><!-- End .card-body -->
+                                        </div><!-- End .card-dashboard -->
+                                    </div><!-- End .col-lg-6 -->
+                                    
+
+                                    
+                                </div><!-- End .row -->
+                            </div><!-- .End .tab-pane -->
+
+
+
+                        </div>
+                    </div><!-- End .col-lg-9 -->
+                </div><!-- End .row -->
+            </div><!-- End .container -->
+        </div><!-- End .dashboard -->
+    </div><!-- End .page-content -->
+</main><!-- End .main -->
+
+{% endblock %}

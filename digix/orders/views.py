@@ -495,7 +495,7 @@ def return_order(request, id,reason):
         print(item)
         print(f"return order object : {return_order}" )
         return JsonResponse({'response':'Request Sent.'})
-        return redirect('user:order_detail',order_id=item.order.id,variant_id=item.variant.id)
+        
 
 
    

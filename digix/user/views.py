@@ -41,7 +41,7 @@ from django.contrib.auth.decorators import user_passes_test
 from . models import ShippingAddress
 from django.core.serializers.json import DjangoJSONEncoder  # Import DjangoJSONEncoder
 #import Order, order detail
-from orders.models import Order,OrderDetail ,UserPurchasedProducts
+from orders.models import Order,OrderDetail ,UserPurchasedProducts ,Wallet,WalletUsage
 
 #razor pay
 from django.conf import settings
@@ -1380,3 +1380,10 @@ def razor_pay_instance(request):
     print(payment)
    
     return JsonResponse({'payment':payment})
+
+
+#user wallet
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def user_wallet(request):
+    user_wallet=Wallet.objects.get(user=request.user)
+    return render(request,'user_app/user_wallet.html',{'user_wallet':user_wallet})
