@@ -2023,3 +2023,108 @@ if (window.location.pathname.startsWith('/order_detail/')){
   });
 
 }
+
+//---------------------------------------order detail product tracking--------------------------------
+//----------------------------------------------------------------------------------------------------
+
+if (window.location.pathname.startsWith('/order_detail/')) {
+  document.addEventListener("DOMContentLoaded", function () {
+    const progress = document.querySelector(".progress");
+    const stepCircles = document.querySelector(".step-circles");
+    const statusDiv = document.querySelector(".status-message");
+    const progressBar = document.querySelector(".progress-bar");
+  const dot = document.querySelector(".dot");
+
+    // Define a mapping of statuses to steps (percentages)
+    const statusToStep = {
+      "order_pending": 20,
+      "order_confirmed": 40,
+      "shipped": 75,
+      "delivered": 100,
+      "cancelled": -1, // Use a negative value for canceled
+      "returned": -2,  // Use another negative value for returned
+      "waiting_for_approval": 100, // Set "Waiting For Approval" as delivered
+    };
+
+    // Simulate an order status change (replace with actual status from your data)
+    async function updateProgress() {
+      const orderId = document.getElementById("sendReasonBtn").getAttribute('data-id');
+      try {
+        const response = await fetch(`/current_order_status/${orderId}/`);
+        
+        if (!response.ok) {
+          // Handle HTTP error responses here, e.g., display an error message.
+          console.error(`Error: ${response.status} - ${response.statusText}`);
+          return;
+        }else{
+          
+        }
+    
+        // Read the response body as text
+        const responseBody = await response.json(); // Parse the JSON response
+        
+    const trimmedStatus = responseBody;
+       
+        
+    let currentStep = statusToStep[trimmedStatus] || 0;
+    
+    
+
+        let progressBarColor = 'green';
+       
+        let dotLeft = "0%"; // Initialize dotLeft to 0% by default
+
+  if (
+    trimmedStatus === 'delivered' ||
+    trimmedStatus === 'cancelled' ||
+    trimmedStatus === 'waiting_for_approval' ||
+    trimmedStatus === 'returned'
+  ) {
+    // For specific statuses, set dotLeft to 100%
+    dotLeft = "96%";
+  } else if (trimmedStatus === 'shipped') {
+    // For "shipped" status, set dotLeft to 75%
+    dotLeft = "75%";
+    console.log(dotLeft)
+  } else if (trimmedStatus === 'order_confirmed') {
+    // For "shipped" status, set dotLeft to 75%
+    dotLeft = "40%";
+  } else {
+    // Calculate the dotLeft based on currentStep for other statuses
+    dotLeft = currentStep + "%";
+  }
+
+  // Set the left position of the dot
+  dot.style.left = dotLeft;
+
+
+        if (currentStep < 0) {
+         
+         
+          progressBarColor = trimmedStatus === 'cancelled' ? 'orange' : 'red';
+          dot.style.display = "block"; 
+          dot.backgroundColor=progressBarColor;
+          statusDiv.innerHTML = `<div><p class='fs-3 text-center text-dark fw-bold'>${trimmedStatus.charAt(0).toUpperCase() + trimmedStatus.slice(1)}</p></div>`;
+          document.getElementById('orderStatusContiner').style.border=`1px solid ${progressBarColor}`;
+        } else {
+          stepCircles.style.display = 'flex';
+          statusDiv.innerHTML = '';
+          dot.style.display = "block"; 
+          
+        }
+    
+        progress.style.width = currentStep + "%";
+        
+        progress.style.backgroundColor = progressBarColor;
+      } catch (error) {
+        // Handle any fetch or processing errors here.
+        console.error('An error occurred:', error);
+      }
+
+    }
+
+    // Initial update when the page loads
+    updateProgress();
+
+  });
+}

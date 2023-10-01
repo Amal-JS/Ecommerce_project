@@ -179,8 +179,8 @@ path('order_detail/<int:order_id>/<int:variant_id>/',views.order_detail,name='or
 #user profile wallet
 path('user_wallet/',views.user_wallet,name='user_wallet'),
 
-
-
+#current order status,
+path('current_order_status/<int:order_id>/',views.current_order_status,),
 
 
 ]

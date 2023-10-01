@@ -1069,7 +1069,7 @@ def user_cart(request):
     
 # Retrieve the user's cart with the 'quantity' attribute
     cart_items = Cart.objects.filter(user=request.user).select_related('variant')
-
+    wallet = Wallet.objects.filter(user=request.user).first()
     # Retrieve variant details and images for the cart items
     variants_with_images = []
 
@@ -1077,9 +1077,12 @@ def user_cart(request):
         variant = cart_item.variant
         variant_images = Variant_Images.objects.filter(variant=variant)
         variants_with_images.append({'variant': variant, 'images': variant_images, 'quantity': cart_item.quantity})
-
+    context={
+    'variants_with_images': variants_with_images,
+    'wallet' : wallet
+    }
     # Pass the data to the template
-    return render(request, 'user_app/cart.html', {'variants_with_images': variants_with_images})
+    return render(request, 'user_app/cart.html', context)
     
 
 
@@ -1387,3 +1390,18 @@ def razor_pay_instance(request):
 def user_wallet(request):
     user_wallet=Wallet.objects.get(user=request.user)
     return render(request,'user_app/user_wallet.html',{'user_wallet':user_wallet})
+
+
+#get current order status
+def current_order_status(request, order_id):
+    print(order_id)
+    try:
+        order = OrderDetail.objects.get(id=order_id)
+        order_status = order.order_status
+        response_data = order_status
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
+    except OrderDetail.DoesNotExist:
+        # Handle the case where the order with the given ID does not exist
+        order_status = 'Order not found'
+        return HttpResponse(json.dumps(order_status), content_type='application/json', status=404)
+    

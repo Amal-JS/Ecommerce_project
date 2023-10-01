@@ -98,9 +98,9 @@
 			            			<div class="cart-discount">
 			            				<form action="#">
 			            					<div class="input-group">
-				        						<input type="text" class="form-control" required placeholder="coupon code">
+				        						<input type="text" class="form-control fs-3"  placeholder="coupon code">
 				        						<div class="input-group-append">
-													<button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button>
+													<button class="btn btn-outline-primary-2 p-3" type="submit"><i class="icon-long-arrow-right"></i></button>
 												</div><!-- .End .input-group-append -->
 			        						</div><!-- End .input-group -->
 			            				</form>
@@ -116,7 +116,16 @@
 	                				<table class="table table-summary">
 	                					<tbody>
 	                						 
-
+											<tr class="summary-total">
+	                							<td>Wallet :</td>
+	                							<td >Rs :<span class="fw-bold">
+													{% if wallet.amount > 0 %}
+													{{wallet.amount}}
+													{% else %}
+													0
+													{% endif %}
+												</span></td>
+	                						</tr><!-- End .summary-total -->
 	                						<tr class="summary-total">
 	                							<td>Subtotal:</td>
 	                							<td >Rs :<span id="subtotal">100</span></td>
