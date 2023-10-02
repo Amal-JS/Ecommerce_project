@@ -2,6 +2,7 @@ from datetime import datetime
 from django.forms import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from coupoun.models import Coupons
 from orders.models import Wallet
 from products.models import Variant_Images
 from products.forms import CategoryForm,ProductForm,VariantForm
@@ -22,6 +23,8 @@ from django.contrib.auth.decorators import user_passes_test
 #import Orders
 from orders.models import OrderDetail,Order,ReturnOrder
 from django.utils.text import capfirst
+#import CoupounForm
+from coupoun.forms import CoupounForm
 
 def is_user_authenticated(user):
     return user.is_authenticated and user.is_superuser
@@ -473,3 +476,75 @@ def accept_return_reason(request,id):
     
 
     return redirect('digix_admin:return_order',id=id)
+
+
+
+#coupoun
+
+def all_coupouns(request):
+    coupouns = Coupons.objects.all()
+    context=''
+    return render(request,'digix_admin/coupoun.html',{'coupouns':coupouns})
+
+# get all variants 
+def get_all_variants(request):
+    # Get all variants and extract their names
+    all_variants = Variant.objects.all()
+    variant_names = [variant.name for variant in all_variants]
+
+    # Create a JSON response with the variant names
+    response_data = {
+        'variants': variant_names
+    }
+    print(variant_names)
+    return JsonResponse(response_data)
+
+
+def add_coupoun(request):
+
+    if request.method == 'POST':
+        # Check if all fields are empty
+        # Check if any field in the form is empty
+        if any(not value for value in request.POST.values()):
+            messages.error(request, 'Please fill  all fields.')
+        else:
+            form = CoupounForm(request.POST)
+            if form.is_valid():
+                # If the form is valid, process the data here
+                # For example, save the coupon data to the database
+                form.save()
+                messages.success(request, 'Coupon added successfully!')
+                return redirect('digix_admin:all_coupouns')  # Redirect to a success page
+            else:
+                messages.error(request, 'Error: Please fill in all required fields.')
+    
+    form = CoupounForm()
+
+    context = {
+        'form_what': 'Coupoun',
+        'form': form
+    }
+    return render(request, 'digix_admin/add_coupoun_offer.html', context)
+
+
+
+def edit_coupoun(request,id):
+    coupoun = Coupons.objects.get(id=id)
+    
+    if request.method == 'POST':
+        form = CoupounForm(request.POST,instance=coupoun)
+        if form.is_valid():
+                # If the form is valid, process the data here
+                # For example, save the coupon data to the database
+                form.save()
+                messages.success(request, 'Coupon updated successfully!')
+                return redirect('digix_admin:all_coupouns')  # Redirect to a success page
+        else:
+                messages.error(request,form.errors)
+
+    form = CoupounForm(instance=coupoun)
+    context = {
+        'form_what': 'Coupoun',
+        'form': form
+    }
+    return render(request, 'digix_admin/add_coupoun_offer.html', context)
