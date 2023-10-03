@@ -34,7 +34,10 @@ def order_confirm(request):
 
         address_id = request.GET.get('selected_address',None)
         payment_method = request.GET.get('payment_method',None)
-        print('payment method :',payment_method)
+        coupoun_applied_amount = request.GET.get('coupoun_applied_amount',None)
+        
+        
+
         if not address_id is None or payment_method is None:
 
             # Retrieve cart items for the user
@@ -89,8 +92,13 @@ def order_confirm(request):
                     cart_item.delete()
 
                 # Calculate and set the total price for the order
-                order_total_price = OrderDetail.objects.filter(order=order).aggregate(total=Sum('total_price'))
-                order.total = order_total_price['total']
+                if coupoun_applied_amount is not None:
+
+                    order.total = int(coupoun_applied_amount)
+                else:
+
+                    order_total_price = OrderDetail.objects.filter(order=order).aggregate(total=Sum('total_price'))
+                    order.total = order_total_price['total']
 
                 
 
@@ -270,6 +278,19 @@ def cancel_order(request, order_id, variant_id):
     variant.stock += item.quantity
     variant.save()
     print(variant.name,' : ',variant.stock)
+
+    #amount adding in wallet
+    if item.order.payment_type == 'online_payment':
+    #Retrieve the user's wallet (assuming you have a way to identify the user)
+        user_wallet = Wallet.objects.filter(user=request.user).first()
+
+        if user_wallet:
+            # Update the wallet amount
+            user_wallet.amount += item.total_price
+            user_wallet.save()
+        else:
+            user_wallet=Wallet(user=request.user,amount=item.total_price)
+            user_wallet.save()
 
     if item and item.order_status != 'cancelled' and item.order_status != 'delivered':
         item.order_status = 'cancelled'

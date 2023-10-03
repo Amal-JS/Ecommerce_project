@@ -76,6 +76,7 @@ path('wishlist/',views.user_wishlist,name='user_wishlist'),
 
 #checkout page
 path('checkout/',views.user_checkout,name='user_checkout'),
+path('checkout/<str:coupoun_applied>/<int:applied_coupoun>/<str:updated_cart_amount>/',views.user_checkout,name='user_checkout'),
 
 
 #user profile views
@@ -181,6 +182,9 @@ path('user_wallet/',views.user_wallet,name='user_wallet'),
 
 #current order status,
 path('current_order_status/<int:order_id>/',views.current_order_status,),
+
+#apply coupoun,
+path('apply_coupoun/<int:id>/',views.apply_coupoun,name='apply_coupoun'),
 
 
 ]
