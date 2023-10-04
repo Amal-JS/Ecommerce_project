@@ -1267,7 +1267,7 @@ def get_variant_stock(request, variant_id):
 
 @user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
 def user_profile_order(request):
-    user_orders = Order.objects.filter(user=request.user).prefetch_related('order_items__variant__variant_images')
+    user_orders = Order.objects.filter(user=request.user).prefetch_related('order_items__variant__variant_images').order_by('-date_created')
     # Annotate each order with the count of order items
     order_count = Order.objects.filter(user=request.user).count()
     
@@ -1324,14 +1324,17 @@ def razor_pay_instance(request):
 
     # Calculate the total price of items in the cart for the specified user
     overall_total = Cart.objects.filter(user=user).aggregate(Sum('total'))['total__sum'] 
-    print(overall_total)
-    if overall_total > 65000:
+    
+    if overall_total is not None and overall_total > 65000:
         overall_total /= 100
     print(overall_total)
      # Razorpay
-    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-    payment = client.order.create({'amount': float(overall_total)*100, 'currency': 'INR', 'payment_capture': 1})
-    print(payment)
+     #when amout credited from wallet use amount will be zero raise an issue
+    payment = None
+    if overall_total is not None:
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        payment = client.order.create({'amount': float(int(overall_total))*100, 'currency': 'INR', 'payment_capture': 1})
+        print(payment)
    
     return JsonResponse({'payment':payment})
 
@@ -1340,7 +1343,8 @@ def razor_pay_instance(request):
 @user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
 def user_wallet(request):
     user_wallet=Wallet.objects.filter(user=request.user).first()
-    return render(request,'user_app/user_wallet.html',{'user_wallet':user_wallet})
+    wallet_usages=WalletUsage.objects.filter(user= request.user).order_by('-date_used')
+    return render(request,'user_app/user_wallet.html',{'user_wallet':user_wallet,'wallet_usages':wallet_usages})
 
 
 #get current order status
@@ -1405,8 +1409,32 @@ def user_checkout(request,coupoun_applied=None,applied_coupoun=None,updated_cart
     for item in cart_items:
         item.total = item.quantity * item.variant.selling_price
 
-    # Calculate the overall total for all items in the cart
-    overall_total = sum(item.total for item in cart_items) 
+    # Calculate the previous overall total (before any deductions)
+    previous_overall_total = sum(item.total for item in cart_items)
+
+    # Get the previous wallet amount if it's not equal to zero
+    previous_wallet_amount = 0
+    if wallet and wallet.amount > 0:
+        previous_wallet_amount = wallet.amount
+
+
+    # Get the previous wallet amount if it's not equal to zero
+    previous_wallet_amount = 0
+    if wallet and wallet.amount > 0:
+        previous_wallet_amount = wallet.amount
+
+    # Deduct the wallet amount if applicable
+    wallet_amount_applied = 0
+    if wallet and wallet.amount > 0:
+        if previous_overall_total >= wallet.amount:
+            previous_overall_total -= wallet.amount
+            wallet_amount_applied = wallet.amount
+            wallet.amount = 0
+        else:
+            wallet.amount -= previous_overall_total
+            wallet_amount_applied = previous_overall_total
+            previous_overall_total = 0
+        
 
     # Calculate the total number of items in the cart
     total_items_in_cart = sum(item.quantity for item in cart_items)
@@ -1457,6 +1485,8 @@ def user_checkout(request,coupoun_applied=None,applied_coupoun=None,updated_cart
 
         context = {
         'cart_items': cart_items,
+        'previous_overall_total': previous_overall_total,
+        'previous_wallet_amount': previous_wallet_amount,  # Pass the previous wallet amount
         'overall_total': Decimal(updated_cart_amount),
         'total_items_in_cart': total_items_in_cart,
         'shipping_addresses': shipping_addresses,  # Add this to the context
@@ -1466,14 +1496,17 @@ def user_checkout(request,coupoun_applied=None,applied_coupoun=None,updated_cart
         'coupoun_applied':coupoun_applied,
         'coupouns':general_coupons | category_coupons | variant_coupons,  # Combine all applicable coupons
         'applied_coupoun':applied_coupoun,
-        'coupoun_count':(general_coupons | category_coupons | variant_coupons).count()  # Pass the number of available coupons  
-       
+        'coupoun_count':(general_coupons | category_coupons | variant_coupons).count(),  # Pass the number of available coupons  
+        'wallet_amount_applied': wallet_amount_applied,
+    
     }
         
     else:
         context = {
         'cart_items': cart_items,
-        'overall_total': overall_total,
+        'previous_overall_total': previous_overall_total,
+        'previous_wallet_amount': previous_wallet_amount,  # Pass the previous wallet amount
+        'overall_total': previous_overall_total,
         'total_items_in_cart': total_items_in_cart,
         'shipping_addresses': shipping_addresses,  # Add this to the context
         'cart_items_json':cart_items_json,
@@ -1481,7 +1514,8 @@ def user_checkout(request,coupoun_applied=None,applied_coupoun=None,updated_cart
         'wallet':wallet,
         'coupoun_applied':coupoun_applied,
         'coupouns':general_coupons | category_coupons | variant_coupons,  # Combine all applicable coupons
-        'coupoun_count':(general_coupons | category_coupons | variant_coupons).count()  # Pass the number of available coupons   
+        'coupoun_count':(general_coupons | category_coupons | variant_coupons).count(),  # Pass the number of available coupons   
+        'wallet_amount_applied': wallet_amount_applied,
     }
 
 
@@ -1505,10 +1539,7 @@ def apply_coupoun(request, id):
         cart_total -= coupoun.discount_amount
     else:
         cart_total -= (cart_total * coupoun.discount_percentage / 100)
-    #reduce the count
-    coupoun.use_coupon()
-    # Create a UsedCoupons entry for the user and the applied coupon
-    UsedCoupons.objects.create(user=user, coupons=coupoun)
+    
     print('cart_total ',cart_total,' coupoun_applied ',coupoun.code)
 
     return redirect('user:user_checkout', coupoun_applied=str(True),applied_coupoun=coupoun.id,updated_cart_amount=str(cart_total))

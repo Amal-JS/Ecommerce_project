@@ -55,6 +55,13 @@ urlpatterns = [
     #get all variants,
     path('get_all_variants/',views.get_all_variants),
     path('edit_coupoun/<int:id>/',views.edit_coupoun,name='edit_coupoun'),
+
+    #get all offers,
+    path('all_offers/',views.all_offers,name='all_offers'),
+    path('add_offer/',views.add_offer,name='add_offer'),
+    path('edit_offer/<int:id>/',views.edit_offer,name='edit_offer'),
+
+    path('change_offer_status/<int:id>/',views.change_offer_status,name='change_offer_status'),
     
     
 

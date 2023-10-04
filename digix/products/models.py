@@ -51,8 +51,14 @@ class Variant(models.Model):
     ram = models.PositiveIntegerField()
     storage = models.PositiveIntegerField()
     color = models.CharField(max_length=20)
+
     mr_price = models.DecimalField(max_digits=8,decimal_places=2)
     selling_price = models.DecimalField(max_digits=8,decimal_places=2)
+    #when adding the offer to variant that offer price will be in the selling_price and the
+    #amount on the selling_price will be on the price_before_offer
+    #when offer ends the selling_price will be set to the previous price
+    price_before_offer = models.DecimalField(max_digits=8,decimal_places=2,default=0)
+
     stock = models.PositiveIntegerField()
     is_available= models.BooleanField(default=False)
     screen_resolution = models.DecimalField(max_digits=5,decimal_places=2,blank=True,null=True)

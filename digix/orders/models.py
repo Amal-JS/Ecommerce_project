@@ -168,6 +168,7 @@ class DamagedProducts(models.Model):
         return f"{self.order.order_num} {self.variant.name}  Qty : {self.qty}"
 #wallet usage
 class WalletUsage(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE,related_name='user_wallet_usage')
     amount = models.DecimalField(max_digits=10,decimal_places=2) 
     order_num = models.ForeignKey(Order,on_delete=models.CASCADE)   

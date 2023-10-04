@@ -1,7 +1,11 @@
 {% extends 'user_app/user_base.html' %}"
 {% load static %}
 {% block title %}Wallet{% endblock %}
-
+{% block importantcss %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<style src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"></style>
+<style src="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"></style>
+{% endblock %}
 {% block body %}
 <main class="main">
     <div class="page-header text-center" >
@@ -75,7 +79,68 @@
                                 </div><!-- End .row -->
                             </div><!-- .End .tab-pane -->
 
+                            
+	                			<div class="tab-content">
+									
 
+
+									
+									
+
+									<div class="row">
+										<table id="example" class="table table-striped" style="width:100%;font-size:12px;">
+											<thead>
+												<tr>
+													
+													<th class="m-4 p-3"><p class="fw-bolder fs-4 text-dark">Order number</p></th>
+													<th class="m-4 p-3"><p class="fw-bolder fs-4 text-dark">Amount</p></th>
+													<th class="m-4 p-3"><p class="fw-bolder fs-4 text-dark">Date</p></th>
+													
+
+
+												</tr>
+											</thead>
+											<tbody>
+												{% for usage in wallet_usages %}
+												
+												
+												<tr>
+													
+													<td style="font-weight:500;"  class="m-3 p-5 ">
+														<p class="fs-3 text-dark fw-normal">{{usage.order_num.order_num}}</p>
+													</td>
+													<td style="font-weight:500;" class="m-3 p-5 "><p class="fs-3 text-dark fw-normal"> Rs : {{usage.amount}}</p></td>
+
+													<td style="font-weight:500;" class="m-3 p-5 "><p class="fs-3 text-dark fw-normal">{{usage.date_used}}</p> </td>
+													
+											
+												</tr>
+												
+												
+												{% endfor %}
+											</tbody>
+											
+										</table>
+									</div>
+
+
+								
+
+								
+
+
+									
+									
+
+									
+								   
+								   
+
+
+										
+
+								</div>
+	                		
 
                         </div>
                     </div><!-- End .col-lg-9 -->
@@ -85,4 +150,32 @@
     </div><!-- End .page-content -->
 </main><!-- End .main -->
 
+{% endblock %}
+
+{% block importantjs %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+ new DataTable('#example');
+ 
+ a_tags =document.getElementsByTagName('a')
+
+// Get all elements with class 'widget' and 'content-widget'
+var widgetElements = document.querySelectorAll('.widget-list');
+
+// Loop through each 'widget' and 'content-widget' element
+widgetElements.forEach(function(element) {
+// Get all <a> tags inside the current 'widget' or 'content-widget' element
+var aTags = element.querySelectorAll('a');
+
+// Loop through each <a> tag inside this element and apply your styling
+aTags.forEach(function(aTag) {
+// Apply your styling to the <a> tag, for example:
+aTag.style.color = '#333333';
+aTag.style.textDecoration = 'none';
+});
+});
+</script>
 {% endblock %}
