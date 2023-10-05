@@ -72,7 +72,8 @@ class UsedCoupons(models.Model):
     class Meta:
         verbose_name_plural = 'Used Coupons'
 
-
+    def __str__(self):
+        return f"{self.user} {self.coupons.code}"
 #offfer
 
 

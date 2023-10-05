@@ -73,6 +73,8 @@ def index(request):
             'review_count': variant_review_count,
             'avg_rating': variant_avg_rating,
         })
+
+   
     return render(request,'user_app/home.html',{'variants_with_images':variants_with_ratings})
 
 
@@ -500,7 +502,7 @@ def user_sign_up(request):
         #send otp to verify number
 
         otp = str(random.randint(1000,9999))
-        send_otp(otp)
+        # send_otp(otp)
         print('-------------------------------------',otp)
         #add all values to a user variable
         user = {'username': username,
@@ -1443,23 +1445,28 @@ def user_checkout(request,coupoun_applied=None,applied_coupoun=None,updated_cart
     shipping_addresses = ShippingAddress.objects.filter(user=user)
 
     # Now, based on the cart items, get category-specific coupons for applicable categories
+    cart_item_categories = set([item.variant.product.category.name for item in cart_items])
+
+    # Filter category-specific coupons for the categories in the cart
     category_coupons = Coupons.objects.filter(
         is_active=True,
         valid_to__gte=timezone.now().date(),
         coupoun_type='category',
-        coupoun_applied_to__in=[item.variant.product.category.name for item in cart_items]
+        coupoun_applied_to__in=cart_item_categories
     )
 
     # Get the IDs of category-specific coupons that have been used by the current user
     used_category_coupon_ids = UsedCoupons.objects.filter(
         user=request.user,
         coupons__coupoun_type='category',
-        coupons__coupoun_applied_to__in=[item.variant.product.category.name for item in cart_items]
+        coupons__coupoun_applied_to__in=cart_item_categories
     ).values_list('coupons_id', flat=True)
+    print(used_category_coupon_ids, 'ids')
 
     # Filter out the category-specific coupons that have already been used by the current user
     category_coupons = category_coupons.exclude(id__in=used_category_coupon_ids)
 
+    print('checkout category coupouns ',category_coupons)
     # Now, based on the cart items, get variant-specific coupons for applicable variants
     variant_coupons = Coupons.objects.filter(
         is_active=True,
@@ -1478,7 +1485,7 @@ def user_checkout(request,coupoun_applied=None,applied_coupoun=None,updated_cart
     # Filter out the variant-specific coupons that have already been used by the current user
     variant_coupons = variant_coupons.exclude(id__in=used_variant_coupon_ids)
 
-
+    print('varinat coupouns ',variant_coupons)
     if coupoun_applied :
 
         applied_coupoun = Coupons.objects.get(id=applied_coupoun)

@@ -9,7 +9,14 @@ container_fluid_page_body_wrapper_id.appendChild(main_panel_div);
 var nav_ul = document.getElementById("nav_ul");
 nav_ul.style.background = "white";
 
-
+function myFunction() {
+  var x = document.getElementById("sidebar");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
 
 
 //used for showing product , category , variant data

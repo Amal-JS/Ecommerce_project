@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 from django.forms import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -399,7 +400,10 @@ def change_order_status(request, id, value):
     try:
         order = OrderDetail.objects.get(id=id)
         order.order_status = value
-
+        
+        if order.order_status == 'shipped':
+            order.delivered_date= order.order.date_created + timedelta(days=7)
+        print('order delivered date ',order.delivered_date,'order.order.date_created + timedelta(days=7)  ',order.order.date_created + timedelta(days=7))
         if order.order_status == 'delivered':
             order.delivered_date= datetime.now()
         order.save()
@@ -668,6 +672,7 @@ def change_offer_status(request,id):
                         variant.save()
             offer.save()
     else:
+        #activating offer
         if offer.is_valid:
             
             
@@ -694,12 +699,13 @@ def change_offer_status(request,id):
                         print('in if block')
                         
                         offer.variant.selling_price = int(offer.variant.price_before_offer - (offer.variant.price_before_offer * (offer.discount_percentage / 100)))
+                        offer.variant.save()
                     else:
                         print('came in else block')
                         offer.variant.price_before_offer = offer.variant.selling_price
                         offer.variant.selling_price = int(offer.variant.price_before_offer - (offer.variant.price_before_offer * (offer.discount_percentage / 100)))
+                        offer.variant.save()
                     
-                    offer.variant.save()
             else:
                 # Check if there is an existing valid offer for this category
                 existing_category_offers = Offers.objects.filter(category=offer.category, is_active=True).exclude(id=offer.id)

@@ -73,7 +73,12 @@ class Variant(models.Model):
     def __str__(self):
         return f'{self.product} {self.name}'
        
+    def save(self, *args, **kwargs):
+        # Log the variant name and selling price before saving
+        print(f"Saving variant: {self.name}, Selling Price: {self.selling_price}")
         
+        # Call the parent class's save method to perform the actual save operation
+        super(Variant, self).save(*args, **kwargs)
 
 #image for a variant
 class Variant_Images(models.Model):

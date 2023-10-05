@@ -1,5 +1,5 @@
 {% load static %}
-<div class="container-scroller">
+<div class="container-scroller" style="background: white;">
     <!-- partial:partials/_sidebar.html -->
     <nav class="sidebar sidebar-offcanvas border-right  " id="sidebar">
       <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top p-5" style="background: white;border-right:10px solid #dadada">
@@ -213,7 +213,10 @@
     <!-- partial -->
     <div class="container-fluid page-body-wrapper" id="container_fluid_page_body_wrapper_id">
       <!-- partial:partials/_navbar.html -->
-      <nav class="navbar p-0 fixed-top d-flex flex-row">
+      <nav class="navbar p-0 fixed-top d-flex flex-row" style="background:#bab8b9;">
+        <i class="bi bi-list text-dark" style="font-size: 2rem;" onclick="myFunction()"></i>
+        
+        
         <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
           <a class="navbar-brand brand-logo-mini" href="index.html"><img src="{% static 'admin/assets/images/logo-mini.svg' %}" alt="logo" /></a>
         </div>

@@ -38,7 +38,7 @@ def order_confirm(request):
         coupoun_applied = request.GET.get('coupoun_applied',None)
         
         
-
+        print('order cofirm ',payment_method,'coupoun applied',coupoun_applied)
         if not address_id is None or payment_method is None:
 
             # Retrieve cart items for the user
@@ -109,15 +109,19 @@ def order_confirm(request):
                         usage=WalletUsage.objects.create(user=user, wallet=wallet, amount=order.total, order_num=order)
                         
 
-                wallet.save()
+                    wallet.save()
 
                 # Calculate and set the total price for the order
                 if coupoun_applied is not None:
+
                     #reduce the count
                     coupoun = Coupons.objects.get(id=int(coupoun_applied))
+                    print('coupoun count',coupoun.count)
                     coupoun.use_coupon()
                     # Create a UsedCoupons entry for the user and the applied coupon
-                    UsedCoupons.objects.create(user=user, coupons=coupoun)
+                    print('coupoun count',coupoun.count)
+                    uc=UsedCoupons.objects.create(user=user, coupons=coupoun)
+                    print(uc)
                     
                 
 

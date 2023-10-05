@@ -1629,9 +1629,9 @@ let outOfStockVariants = [];
           coupounApplied = document.getElementById('coupounApplied')
           let successUrl;
           if (coupounApplied){
-            data-coupoun-id
-            successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method+ '&coupoun_applied=' + coupounApplied.getAttribute('data-coupoun-id');
-         
+            coupon_id= coupounApplied.getAttribute('data-coupoun-id')
+            successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method+ '&coupoun_applied=' + coupon_id;
+         console.log(successUrl)
 
           }else{
              successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method;
@@ -1657,9 +1657,18 @@ let outOfStockVariants = [];
       
           rzp1.on('payment.success', function (response) {
             console.log('comes into the instance',response)
-              // Handle successful payment
-              const url = `/order_confirm/?selected_address=${address_id}&payment_method=${payment_method}`;
-              fetch(url, {
+
+             // If payment method is not 'online_payment', directly proceed to order confirmation
+                coupounApplied = document.getElementById('coupounApplied')
+                let successUrl;
+                if (coupounApplied){
+                  coupon_id= coupounApplied.getAttribute('data-coupoun-id')
+                  successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method+ '&coupoun_applied=' + coupon_id;
+               console.log(successUrl)
+      
+                }else{
+                   successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method;
+                }fetch(successUrl, {
                   method: 'GET'
               })
               .then(response => response.json())
@@ -1707,8 +1716,17 @@ let outOfStockVariants = [];
              
           } else {
                 // If payment method is not 'online_payment', directly proceed to order confirmation
-                const url = `/order_confirm/?selected_address=${address_id}&payment_method=${payment_method}`;
-                fetch(url, {
+                coupounApplied = document.getElementById('coupounApplied')
+                let successUrl;
+                if (coupounApplied){
+                  coupon_id= coupounApplied.getAttribute('data-coupoun-id')
+                  successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method+ '&coupoun_applied=' + coupon_id;
+               console.log(successUrl)
+      
+                }else{
+                   successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method;
+                }
+                fetch(successUrl, {
                     method: 'GET'
                 })
                 .then(response => response.json())

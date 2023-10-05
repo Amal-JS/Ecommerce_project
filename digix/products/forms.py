@@ -121,6 +121,8 @@ class VariantForm(forms.ModelForm):
         required=False,
         widget=forms.Select(attrs={'placeholder': 'Select TV Mount' ,'class':'select_admin'}),
     )
+
+    
 #=====================================================================================================
 # image field only want to accept jpg or jpeg or svg file for that use 'accept' :'.jpg,.jpeg etc ' 
 # in the attrs
