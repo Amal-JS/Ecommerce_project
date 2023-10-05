@@ -3,6 +3,7 @@ from decimal import Decimal
 import time
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from coupoun.models import Coupons, UsedCoupons
 
 #importing variant and custom user models , cart
 from products.models import Variant
@@ -34,7 +35,10 @@ def order_confirm(request):
 
         address_id = request.GET.get('selected_address',None)
         payment_method = request.GET.get('payment_method',None)
-        print('payment method :',payment_method)
+        coupoun_applied = request.GET.get('coupoun_applied',None)
+        
+        
+        print('order cofirm ',payment_method,'coupoun applied',coupoun_applied)
         if not address_id is None or payment_method is None:
 
             # Retrieve cart items for the user
@@ -88,15 +92,48 @@ def order_confirm(request):
                     # Delete the product from the cart
                     cart_item.delete()
 
-                # Calculate and set the total price for the order
                 order_total_price = OrderDetail.objects.filter(order=order).aggregate(total=Sum('total_price'))
                 order.total = order_total_price['total']
+
+                #get the wallet and reduce the amount
+                wallet = Wallet.objects.filter(user=request.user).first()
+
+                if wallet and wallet.amount > 0:
+                    if order.total >= wallet.amount:
+                        order.total -= wallet.amount
+                        usage=WalletUsage.objects.create(user=user, wallet=wallet, amount=wallet.amount, order_num=order)
+                        
+                        wallet.amount = 0
+                    else:
+                        wallet.amount -= order.total
+                        usage=WalletUsage.objects.create(user=user, wallet=wallet, amount=order.total, order_num=order)
+                        
+
+                    wallet.save()
+
+                # Calculate and set the total price for the order
+                if coupoun_applied is not None:
+
+                    #reduce the count
+                    coupoun = Coupons.objects.get(id=int(coupoun_applied))
+                    print('coupoun count',coupoun.count)
+                    coupoun.use_coupon()
+                    # Create a UsedCoupons entry for the user and the applied coupon
+                    print('coupoun count',coupoun.count)
+                    uc=UsedCoupons.objects.create(user=user, coupons=coupoun)
+                    print(uc)
+                    
+                
+
+                
 
                 
 
                 order.payment_type = payment_method
                 order.save()
 
+                
+                
                 order_num = order.order_num
                 return JsonResponse({'order_num':order_num},safe=False)
 
@@ -270,6 +307,19 @@ def cancel_order(request, order_id, variant_id):
     variant.stock += item.quantity
     variant.save()
     print(variant.name,' : ',variant.stock)
+
+    #amount adding in wallet
+    if item.order.payment_type == 'online_payment':
+    #Retrieve the user's wallet (assuming you have a way to identify the user)
+        user_wallet = Wallet.objects.filter(user=request.user).first()
+
+        if user_wallet:
+            # Update the wallet amount
+            user_wallet.amount += item.total_price
+            user_wallet.save()
+        else:
+            user_wallet=Wallet(user=request.user,amount=item.total_price)
+            user_wallet.save()
 
     if item and item.order_status != 'cancelled' and item.order_status != 'delivered':
         item.order_status = 'cancelled'

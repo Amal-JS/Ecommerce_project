@@ -35,7 +35,7 @@ class Cart(models.Model):
 
 
     def __str__(self):
-        return self.variant.product.name+"---"+self.variant.ram+'----'+self.variant.storage+"---"+self.variant.color
+        return f"{self.variant.product.name}---{self.variant.ram}----{self.variant.storage}---{self.variant.color}"
 
 
 
@@ -165,9 +165,10 @@ class DamagedProducts(models.Model):
     qty = models.PositiveIntegerField(default=0)
     date_added = models.DateTimeField(auto_now_add=True)
     def __str__(self) -> str:
-        return f"{self.order.order_num} {self.variant.name}  Qty : {self.qty}"
+        return f" {self.variant.name}  Qty : {self.qty}"
 #wallet usage
 class WalletUsage(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE,related_name='user_wallet_usage')
     amount = models.DecimalField(max_digits=10,decimal_places=2) 
     order_num = models.ForeignKey(Order,on_delete=models.CASCADE)   

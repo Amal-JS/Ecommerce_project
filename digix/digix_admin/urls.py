@@ -46,6 +46,23 @@ urlpatterns = [
     path('return_reason_update/<str:order_num>/<int:variant_id>/<int:return_order_id>/',views.return_reason_update,name='return_reason_update'),
 
     path('accept_return_reason/<int:id>/',views.accept_return_reason,name='accept_return_reason'),
+
+    #coupoun
+    path('all_coupouns/',views.all_coupouns,name='all_coupouns'),
+
+    path('add_coupoun/',views.add_coupoun,name='add_coupoun'),
+
+    #get all variants,
+    path('get_all_variants/',views.get_all_variants),
+    path('edit_coupoun/<int:id>/',views.edit_coupoun,name='edit_coupoun'),
+
+    #get all offers,
+    path('all_offers/',views.all_offers,name='all_offers'),
+    path('add_offer/',views.add_offer,name='add_offer'),
+    path('edit_offer/<int:id>/',views.edit_offer,name='edit_offer'),
+
+    path('change_offer_status/<int:id>/',views.change_offer_status,name='change_offer_status'),
+    
     
 
 ]

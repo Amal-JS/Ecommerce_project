@@ -9,7 +9,14 @@ container_fluid_page_body_wrapper_id.appendChild(main_panel_div);
 var nav_ul = document.getElementById("nav_ul");
 nav_ul.style.background = "white";
 
-
+function myFunction() {
+  var x = document.getElementById("sidebar");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
 
 
 //used for showing product , category , variant data
@@ -342,7 +349,12 @@ if(ad_modal_content){
 //-------------------------------------------------------------------------------------------------------
 //add form image croping  and update form image crop
 
-if ( (window.location.pathname.startsWith('/admin/add')) || ( (window.location.pathname.includes('update'))  &&  (window.location.pathname.includes('admin'))))  { 
+if ( (
+  (window.location.pathname.startsWith('/admin/add') ||
+  (window.location.pathname.includes('update') &&
+    window.location.pathname.includes('admin'))) &&
+  window.location.pathname !== '/admin/add_coupoun/'
+))  { 
 
      //document fully loaded
 
@@ -692,4 +704,92 @@ selectElement.querySelectorAll("option").forEach(function (option, index) {
           addEventListenersToSelects();
       });
   });
+}
+
+
+//==========================================add  coupoun ===============================================
+
+if (window.location.pathname.startsWith('/admin/add_coupoun/') || window.location.pathname.startsWith('/admin/update_coupoun/')){
+
+
+  document.addEventListener("DOMContentLoaded", function () {
+    // Get references to the select element and the input field
+    const coupounTypeSelect = document.querySelector("#id_coupoun_type");
+    const coupounAppliedToInput = document.querySelector("#id_coupoun_applied_to");
+    const modalBody = document.querySelector(".modal-body");
+
+     // Function to create buttons for variant names
+     function createVariantButtons(variantNames) {
+      modalBody.innerHTML = ''; // Clear the modal body
+
+      variantNames.forEach(function (variantName) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "btn btn-dark coupon-variant-option mt-1 p-4 w-100";
+          button.style.height= '100px';
+          button.setAttribute("data-value", variantName);
+          button.textContent = variantName;
+          modalBody.appendChild(button);
+
+          // Add event listener to the variant buttons
+          button.addEventListener("click", function () {
+              const selectedVariant = button.getAttribute("data-value");
+              coupounAppliedToInput.value = selectedVariant;
+              $('#couponAppliedToModal').modal('hide'); // Close the modal
+          });
+      });
+      // Show the modal
+      $('#couponAppliedToModal').modal('show');
+  }
+    // Add an event listener to the select element
+    coupounTypeSelect.addEventListener("change", function () {
+        // Get the selected option's value
+        const selectedValue = coupounTypeSelect.value;
+        
+        // Check the selected value
+        if (selectedValue === "general") {
+            // If "general" is selected, set the input field value to "general"
+            coupounAppliedToInput.value = "general";
+        } else if (selectedValue === "category") {
+            // If "category" is selected, trigger the modal to choose a category
+           // If "category" is selected, dynamically add buttons to choose a category
+           modalBody.innerHTML = `
+           <button type="button" class="btn btn-dark p-2 mt-3 coupon-category-option" data-value="Smart TV" style="width:300px;">Smart TV</button>
+           <br>
+           <button type="button" class="btn btn-dark p-2 mt-3 coupon-category-option" data-value="Smart Phone" style="width:300px;">Smart Phone</button>
+           <br>
+           <button type="button" class="btn btn-dark p-2 mt-3 coupon-category-option" data-value="Laptop" style="width:300px;">Laptop</button>
+       `;
+       
+       // Add event listeners to the category buttons
+       const categoryButtons = document.querySelectorAll(".coupon-category-option");
+       categoryButtons.forEach(function (button) {
+           button.addEventListener("click", function () {
+               const selectedCategory = button.getAttribute("data-value");
+               coupounAppliedToInput.value = selectedCategory;
+               $('#couponAppliedToModal').modal('hide'); // Close the modal
+           });
+       });
+       
+       // Show the modal
+       $('#couponAppliedToModal').modal('show');
+        } else if (selectedValue === "variant") {
+             fetch('/admin/get_all_variants/')
+                .then(response => response.json())
+                .then(data => createVariantButtons(data.variants))
+                .catch(error => console.error('Error fetching variants:', error));
+        }
+        
+    });
+    
+    // Handle clicks on the category buttons within the modal
+    const categoryButtons = document.querySelectorAll(".coupon-option[data-value='category']");
+    categoryButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            const selectedCategory = button.textContent;
+            coupounAppliedToInput.value = selectedCategory;
+            $('#couponAppliedToModal').modal('hide'); // Close the modal
+        });
+    });
+});
 }

@@ -1,0 +1,167 @@
+{% extends 'digix_admin/base.html' %}
+{% load static %}
+
+{% block title %}Offers{% endblock %}
+
+{% block priority_css_links %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<style src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"></style>
+<style src="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css"></style>
+<link rel="stylesheet" href="{% static 'admin/assets/css/style.css' %}">
+<style>
+    /* Change background color of pagination buttons */
+.dataTables_paginate .paginate_button {
+    background-color: #fff;
+    color: black;
+}
+
+/* Change text color of pagination buttons on hover */
+.dataTables_paginate .paginate_button:hover {
+    background-color: #333333;
+    color: white;
+}
+
+/* Change text color of active page button */
+.dataTables_paginate .paginate_button.current {
+    background-color: #fff;
+    color: black;
+}
+
+
+</style>
+{% endblock %}
+
+{% block body %}
+   
+
+<div class="content-wrapper bg-light" id="content_wrapper_div" >
+    
+    <div class="text-right m-3"><a class='btn btn-success p-3 add_btn' href="{% url 'digix_admin:add_offer' %}">Add Offer</a></div>
+    
+<div class="text-center">
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+        <p class="fs-4 text-success">{{ message }}</p>
+    {% else %}
+        <p class="fs-4 text-danger">{{ message }}</p>
+    {% endif %}
+    <br>
+{% endfor %}
+</div>
+        
+    <table id="example" class="table table-striped" style="
+        padding: 20px;
+        border-radius: 20px;
+        border: 2px solid #333333;
+        width: 1312px;
+    ">
+        <thead>
+            <tr>
+                <!-- Add table headers here -->
+                <th>Coupon Name</th>
+                <th>Category</th>
+                <th>Product</th>
+                <th>Is Active</th>
+                
+                
+                
+                <th>Discount Percentage</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+               <th></th>
+               <th></th>
+             
+            </tr>
+        </thead>
+        <tbody>
+         
+           
+            {% for offer in offers %}
+            
+            <tr>
+                <td>{{ offer.name }}</td>
+
+                <td style="max-height: 60px;white-space: normal;padding:20px;"> {{ offer.category  }}</td>
+
+                <td style="max-height: 60px;white-space: normal;padding:20px;">{% if offer.variant is not None %}{{offer.variant.name |slice:100 }}{% else %}  {% endif %}</td>
+                <td>{% if offer.is_active %}
+
+                    <div class="badge badge-outline-success">Active</div>
+                    {% else %}
+                    <div class="badge badge-outline-danger">In active</div>
+                    {% endif %}
+                </td>
+                
+                <td>{{ offer.discount_percentage }}</td>
+                <td>{{ offer.start_date }}</td>
+                <td>{{ offer.end_date }}</td>
+                <td>
+                    {% if not  offer.is_active %}
+
+                    <div class="badge badge-outline-success"> <a class="btn text-success"  href="{% url 'digix_admin:change_offer_status' offer.id %}">Activate</a></div>
+                    {% else %}
+                    <div class="badge badge-outline-danger"> <a class="btn text-danger"  href="{% url 'digix_admin:change_offer_status' offer.id %}">Deactivate</a></div>
+                    {% endif %}
+
+                </td>
+                <td><a href="{% url 'digix_admin:edit_offer' offer.id %}" class="btn btn-dark d-flex justify-content-center align-items-center">Edit</a></td>
+                
+                
+            </tr>
+        {% endfor %}
+        </tbody>
+        
+    </table>
+   
+
+</div>
+
+
+{% endblock %}
+
+{% block priority_js_links %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="{% static 'admin/custom_admin.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize the DataTable
+        var table = new DataTable('#example');
+
+        // Get the odd rows using DataTables API
+        var oddRows = table.rows('.odd');
+
+        // Loop through the odd rows and change their background color to white
+        oddRows.every(function () {
+            $(this.node()).css('background-color', 'transparent');
+            $(this.node()).css('height', '30px');
+        });
+
+        // Override pagination button styles
+        $('.paginate_button').css('background-color', 'white');
+        $('.paginate_button').css('color', 'black');
+        $('.paginate_button, .page-item').css('background-color', 'white');
+        
+        $('.paginate_button, .page-item').hover(function () {
+            // Remove hover effect by setting the same background color on hover
+            $(this).css('background-color', 'white');
+        });
+
+        // Get a reference to the table element by its ID
+        const tableElement = document.getElementById('example'); // Replace 'example' with your table's actual ID
+
+        // Get all table rows within the table
+        const rows = tableElement.querySelectorAll('tr');
+
+        // Define the desired row height (in pixels)
+        const desiredRowHeight = 60; // Adjust the height as needed
+
+        // Loop through each row and set the height
+        rows.forEach((row) => {
+            row.style.height = `${desiredRowHeight}px`;
+        });
+    });
+</script>
+{% endblock %}

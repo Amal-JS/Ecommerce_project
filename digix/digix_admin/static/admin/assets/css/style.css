@@ -21466,3 +21466,8 @@ input[type="color"]:focus,
   background-color: #fff;
   border-color: #333333;
 }
+
+#content_wrapper_div {
+  margin-top: 4.5rem;
+  color: black;
+}

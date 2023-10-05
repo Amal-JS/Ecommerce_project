@@ -1,7 +1,10 @@
 from datetime import datetime
+from datetime import timedelta
 from django.forms import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from coupoun.models import Coupons
+from coupoun.models import Offers
 from orders.models import Wallet
 from products.models import Variant_Images
 from products.forms import CategoryForm,ProductForm,VariantForm
@@ -22,6 +25,9 @@ from django.contrib.auth.decorators import user_passes_test
 #import Orders
 from orders.models import OrderDetail,Order,ReturnOrder
 from django.utils.text import capfirst
+#import CoupounForm
+from coupoun.forms import CoupounForm,OfferForm
+
 
 def is_user_authenticated(user):
     return user.is_authenticated and user.is_superuser
@@ -367,7 +373,7 @@ def variant_update(request, id):
 @user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def orders(request):
     # Use select_related() to fetch related Order and User data
-    all_orders = OrderDetail.objects.select_related('order__user').all()
+    all_orders = OrderDetail.objects.select_related('order__user').order_by('-order__date_created').all()
 
     # Use prefetch_related() to fetch related Variant data
     all_orders = all_orders.prefetch_related('variant')
@@ -394,7 +400,10 @@ def change_order_status(request, id, value):
     try:
         order = OrderDetail.objects.get(id=id)
         order.order_status = value
-
+        
+        if order.order_status == 'shipped':
+            order.delivered_date= order.order.date_created + timedelta(days=7)
+        print('order delivered date ',order.delivered_date,'order.order.date_created + timedelta(days=7)  ',order.order.date_created + timedelta(days=7))
         if order.order_status == 'delivered':
             order.delivered_date= datetime.now()
         order.save()
@@ -473,3 +482,275 @@ def accept_return_reason(request,id):
     
 
     return redirect('digix_admin:return_order',id=id)
+
+
+
+#coupoun
+
+def all_coupouns(request):
+    coupouns = Coupons.objects.all()
+    context=''
+    return render(request,'digix_admin/coupoun.html',{'coupouns':coupouns})
+
+# get all variants 
+def get_all_variants(request):
+    # Get all variants and extract their names
+    all_variants = Variant.objects.all()
+    variant_names = [variant.name for variant in all_variants]
+
+    # Create a JSON response with the variant names
+    response_data = {
+        'variants': variant_names
+    }
+    print(variant_names)
+    return JsonResponse(response_data)
+
+
+def add_coupoun(request):
+
+    if request.method == 'POST':
+        # Check if all fields are empty
+        # Check if any field in the form is empty
+        if any(not value for value in request.POST.values()):
+            messages.error(request, 'Please fill  all fields.')
+        else:
+            form = CoupounForm(request.POST)
+            if form.is_valid():
+                # If the form is valid, process the data here
+                # For example, save the coupon data to the database
+                form.save()
+                messages.success(request, 'Coupon added successfully!')
+                return redirect('digix_admin:all_coupouns')  # Redirect to a success page
+            else:
+                messages.error(request, 'Error: Please fill in all required fields.')
+    
+    form = CoupounForm()
+
+    context = {
+        'form_what': 'Coupoun',
+        'form': form
+    }
+    return render(request, 'digix_admin/add_coupoun_offer.html', context)
+
+
+
+def edit_coupoun(request,id):
+    coupoun = Coupons.objects.get(id=id)
+    
+    if request.method == 'POST':
+        form = CoupounForm(request.POST,instance=coupoun)
+        if form.is_valid():
+                # If the form is valid, process the data here
+                # For example, save the coupon data to the database
+                form.save()
+                messages.success(request, 'Coupon updated successfully!')
+                return redirect('digix_admin:all_coupouns')  # Redirect to a success page
+        else:
+                messages.error(request,form.errors)
+
+    form = CoupounForm(instance=coupoun)
+    context = {
+        'form_what': 'Coupoun',
+        'form': form
+    }
+    return render(request, 'digix_admin/add_coupoun_offer.html', context)
+
+
+
+#offers 
+def all_offers(request):
+    offers = Offers.objects.all().order_by('-created_at')
+    return render(request,'digix_admin/offers.html',{'offers':offers})
+
+
+def add_offer(request):
+
+    if request.method == 'POST':
+        # Check if all fields are empty
+        # Check if any field in the form is empty
+        if any(not value for field, value in request.POST.items() if field != 'variant'):
+            messages.error(request, 'Please fill  all fields.')
+        else:
+            form = OfferForm(request.POST)
+            if form.is_valid():
+                try:
+                        # Attempt to save the form data
+                        form.save()
+                        messages.success(request, 'Offer updated successfully!')
+                        return redirect('digix_admin:all_offers')
+                except ValidationError as e:
+                        # Handle the validation error
+                        form.add_error(None, e)  # Add the error to the form's non-field errors
+                        messages.error(request, 'Validation error: ' + str(e))
+            else:
+                messages.error(request, 'Error: Please fill in all required fields.')
+    
+    form = OfferForm()
+
+    context = {
+        'form_what': 'Offer',
+        'form': form
+    }
+    return render(request, 'digix_admin/add_coupoun_offer.html', context)
+
+def edit_offer(request,id):
+
+    offer = Offers.objects.get(id=id)
+    
+
+    if request.method == 'POST':
+        form = OfferForm(request.POST,instance=offer)
+        if form.is_valid():
+                try:
+                        # Attempt to save the form data
+                        form.save()
+                        messages.success(request, 'Offer updated successfully!')
+                        return redirect('digix_admin:all_offers')
+                except ValidationError as e:
+                        # Handle the validation error
+                        form.add_error(None, e)  # Add the error to the form's non-field errors
+                        messages.error(request, 'Validation error: ' + str(e))
+        else:
+                messages.error(request,form.errors)
+
+    
+    form = OfferForm(instance=offer)
+    
+    context = {
+        'form_what': 'Offer',
+        'form': form
+    }
+    return render(request, 'digix_admin/add_coupoun_offer.html', context)
+
+def change_offer_status(request,id):
+    offer = Offers.objects.get(id=id)
+
+    if offer.is_active:
+        if offer.is_valid:
+            offer.is_active = False
+            
+            # Check if the 'is_valid' property has changed to False
+            
+            print(offer.is_valid,offer.variant)
+            if  offer.is_valid:
+                
+                if offer.variant is not None:
+                    print('deactivate offer variant')
+                    print(f"offer variant =--------{offer.variant}----nospace")
+                    # Check if there is an active category offer for this variant
+
+                    category_offer = Offers.objects.filter(category=offer.category, is_active=True,variant__isnull=True).exclude(id=offer.id).first()
+                    if category_offer:
+                        print('category offer for the variant available :',category_offer.name)
+                        # Set the variant's selling price to the category offer price
+                        offer.variant.selling_price = int(offer.variant.price_before_offer -  (offer.variant.price_before_offer * (category_offer.discount_percentage / 100)))
+                        offer.variant.save()
+                    else:
+                        # Set the variant's selling price to the price before the offer
+                        print('category offer for the variant  not available :',offer.variant.selling_price)
+                        offer.variant.selling_price = offer.variant.price_before_offer
+                        offer.variant.save()
+                        print('category offer for the variant  not available after saving:',offer.variant.selling_price)
+                    
+
+                elif offer.category:
+                    print('deactivate category :')
+                    # Find all variants in the category and set their selling prices
+                    variants_in_category = Variant.objects.filter(product__category=offer.category)
+                    for variant in variants_in_category:
+                        # print(variant.name,'-------- before updating price ------------',variant.selling_price)
+                        # Check if the variant has an existing offer
+                        existing_variant_offer = Offers.objects.filter(variant=variant, is_active=True).first()
+                        if not existing_variant_offer:
+                            # Set the variant's selling price to the price before the offer
+                            variant.selling_price = variant.price_before_offer
+                            # print(variant.name,'-------- after updating price ------------',variant.selling_price)
+                            
+                        else:
+                            variant.selling_price = int(variant.price_before_offer - (variant.price_before_offer * (existing_variant_offer.discount_percentage / 100)))
+                        #     print(variant.name,'-------- after updating price ------------',variant.selling_price)
+                        variant.save()
+            offer.save()
+    else:
+        #activating offer
+        if offer.is_valid:
+            
+            
+            
+            if offer.variant is not None:
+                # Set the 'is_active' field to False when creating a new offer
+                
+                print(' updating starting phase True case')
+                # Check if an offer already exists for this variant
+                existing_variant_offer = Offers.objects.filter(variant=offer.variant, is_active=True).exclude(id=offer.id).first()
+                
+                if existing_variant_offer:
+                    # An active offer for this variant already exists
+                    messages.error(request,f"An active offer already exists for the variant {offer.variant.name}")
+                    return redirect('digix_admin:all_offers')
+                
+                offer.is_active = True
+                # Check if the offer is valid
+                if offer.is_valid:
+                    # Set the variant's selling price to the new offer price
+                    print('offer.variant.price_before_offer',offer.variant.price_before_offer,'offer.variant.selling_price',offer.variant.selling_price)
+
+                    if offer.variant.price_before_offer > 0 and offer.variant.price_before_offer > offer.variant.selling_price:
+                        print('in if block')
+                        
+                        offer.variant.selling_price = int(offer.variant.price_before_offer - (offer.variant.price_before_offer * (offer.discount_percentage / 100)))
+                        offer.variant.save()
+                    else:
+                        print('came in else block')
+                        offer.variant.price_before_offer = offer.variant.selling_price
+                        offer.variant.selling_price = int(offer.variant.price_before_offer - (offer.variant.price_before_offer * (offer.discount_percentage / 100)))
+                        offer.variant.save()
+                    
+            else:
+                # Check if there is an existing valid offer for this category
+                existing_category_offers = Offers.objects.filter(category=offer.category, is_active=True).exclude(id=offer.id)
+               
+                # Check if there are variant offers for products in this category
+                variants_in_category = Variant.objects.filter(product__category=offer.category)
+                existing_variant_offers = Offers.objects.filter(variant__in=variants_in_category, is_active=True).exclude(id=offer.id)
+                
+
+
+              
+                # Remove the offer objects in existing_variant_offers if they exist in existing_category_offers
+                existing_category_offers = existing_category_offers.exclude(variant__in=existing_variant_offers.values_list('variant', flat=True))
+                
+
+
+                
+
+
+                if existing_category_offers.exists():
+                    # Active offers for this category (including current category offer) or variant offers in this category exist
+                    messages.error(request,f"An active offer already exists for the category {offer.name}")
+                    return redirect('digix_admin:all_offers')
+                
+                offer.is_active = True
+                # Check if this offer is valid
+                if offer.is_valid:
+                    # Get all variants in the category
+                    variants_in_category = Variant.objects.filter(product__category=offer.category)
+                    
+                    for variant in variants_in_category:
+                        # Check if the variant has an existing offer
+                        existing_variant_offer = Offers.objects.filter(variant=variant, is_active=True).first()
+
+                        if existing_variant_offer:
+                            # Skip this variant if it already has an offer
+                            continue
+
+                        variant.price_before_offer = variant.selling_price
+                        # Update the variant's selling price and price_before_offer
+                        variant.selling_price = int(variant.price_before_offer - (variant.price_before_offer * (offer.discount_percentage / 100)))
+                        variant.save()
+            
+            offer.save()
+        else:
+            messages.error(request,'Date is not in the time period')
+
+    return redirect('digix_admin:all_offers')

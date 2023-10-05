@@ -1,5 +1,5 @@
 {% load static %}
-<div class="container-scroller">
+<div class="container-scroller" style="background: white;">
     <!-- partial:partials/_sidebar.html -->
     <nav class="sidebar sidebar-offcanvas border-right  " id="sidebar">
       <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top p-5" style="background: white;border-right:10px solid #dadada">
@@ -57,14 +57,14 @@
                   </a></li>
 
               <li class="nav-item menu-items ml-2 mb-5">
-                <a  class="btn  mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a"" href="{% url 'digix_admin:add_category' %}" >
+                <a  class="btn  mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a"" href="{% url 'digix_admin:all_coupouns' %}" >
                   <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi mr-2 text-black bi-cart-fill" viewBox="0 0 16 16">
                     <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
                   </svg>Coupouns
                 </a></li>
 
                 <li class="nav-item menu-items ml-2 mb-5">
-                  <a  class="btn  mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a"" href="{% url 'digix_admin:add_category' %}" >
+                  <a  class="btn  mr-3 p-3 border-right-5 w-100 d-flex justify-content-center align-items-center text-black admin_side_a"" href="{% url 'digix_admin:all_offers' %}" >
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi mr-2 text-black bi-cart-fill" viewBox="0 0 16 16">
                       <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
                     </svg>Offers
@@ -213,7 +213,10 @@
     <!-- partial -->
     <div class="container-fluid page-body-wrapper" id="container_fluid_page_body_wrapper_id">
       <!-- partial:partials/_navbar.html -->
-      <nav class="navbar p-0 fixed-top d-flex flex-row">
+      <nav class="navbar p-0 fixed-top d-flex flex-row" style="background:#bab8b9;">
+        <i class="bi bi-list text-dark" style="font-size: 2rem;" onclick="myFunction()"></i>
+        
+        
         <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
           <a class="navbar-brand brand-logo-mini" href="index.html"><img src="{% static 'admin/assets/images/logo-mini.svg' %}" alt="logo" /></a>
         </div>

@@ -1,10 +1,14 @@
 from datetime import timedelta
+from django.utils import timezone
 from decimal import Decimal
 import json
 import re
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+
+from coupoun.models import Coupons
+from coupoun.models import UsedCoupons
 #Form for user creation
 from . forms import UserCreationForm , ShippingAddressForm
 #display form validation errors
@@ -69,6 +73,8 @@ def index(request):
             'review_count': variant_review_count,
             'avg_rating': variant_avg_rating,
         })
+
+   
     return render(request,'user_app/home.html',{'variants_with_images':variants_with_ratings})
 
 
@@ -496,7 +502,7 @@ def user_sign_up(request):
         #send otp to verify number
 
         otp = str(random.randint(1000,9999))
-        send_otp(otp)
+        # send_otp(otp)
         print('-------------------------------------',otp)
         #add all values to a user variable
         user = {'username': username,
@@ -1150,60 +1156,7 @@ def cart_variant_qty_update(request,id,quantity):
     else:
         return JsonResponse({'response': f'Cart item not found for variant with ID: {id}'})
     
-
-#-----------------------------------------------------------------------------------------
-#user checkout
-
-#checkout view
-
-@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
-def user_checkout(request):
-
-    # Retrieve the Cart objects for the current user
-    user = request.user
-    cart_items = Cart.objects.filter(user=user)
-
-    # Convert Decimal fields to float for serialization
-    cart_items_list = []
-    
-    for item in cart_items:
-        cart_items_list.append({'variant_name':item.variant.name,'variant_id':item.variant.id,'quantity':item.quantity})
-
-    # Serialize the cart_items as a JSON string
-    cart_items_json = json.dumps(cart_items_list, cls=DjangoJSONEncoder)
-    
-    # Check if there is at least one item in the cart
-    if not cart_items.exists():
-        # Redirect the user to the cart page if the cart is empty
-        return redirect('user:user_cart')
-
-    # Calculate the total for each item in the cart
-    for item in cart_items:
-        item.total = item.quantity * item.variant.selling_price
-
-    # Calculate the overall total for all items in the cart
-    overall_total = sum(item.total for item in cart_items) 
-
-    # Calculate the total number of items in the cart
-    total_items_in_cart = sum(item.quantity for item in cart_items)
-
-     # Retrieve the user's shipping addresses
-    shipping_addresses = ShippingAddress.objects.filter(user=user)
-
-    
-
-    context = {
-        'cart_items': cart_items,
-        'overall_total': overall_total,
-        'total_items_in_cart': total_items_in_cart,
-        'shipping_addresses': shipping_addresses,  # Add this to the context
-        'cart_items_json':cart_items_json,
-        'page_title': 'checkout'
-       
-    }
-    
-    return render(request, 'user_app/checkout.html', context)
-
+#-----------------------------------------------------------------------------------------------------------
 
 
 #address adding updating default in cart page
@@ -1316,7 +1269,7 @@ def get_variant_stock(request, variant_id):
 
 @user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
 def user_profile_order(request):
-    user_orders = Order.objects.filter(user=request.user).prefetch_related('order_items__variant__variant_images')
+    user_orders = Order.objects.filter(user=request.user).prefetch_related('order_items__variant__variant_images').order_by('-date_created')
     # Annotate each order with the count of order items
     order_count = Order.objects.filter(user=request.user).count()
     
@@ -1373,14 +1326,17 @@ def razor_pay_instance(request):
 
     # Calculate the total price of items in the cart for the specified user
     overall_total = Cart.objects.filter(user=user).aggregate(Sum('total'))['total__sum'] 
-    print(overall_total)
-    if overall_total > 65000:
+    
+    if overall_total is not None and overall_total > 65000:
         overall_total /= 100
     print(overall_total)
      # Razorpay
-    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-    payment = client.order.create({'amount': float(overall_total)*100, 'currency': 'INR', 'payment_capture': 1})
-    print(payment)
+     #when amout credited from wallet use amount will be zero raise an issue
+    payment = None
+    if overall_total is not None:
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        payment = client.order.create({'amount': float(int(overall_total))*100, 'currency': 'INR', 'payment_capture': 1})
+        print(payment)
    
     return JsonResponse({'payment':payment})
 
@@ -1388,8 +1344,9 @@ def razor_pay_instance(request):
 #user wallet
 @user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
 def user_wallet(request):
-    user_wallet=Wallet.objects.get(user=request.user)
-    return render(request,'user_app/user_wallet.html',{'user_wallet':user_wallet})
+    user_wallet=Wallet.objects.filter(user=request.user).first()
+    wallet_usages=WalletUsage.objects.filter(user= request.user).order_by('-date_used')
+    return render(request,'user_app/user_wallet.html',{'user_wallet':user_wallet,'wallet_usages':wallet_usages})
 
 
 #get current order status
@@ -1405,3 +1362,191 @@ def current_order_status(request, order_id):
         order_status = 'Order not found'
         return HttpResponse(json.dumps(order_status), content_type='application/json', status=404)
     
+#-----------------------------------------------------------------------------------------
+#user checkout
+
+#checkout view
+
+@user_passes_test(is_user_authenticated, login_url='user:user_sign_in')
+def user_checkout(request,coupoun_applied=None,applied_coupoun=None,updated_cart_amount=None):
+   
+   
+     # Retrieve all the general coupons that are unused by any user and are still valid
+    # Get all valid general coupons
+    general_coupons = Coupons.objects.filter(
+        is_active=True,
+        valid_to__gte=timezone.now().date(),
+        coupoun_type='general'
+    )
+
+    # Get the IDs of general coupons that have been used by the current user
+    used_general_coupon_ids = UsedCoupons.objects.filter(
+        user=request.user,
+        coupons__coupoun_type='general'
+    ).values_list('coupons_id', flat=True)
+
+    # Filter out the general coupons that have already been used by the current user
+    general_coupons = general_coupons.exclude(id__in=used_general_coupon_ids)
+
+    wallet = Wallet.objects.filter(user=request.user).first()
+    # Retrieve the Cart objects for the current user
+    user = request.user
+    cart_items = Cart.objects.filter(user=user)
+
+    # Convert Decimal fields to float for serialization
+    cart_items_list = []
+    
+    for item in cart_items:
+        cart_items_list.append({'variant_name':item.variant.name,'variant_id':item.variant.id,'quantity':item.quantity})
+
+    # Serialize the cart_items as a JSON string
+    cart_items_json = json.dumps(cart_items_list, cls=DjangoJSONEncoder)
+    
+    # Check if there is at least one item in the cart
+    if not cart_items.exists():
+        # Redirect the user to the cart page if the cart is empty
+        return redirect('user:user_cart')
+
+    # Calculate the total for each item in the cart
+    for item in cart_items:
+        item.total = item.quantity * item.variant.selling_price
+
+    # Calculate the previous overall total (before any deductions)
+    previous_overall_total = sum(item.total for item in cart_items)
+
+    # Get the previous wallet amount if it's not equal to zero
+    previous_wallet_amount = 0
+    if wallet and wallet.amount > 0:
+        previous_wallet_amount = wallet.amount
+
+
+    # Get the previous wallet amount if it's not equal to zero
+    previous_wallet_amount = 0
+    if wallet and wallet.amount > 0:
+        previous_wallet_amount = wallet.amount
+
+    # Deduct the wallet amount if applicable
+    wallet_amount_applied = 0
+    if wallet and wallet.amount > 0:
+        if previous_overall_total >= wallet.amount:
+            previous_overall_total -= wallet.amount
+            wallet_amount_applied = wallet.amount
+            wallet.amount = 0
+        else:
+            wallet.amount -= previous_overall_total
+            wallet_amount_applied = previous_overall_total
+            previous_overall_total = 0
+        
+
+    # Calculate the total number of items in the cart
+    total_items_in_cart = sum(item.quantity for item in cart_items)
+
+     # Retrieve the user's shipping addresses
+    shipping_addresses = ShippingAddress.objects.filter(user=user)
+
+    # Now, based on the cart items, get category-specific coupons for applicable categories
+    cart_item_categories = set([item.variant.product.category.name for item in cart_items])
+
+    # Filter category-specific coupons for the categories in the cart
+    category_coupons = Coupons.objects.filter(
+        is_active=True,
+        valid_to__gte=timezone.now().date(),
+        coupoun_type='category',
+        coupoun_applied_to__in=cart_item_categories
+    )
+
+    # Get the IDs of category-specific coupons that have been used by the current user
+    used_category_coupon_ids = UsedCoupons.objects.filter(
+        user=request.user,
+        coupons__coupoun_type='category',
+        coupons__coupoun_applied_to__in=cart_item_categories
+    ).values_list('coupons_id', flat=True)
+    print(used_category_coupon_ids, 'ids')
+
+    # Filter out the category-specific coupons that have already been used by the current user
+    category_coupons = category_coupons.exclude(id__in=used_category_coupon_ids)
+
+    print('checkout category coupouns ',category_coupons)
+    # Now, based on the cart items, get variant-specific coupons for applicable variants
+    variant_coupons = Coupons.objects.filter(
+        is_active=True,
+        valid_to__gte=timezone.now().date(),
+        coupoun_type='variant',
+        coupoun_applied_to__in=[item.variant.name for item in cart_items]
+    )
+
+    # Get the IDs of variant-specific coupons that have been used by the current user
+    used_variant_coupon_ids = UsedCoupons.objects.filter(
+        user=request.user,
+        coupons__coupoun_type='variant',
+        coupons__coupoun_applied_to__in=[item.variant.name for item in cart_items]
+    ).values_list('coupons_id', flat=True)
+
+    # Filter out the variant-specific coupons that have already been used by the current user
+    variant_coupons = variant_coupons.exclude(id__in=used_variant_coupon_ids)
+
+    print('varinat coupouns ',variant_coupons)
+    if coupoun_applied :
+
+        applied_coupoun = Coupons.objects.get(id=applied_coupoun)
+
+        context = {
+        'cart_items': cart_items,
+        'previous_overall_total': previous_overall_total,
+        'previous_wallet_amount': previous_wallet_amount,  # Pass the previous wallet amount
+        'overall_total': Decimal(updated_cart_amount),
+        'total_items_in_cart': total_items_in_cart,
+        'shipping_addresses': shipping_addresses,  # Add this to the context
+        'cart_items_json':cart_items_json,
+        'page_title': 'checkout',
+        'wallet':wallet,
+        'coupoun_applied':coupoun_applied,
+        'coupouns':general_coupons | category_coupons | variant_coupons,  # Combine all applicable coupons
+        'applied_coupoun':applied_coupoun,
+        'coupoun_count':(general_coupons | category_coupons | variant_coupons).count(),  # Pass the number of available coupons  
+        'wallet_amount_applied': wallet_amount_applied,
+    
+    }
+        
+    else:
+        context = {
+        'cart_items': cart_items,
+        'previous_overall_total': previous_overall_total,
+        'previous_wallet_amount': previous_wallet_amount,  # Pass the previous wallet amount
+        'overall_total': previous_overall_total,
+        'total_items_in_cart': total_items_in_cart,
+        'shipping_addresses': shipping_addresses,  # Add this to the context
+        'cart_items_json':cart_items_json,
+        'page_title': 'checkout',
+        'wallet':wallet,
+        'coupoun_applied':coupoun_applied,
+        'coupouns':general_coupons | category_coupons | variant_coupons,  # Combine all applicable coupons
+        'coupoun_count':(general_coupons | category_coupons | variant_coupons).count(),  # Pass the number of available coupons   
+        'wallet_amount_applied': wallet_amount_applied,
+    }
+
+
+    
+    
+    return render(request, 'user_app/checkout.html', context)
+
+#apply coupoun
+def apply_coupoun(request, id):
+    coupoun = Coupons.objects.get(id=id)
+    user = request.user
+
+    # Calculate the total sum of all items in the user's cart
+    cart_total = Cart.objects.filter(user=user).aggregate(total_price=Sum('total'))['total_price']
+
+    if cart_total is None:
+        cart_total = Decimal('0.00')
+
+    # Check if the cart total is greater than or equal to the coupon's max_amount
+    if cart_total >= coupoun.cart_max_amount:
+        cart_total -= coupoun.discount_amount
+    else:
+        cart_total -= (cart_total * coupoun.discount_percentage / 100)
+    
+    print('cart_total ',cart_total,' coupoun_applied ',coupoun.code)
+
+    return redirect('user:user_checkout', coupoun_applied=str(True),applied_coupoun=coupoun.id,updated_cart_amount=str(cart_total))

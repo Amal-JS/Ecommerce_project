@@ -1462,7 +1462,7 @@ qtyInputs.forEach((qtyInput, index) => {
   )};
   
  //======================================================================================================================
-
+//user_checkout page
 //place order variant quantity check
 //getting the place order btn
 placeOrderBtn = document.getElementById('placeOrderBtn')
@@ -1491,7 +1491,7 @@ if (placeOrderBtn){
 
   const subtotal = document.getElementById('subtotal_cart').innerHTML
    
-  if (subtotal === ''){
+  if (subtotal === '' && document.getElementById('total_items_in_cart').innerHTML === '0'){
     
     showNotification('No item in cart','text-danger');
     return; // Prevent order placement if no address is selected
@@ -1603,10 +1603,11 @@ let outOfStockVariants = [];
       }
       
       async function makePayment(razorPayData) {
+        console.log(parseInt(razorPayData.payment.amount,10))
           // Define your Razorpay options
           var options = {
               "key": "rzp_test_JVNu2LgSFIq4MX",
-              "amount": `${razorPayData.payment.amount}`,
+              "amount": `${parseInt(razorPayData.payment.amount,10)}`,
               "currency": "INR",
               "name": "Digix Store",
               "description": "Product Purchase",
@@ -1625,7 +1626,17 @@ let outOfStockVariants = [];
           // Handle successful payment
 
           // Instead of using 'window.location.href', you can use a fetch request
-          const successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method;
+          coupounApplied = document.getElementById('coupounApplied')
+          let successUrl;
+          if (coupounApplied){
+            coupon_id= coupounApplied.getAttribute('data-coupoun-id')
+            successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method+ '&coupoun_applied=' + coupon_id;
+         console.log(successUrl)
+
+          }else{
+             successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method;
+          }
+         
           fetch(successUrl, {
               method: 'GET'
           })
@@ -1646,9 +1657,18 @@ let outOfStockVariants = [];
       
           rzp1.on('payment.success', function (response) {
             console.log('comes into the instance',response)
-              // Handle successful payment
-              const url = `/order_confirm/?selected_address=${address_id}&payment_method=${payment_method}`;
-              fetch(url, {
+
+             // If payment method is not 'online_payment', directly proceed to order confirmation
+                coupounApplied = document.getElementById('coupounApplied')
+                let successUrl;
+                if (coupounApplied){
+                  coupon_id= coupounApplied.getAttribute('data-coupoun-id')
+                  successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method+ '&coupoun_applied=' + coupon_id;
+               console.log(successUrl)
+      
+                }else{
+                   successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method;
+                }fetch(successUrl, {
                   method: 'GET'
               })
               .then(response => response.json())
@@ -1696,8 +1716,17 @@ let outOfStockVariants = [];
              
           } else {
                 // If payment method is not 'online_payment', directly proceed to order confirmation
-                const url = `/order_confirm/?selected_address=${address_id}&payment_method=${payment_method}`;
-                fetch(url, {
+                coupounApplied = document.getElementById('coupounApplied')
+                let successUrl;
+                if (coupounApplied){
+                  coupon_id= coupounApplied.getAttribute('data-coupoun-id')
+                  successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method+ '&coupoun_applied=' + coupon_id;
+               console.log(successUrl)
+      
+                }else{
+                   successUrl = '/order_confirm/?selected_address=' + address_id + '&payment_method=' + payment_method;
+                }
+                fetch(successUrl, {
                     method: 'GET'
                 })
                 .then(response => response.json())
