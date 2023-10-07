@@ -1,7 +1,16 @@
-from datetime import datetime
+#report generation
+from reportlab.platypus import Paragraph, Spacer, SimpleDocTemplate, Table, TableStyle
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.lib import colors
+from io import BytesIO
+from django.http import HttpResponse
+from reportlab.lib.styles import getSampleStyleSheet
+
+from django.http import HttpResponse
+
 from datetime import timedelta
 from django.forms import ValidationError
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from coupoun.models import Coupons
 from coupoun.models import Offers
@@ -27,7 +36,9 @@ from orders.models import OrderDetail,Order,ReturnOrder
 from django.utils.text import capfirst
 #import CoupounForm
 from coupoun.forms import CoupounForm,OfferForm
-
+from django.utils import timezone
+from django.db.models import Sum, Count
+from datetime import timedelta, datetime, time
 
 def is_user_authenticated(user):
     return user.is_authenticated and user.is_superuser
@@ -36,7 +47,113 @@ def is_user_authenticated(user):
 #admin home 
 @user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def admin_home(request):
-    return render(request,'digix_admin/index.html')
+        today = timezone.now().date()
+        month = timezone.now().month
+        current_date = timezone.now()
+        print('date ',today,month,current_date)
+        daily_sales_count = OrderDetail.objects.filter(order_status='delivered',
+                                                       order__date_created__date=today).aggregate(
+            delivered_count=Count('order'))
+        daily_sales_amount = OrderDetail.objects.filter(order_status='delivered',
+                                                        order__date_created__date=today).aggregate(
+            delivered_amount=Sum('total_price'))
+        # Count of daily Orders
+        daily_orders_count = OrderDetail.objects.filter(delivered_date=today).aggregate(orders_count=Count('order'))
+
+        # Monthly Revenue
+        this_month_monthly_revenue = OrderDetail.objects.filter(
+            order_status='delivered',
+            order__date_created__month=month
+        ).aggregate(monthly_revenue=Sum('total_price'))
+
+        # Incase whether monthly revenue return None in case of no revenue
+        if this_month_monthly_revenue is None:
+            this_month_monthly_revenue['monthly_revenue'] = 0
+
+        first_day_of_current_month = current_date.replace(day=1)
+        last_day_of_previous_month = first_day_of_current_month - timezone.timedelta(days=1)
+        first_day_of_previous_month = last_day_of_previous_month.replace(day=1)
+        last_month_monthly_revenue = OrderDetail.objects.filter(
+            order_status='delivered',
+            order__date_created__range=(
+                first_day_of_previous_month,
+                last_day_of_previous_month)).aggregate(monthly_revenue=Sum('total_price'))
+
+        if this_month_monthly_revenue['monthly_revenue'] is not None and last_month_monthly_revenue[
+            'monthly_revenue'] is not None:
+            last_month_monthly_revenue_diff = ((this_month_monthly_revenue['monthly_revenue'] -
+                                                last_month_monthly_revenue['monthly_revenue']) /
+                                               last_month_monthly_revenue['monthly_revenue']) * 100
+        else:
+            last_month_monthly_revenue_diff = 0
+
+        total_orders = Order.objects.all().count()
+        total_users = CustomUser.objects.all().count()
+        total_sales = OrderDetail.objects.filter(order_status = 'delivered').count()
+        total_profit_result = OrderDetail.objects.filter(order_status='delivered').aggregate(Sum('total_price'))
+        total_profit = total_profit_result['total_price__sum'] if total_profit_result['total_price__sum'] is not None else 0
+        total_cancelled = OrderDetail.objects.filter(order_status = 'cancelled').count()
+        total_returned = OrderDetail.objects.filter(order_status='returned').count()
+
+        context = {
+            'total_users':total_users,
+            'total_sales' : total_sales ,
+            'total_profit' :total_profit, 
+            'total_cancelled':total_cancelled,
+            'total_returned':total_returned,
+            'total_orders'      :total_orders,
+            'daily_sales_count': daily_sales_count['delivered_count'],
+            'daily_sales_amount': daily_sales_amount['delivered_amount'],
+            'daily_orders_count': daily_orders_count['orders_count'],
+            'this_month_monthly_revenue': this_month_monthly_revenue['monthly_revenue'],
+            'last_month_monthly_revenue_diff': last_month_monthly_revenue_diff,
+        }
+        
+        return render(request,'digix_admin/index.html',context)
+#order data
+def get_order_data(request):
+    today = timezone.now()
+    seven_days_ago = today - timedelta(days=6)
+
+    orders_by_day = Order.objects.filter(
+        date_created__range=(seven_days_ago, today)
+    ).values('date_created__day').annotate(order_count=Count('id'))
+
+    order_data = [0] * 7  # Initialize with zeros for all days of the week
+
+    for order in orders_by_day:
+        day = (order['date_created__day'] + 6) % 7  # Adjust for array indexing
+        order_data[day] = order['order_count']
+
+    return JsonResponse({'order_data': order_data})
+
+#order count in returned , cancelled ,total and delivered
+from django.http import JsonResponse
+
+def chart_order_status(request):
+    # Simulated data, replace with actual data retrieval logic
+    orders_count = Order.objects.all().count()
+    canceled_count = OrderDetail.objects.filter(order_status='cancelled').count()
+    returned_count = OrderDetail.objects.filter(order_status='returned').count()
+    delivered_count = OrderDetail.objects.filter(order_status='delivered').count()
+
+    # Create a dictionary with the data
+    chart_data = {
+        "labels": ["Orders", "Canceled", "Returned", "Delivered"],
+        "datasets": [
+            {
+                "data": [orders_count, canceled_count, returned_count, delivered_count],
+                "backgroundColor": [
+                    "#FF6384",
+                    "#36A2EB",
+                    "#FFCE56",
+                    "#4BC0C0",
+                ],
+            }
+        ],
+    }
+
+    return JsonResponse(chart_data)
 
 #admin login
 def admin_login(request):
@@ -754,3 +871,115 @@ def change_offer_status(request,id):
             messages.error(request,'Date is not in the time period')
 
     return redirect('digix_admin:all_offers')
+
+
+#----------------------------------------------- order report -------------------------------------
+
+
+
+def create_title(title_text):
+    styles = getSampleStyleSheet()
+    title_style = styles['Title']
+    return Paragraph(title_text, style=title_style)
+
+
+def create_table(data, style):
+    table = Table(data, style=style)
+    return table
+
+
+def create_pdf_response(report_type, elements):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename={report_type}_report.pdf'
+    
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=landscape(letter))
+
+    doc.build(elements)
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+    return response
+
+def generate_pdf_report(sales_data, total_canceled_sales, total_price_for_orders, total_orders_count, report_type):
+    elements = []
+
+    # Create Title
+    title_text = f"Digix {report_type.capitalize()} Report"
+    elements.append(create_title(title_text))
+    elements.append(Spacer(1, 12))
+    # Create Table for Data
+    table_data = [["Product Name (Variant)", "Total Quantity", "Total Price"]]
+
+    for order_detail in sales_data:
+        product_name = f"{order_detail['variant__product__name']} (RAM: {order_detail['variant__ram']}GB, Storage: {order_detail['variant__storage']}GB)"
+        variant_name = f"{order_detail['variant__product__name']} (RAM: {order_detail['variant__ram']}GB, Storage: {order_detail['variant__storage']}GB)"
+        quantity = str(order_detail['total_quantity'])
+        total_price = f"Rs {order_detail['total_price']}"  # Format the total price as 'Rs X'
+        table_data.append([product_name,  quantity, total_price])
+
+    table_style = [
+        ('BACKGROUND', (0, 0), (-1, 0), (0, 0, 0)),
+        ('TEXTCOLOR', (0, 0), (-1, 0), (1, 1, 1)),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), (0.9, 0.9, 0.9)),
+        ('GRID', (0, 0), (-1, -1), 1, (0, 0, 0)),
+    ]
+
+    elements.append(create_table(table_data, table_style))
+    # Create a spacer to add some space between the table and the total info paragraph
+    elements.append(Spacer(1, 20))
+
+    total_info = f"Total Canceled {report_type.capitalize()}: {total_canceled_sales}<br/><br/><br/>"
+    total_info += f"Total Orders {report_type.capitalize()}: {total_orders_count}<br/><br/><br/>"
+    total_info += f"Total Profit: Rs {int(total_price_for_orders)}\n"  # Use the calculated total_price_for_orders
+    
+
+    # Add total_info as a Paragraph to elements
+    total_info_paragraph = Paragraph(total_info, style=getSampleStyleSheet()['Normal'])
+    elements.append(total_info_paragraph)
+
+    return create_pdf_response(report_type, elements)
+
+def download_report(request):
+    start_date = request.GET.get('start_date', None)
+    end_date = request.GET.get('end_date', None)
+    report_type = 'orders'
+
+    if not start_date or not end_date or not report_type:
+        # Handle missing or invalid parameters
+        return HttpResponse("Invalid parameters")
+
+    
+
+    
+    
+    # Calculate total orders, canceled orders, and total price within the specified date range
+    order_data = OrderDetail.objects.filter(
+        order__date_created__range=(start_date, end_date)
+    ).values(
+    'variant__name',  # Include the variant name
+    'variant__product__name',  # Include the product name
+    'variant__ram',  # Include the variant RAM
+    'variant__storage',  # Include the variant storage
+    ).annotate(
+    total_quantity=Sum('quantity'),
+    total_price=Sum('total_price')  # Calculate the total price for orders
+    ).order_by('-total_quantity')
+
+    total_canceled_orders = OrderDetail.objects.filter(
+        order_status='cancelled',
+        order__date_created__range=(start_date, end_date)
+    ).count()
+
+    total_orders_count = OrderDetail.objects.filter(
+        order__date_created__range=(start_date, end_date)
+    ).count()
+    
+    # Calculate total price for orders within the date range
+    total_price_for_orders = int(sum(order['total_price'] for order in order_data))
+    
+    # Call generate_pdf_report with the correct arguments for "orders" report
+    return generate_pdf_report(order_data, total_canceled_orders, total_price_for_orders, total_orders_count, report_type)

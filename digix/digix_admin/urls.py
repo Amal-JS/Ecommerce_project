@@ -62,7 +62,12 @@ urlpatterns = [
     path('edit_offer/<int:id>/',views.edit_offer,name='edit_offer'),
 
     path('change_offer_status/<int:id>/',views.change_offer_status,name='change_offer_status'),
-    
+
+    #chart
+    path('get_order_data/',views.get_order_data),
+    path('chart_order_status/',views.chart_order_status),
+    #download report,   
+    path('download_report/',views.download_report,name='download_report'),
     
 
 ]

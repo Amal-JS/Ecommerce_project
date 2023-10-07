@@ -5,12 +5,15 @@ main_panel_div.appendChild(content_wrapper_div);
 var container_fluid_page_body_wrapper_id = document.getElementById(
   "container_fluid_page_body_wrapper_id"
 );
-container_fluid_page_body_wrapper_id.appendChild(main_panel_div);
+
 var nav_ul = document.getElementById("nav_ul");
 nav_ul.style.background = "white";
 
+const digixContentDiv = document.getElementById('digix-content-div')
+digixContentDiv.appendChild(content_wrapper_div)
+digixContentDiv.appendChild(main_panel_div);
 function myFunction() {
-  var x = document.getElementById("sidebar");
+  var x = document.getElementById("nav-div");
   if (x.style.display === "none") {
     x.style.display = "block";
   } else {
