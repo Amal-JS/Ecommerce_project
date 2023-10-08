@@ -691,6 +691,11 @@ if(document.getElementById('id_password')){
 }
 
 
+
+
+
+
+
 //verify otp input value length limit and focus change
 
 if ((window.location.pathname === '/user_sign_up/') || (window.location.pathname === '/verify_otp/')){

@@ -55,7 +55,7 @@ Login
                         </div>
                         {% if otp_again %}
                         <div class="text-start mt-2 mx-3" >
-                          <a href="{% url 'user:otp_update' %}">Try again , send another otp</a>
+                          <a href="{% url 'user:otp_update' %}" class="text-dark text-decoration-none">Try again , send another otp</a>
                         </div>
                       {% endif %}
                      
@@ -131,7 +131,11 @@ Login
                                                                 {% if messages %}
                                             <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %}">
                                                 {% for message in messages %}
-                                                <p class="text-danger">{{ message }}</p>
+                                                {% if message.tags == 'success' %}
+                                                    <p class=" text-success fw-bold">{{ message }}</p>
+                                                {% else %}
+                                                    <p class=" text-danger fw-bold  ">{{ message }}</p>
+                                                {% endif %}
                                                 {% endfor %}
                                             </div>
                                             {% endif %}

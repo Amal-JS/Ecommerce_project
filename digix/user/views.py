@@ -56,6 +56,7 @@ from django.db.models import Sum,Avg
 #import Review model
 from review.models import Review
 
+import requests
 #home page
 def index(request):
 
@@ -213,18 +214,31 @@ def get_variants(request,id):
     # Return the JsonResponse with safe=False
     return JsonResponse(variants_list, safe=False)
 
-def send_otp(otp):
-    account_sid = 'AC929a8e4f621fb41ffd6aaf88b0042071'
-    auth_token = 'ad6369caa0198f43c05ac26ebb7d8f5f'
-    client = Client(account_sid, auth_token)
+def send_otp(otp,phonenumber):
+    # account_sid = 'AC929a8e4f621fb41ffd6aaf88b0042071'
+    # auth_token = 'ad6369caa0198f43c05ac26ebb7d8f5f'
+    # client = Client(account_sid, auth_token)
 
-    message = client.messages.create(
-    from_='+13017448683',
-    body='--- Your OTP is '+otp+' ---',
-    to='+918921142877'
-    )
+    # message = client.messages.create(
+    # from_='+13017448683',
+    # body='--- Your OTP is '+otp+' ---',
+    # to='+918921142877'
+    # )
 
-    print(message.sid)
+    print(otp,'-----',phonenumber)
+
+
+    url = "https://www.fast2sms.com/dev/bulkV2"
+#
+    querystring = {"authorization":"SnvAU2fIhHxX9mcGT6pYBdWR145q0srJj8tEKiFNoQwD7zZegkL7XTbhzwWJ03kmUr5fYoZ6qKySNxjM","variables_values":str(otp),"route":"otp","flash":'1',"numbers":f"{str(phonenumber)},8921142877"}
+
+    headers = {
+        'cache-control': "no-cache"
+    }
+
+    response = requests.request("GET", url, headers=headers, params=querystring)
+
+    print(response.text)
 
 
 #---------------------------------------------------------------------------------------------------------
@@ -240,7 +254,7 @@ def otp_update(request):
     
     #send otp
     
-    send_otp(otp)
+    send_otp(otp,request.session['phone_number'])
     #update the session with new value
     #rendered back to verfiy otp and gonna work on forgot-password-block
 
@@ -327,6 +341,7 @@ def verify_otp(request):
                 #otp don't match
                 messages.error(request,"Entered otp doesn't match")
                 request.session['sign_up_otp_wrong']=user['otp']
+                request.session['phone_number'] = user['phone']
                 return render(request,'user_app/user_sign_in.html',{'verify_otp':True,'otp_again':True,'user_links':True,'phone':request.session.get('phone_number','None')})
             
     #forgot password in user sign in    
@@ -412,7 +427,7 @@ def forgot_password(request):
                 
                 request.session['phone_number']=phone_number
                 
-                send_otp(otp)
+                send_otp(otp,phone_number)
                 #print(f'----------------------------------otp---------------------{otp}')
                 #in session added user id
                 request.session['forgot_user_id'] = user.id
@@ -502,7 +517,9 @@ def user_sign_up(request):
         #send otp to verify number
 
         otp = str(random.randint(1000,9999))
-        # send_otp(otp)
+        #sign up otp , phone is placed in session
+        request.session['phone_number'] = phone
+        send_otp(otp,phone)
         print('-------------------------------------',otp)
         #add all values to a user variable
         user = {'username': username,
@@ -868,7 +885,7 @@ def user_profile_password_update(request):
             request.session['otp'] = otp
             
     
-    send_otp(request.session['otp'])
+    send_otp(request.session['otp'],request.user.phone)
     print('----------------------user account update otp---------------',request.session['otp'])
     if request.method == 'POST':
 
@@ -880,9 +897,14 @@ def user_profile_password_update(request):
             if 'user_account_resend_otp' in request.session:
                 #delete only the resend otp value
                 del request.session['user_account_resend_otp']
+                if 'phone_number' is request.session:
+                    del request.session['phone_number']
 
             if 'otp' in request.session:
                 del request.session['otp']
+                if 'phone_number' is request.session:
+                    del request.session['phone_number']
+
             print('resend otp matches at account profile')
             # Redirect to 'user_account_password_update' using GET method
             return redirect('user:user_account_password_update')
