@@ -50,42 +50,17 @@ def admin_home(request):
         today = timezone.now().date()
         month = timezone.now().month
         current_date = timezone.now()
-        print('date ',today,month,current_date)
+        
         daily_sales_count = OrderDetail.objects.filter(order_status='delivered',
                                                        order__date_created__date=today).aggregate(
             delivered_count=Count('order'))
         daily_sales_amount = OrderDetail.objects.filter(order_status='delivered',
                                                         order__date_created__date=today).aggregate(
-            delivered_amount=Sum('total_price'))
+            delivered_amount=Sum('total_price')) 
         # Count of daily Orders
         daily_orders_count = OrderDetail.objects.filter(delivered_date=today).aggregate(orders_count=Count('order'))
 
-        # Monthly Revenue
-        this_month_monthly_revenue = OrderDetail.objects.filter(
-            order_status='delivered',
-            order__date_created__month=month
-        ).aggregate(monthly_revenue=Sum('total_price'))
-
-        # Incase whether monthly revenue return None in case of no revenue
-        if this_month_monthly_revenue is None:
-            this_month_monthly_revenue['monthly_revenue'] = 0
-
-        first_day_of_current_month = current_date.replace(day=1)
-        last_day_of_previous_month = first_day_of_current_month - timezone.timedelta(days=1)
-        first_day_of_previous_month = last_day_of_previous_month.replace(day=1)
-        last_month_monthly_revenue = OrderDetail.objects.filter(
-            order_status='delivered',
-            order__date_created__range=(
-                first_day_of_previous_month,
-                last_day_of_previous_month)).aggregate(monthly_revenue=Sum('total_price'))
-
-        if this_month_monthly_revenue['monthly_revenue'] is not None and last_month_monthly_revenue[
-            'monthly_revenue'] is not None:
-            last_month_monthly_revenue_diff = ((this_month_monthly_revenue['monthly_revenue'] -
-                                                last_month_monthly_revenue['monthly_revenue']) /
-                                               last_month_monthly_revenue['monthly_revenue']) * 100
-        else:
-            last_month_monthly_revenue_diff = 0
+        
 
         total_orders = Order.objects.all().count()
         total_users = CustomUser.objects.all().count()
@@ -94,6 +69,9 @@ def admin_home(request):
         total_profit = total_profit_result['total_price__sum'] if total_profit_result['total_price__sum'] is not None else 0
         total_cancelled = OrderDetail.objects.filter(order_status = 'cancelled').count()
         total_returned = OrderDetail.objects.filter(order_status='returned').count()
+        order_count_today = 0  if daily_orders_count['orders_count'] is None else daily_orders_count['orders_count']
+        
+        print(daily_sales_amount)
 
         context = {
             'total_users':total_users,
@@ -104,9 +82,8 @@ def admin_home(request):
             'total_orders'      :total_orders,
             'daily_sales_count': daily_sales_count['delivered_count'],
             'daily_sales_amount': daily_sales_amount['delivered_amount'],
-            'daily_orders_count': daily_orders_count['orders_count'],
-            'this_month_monthly_revenue': this_month_monthly_revenue['monthly_revenue'],
-            'last_month_monthly_revenue_diff': last_month_monthly_revenue_diff,
+            'daily_orders_count':  order_count_today,
+            
         }
         
         return render(request,'digix_admin/index.html',context)

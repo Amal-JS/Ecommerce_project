@@ -24,6 +24,9 @@
 								
 								<div class="checkout-discount ">
 
+									{% if update_address or   add_new_address %}
+
+									{% else %}
 									{% if coupoun_applied  %}
 
 									<div style="border:3px solid green;"  class="m-2 p-3 w-100 d-flex">
@@ -61,7 +64,7 @@
 										
 									</div>
 									{% endif %}
-
+									{% endif %}
 									
 
 								</div><!-- End .checkout-discount -->

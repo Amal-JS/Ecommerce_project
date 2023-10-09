@@ -1,0 +1,20 @@
+{% extends 'user_app/user_base.html' %}"
+{% load static %}
+{% block title %}Profile{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1 class="fs-1 text-dark text-center mt-5">Page not found   </h1>
+            <h1 class="fs-1 text-dark text-center mt-2">  Go to home 
+                <span>
+                    
+                </span>
+            </h1>
+            <a href="{% url 'user:index' %}" class="btn btn-dark mt-2"> Home</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

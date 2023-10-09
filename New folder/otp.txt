@@ -1,0 +1,57 @@
+otp update 
+from profile otp
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const otpInputs = document.querySelectorAll(".otp-input");
+  
+  otpInputs.forEach(function (input, index) {
+      input.addEventListener("input", function (e) {
+          const currentValue = e.target.value;
+
+          if (currentValue.length === 1) {
+              // Move focus to the next input if a character is entered
+              if (index < otpInputs.length - 1) {
+                  otpInputs[index + 1].focus();
+              }
+          } else if (currentValue.length === 0) {
+              // Move focus to the previous input if Backspace is pressed
+              if (index > 0) {
+                  otpInputs[index - 1].focus();
+              }
+          }
+      });
+
+      input.addEventListener("keydown", function (e) {
+          // Prevent default Backspace behavior when the input is empty
+          if (e.key === "Backspace" && !input.value) {
+              e.preventDefault();
+          }
+      });
+  });
+});
+
+
+was in sign up
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const otpInputs = document.querySelectorAll('.otp-input');
+
+    if (otpInputs){
+      otpInputs.forEach((input, index) => {
+        input.addEventListener('input', function () {
+            if (this.value.length === 1 && index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+        });
+
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Backspace' && index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        });
+    });
+    }
+   
+});

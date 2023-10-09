@@ -3,7 +3,7 @@ from django.utils import timezone
 from decimal import Decimal
 import json
 import re
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -59,7 +59,7 @@ from review.models import Review
 import requests
 #home page
 def index(request):
-
+    
     #print(f" from index view ===>  session : {request.session} , user : { request.user}")
     variants_with_images = Variant.objects.prefetch_related('variant_images').all()
      # Calculate review count and average star rating for each variant
@@ -243,6 +243,9 @@ def send_otp(otp,phonenumber):
 
 #---------------------------------------------------------------------------------------------------------
 #-----------------------------------------User Login ,Signup , Otp --------------------------------------
+
+
+
 
 
 
@@ -1572,3 +1575,8 @@ def apply_coupoun(request, id):
     print('cart_total ',cart_total,' coupoun_applied ',coupoun.code)
 
     return redirect('user:user_checkout', coupoun_applied=str(True),applied_coupoun=coupoun.id,updated_cart_amount=str(cart_total))
+
+
+# handle 404 exception 
+def custom_404_view(request, exception):
+    return render(request, 'user_app/404.html', status=404)
