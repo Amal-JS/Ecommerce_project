@@ -28,14 +28,14 @@
       <div class="container-fluid page-body-wrapper full-page-wrapper">
         <div class="row w-100 m-0">
           <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg mt-5" >
-            <div class="card col-lg-3 mx-auto " style="margin-top:110px;">
+            <div class="card col-lg-3 mx-auto " >
               <div class="card-body px-2 py-2 text-center  " >
-                <div class="d-flex justify-content-center">
+                <div class="d-flex justify-content-center align-items-center">
                   <img src="{% static 'logo.jpg' %}" class="img-fluid" alt="Digix logo" style="width:10rem;height:10rem;">
               </div>
                 <form method="POST" class="mt-2 p-3">
                   {% csrf_token %}
-                  <div class="form-group mt-3">
+                  <div class="form-group">
                     
                     <input type="text" class="form-control p_input text-dark" placeholder="Admin Username" name="admin_username">
                   </div>
