@@ -900,12 +900,12 @@ def user_profile_password_update(request):
             if 'user_account_resend_otp' in request.session:
                 #delete only the resend otp value
                 del request.session['user_account_resend_otp']
-                if 'phone_number' is request.session:
+                if 'phone_number' in request.session:
                     del request.session['phone_number']
 
             if 'otp' in request.session:
                 del request.session['otp']
-                if 'phone_number' is request.session:
+                if 'phone_number' in request.session:
                     del request.session['phone_number']
 
             print('resend otp matches at account profile')
