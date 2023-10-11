@@ -47,6 +47,7 @@ def is_user_authenticated(user):
 #admin home 
 @user_passes_test(is_user_authenticated, login_url='digix_admin:admin_login')
 def admin_home(request):
+        #getting dates
         today = timezone.now().date()
         month = timezone.now().month
         current_date = timezone.now()
@@ -59,7 +60,7 @@ def admin_home(request):
             delivered_amount=Sum('total_price')) 
         # Count of daily Orders
         daily_orders_count = OrderDetail.objects.filter(delivered_date=today).aggregate(orders_count=Count('order'))
-
+        print(OrderDetail.objects.filter(delivered_date=today))
         
 
         total_orders = Order.objects.all().count()
@@ -921,18 +922,31 @@ def generate_pdf_report(sales_data, total_canceled_sales, total_price_for_orders
     return create_pdf_response(report_type, elements)
 
 def download_report(request):
+
     start_date = request.GET.get('start_date', None)
     end_date = request.GET.get('end_date', None)
+    month = request.GET.get('month', None)
+    year = request.GET.get('year', None)
     report_type = 'orders'
 
-    if not start_date or not end_date or not report_type:
+
+    if (not start_date and not end_date) or (not month and not year) or not report_type:
         # Handle missing or invalid parameters
-        return HttpResponse("Invalid parameters")
-
+        messages.error(request,"Invalid parameters")
+        return redirect('digix_admin:admin_home')
+    
+    if month != 'Select Month':
+        if month and year:
+            # If month and year are provided, calculate the start and end dates accordingly
+            month = int(month)
+            year = int(year)
+            start_date = datetime(year, month, 1)
+            end_date = datetime(year, month + 1, 1) 
+    
+    
     
 
-    
-    
+
     # Calculate total orders, canceled orders, and total price within the specified date range
     order_data = OrderDetail.objects.filter(
         order__date_created__range=(start_date, end_date)

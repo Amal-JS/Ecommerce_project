@@ -439,7 +439,7 @@ def forgot_password(request):
             
         except Exception as e:
             #no phone number exist in database
-            print(user ,e )
+            print(e )
             messages.error(request,"User with phone number doesn't exist")
             return render(request,'user_app/user_sign_in.html',{'forgot_password':True,'user_links':True})
         
@@ -1372,7 +1372,7 @@ def user_wallet(request):
     user_wallet=Wallet.objects.filter(user=request.user).first()
     wallet_usages=WalletUsage.objects.filter(user= request.user).order_by('-date_used')
     return render(request,'user_app/user_wallet.html',{'user_wallet':user_wallet,'wallet_usages':wallet_usages})
-
+#CSRF_TRUSTED_ORIGINS = []
 
 #get current order status
 def current_order_status(request, order_id):
