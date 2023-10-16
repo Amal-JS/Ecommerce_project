@@ -37,5 +37,8 @@ Project has :
               - sales report
 
        10.Can add product review
+       11.Quantity decrement button hiding when product quantity is 1.
+       12.Adding product image cropping
        
+
         
