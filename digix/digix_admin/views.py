@@ -912,7 +912,7 @@ def generate_pdf_report(sales_data, total_canceled_sales, total_price_for_orders
     elements.append(Spacer(1, 20))
 
     total_info = f"Total Canceled {report_type.capitalize()}: {total_canceled_sales}<br/><br/><br/>"
-    total_info += f"Total Orders {report_type.capitalize()}: {total_orders_count}<br/><br/><br/>"
+    total_info += f"Total  {report_type.capitalize()}: {total_orders_count}<br/><br/><br/>"
     total_info += f"Total Profit: Rs {int(total_price_for_orders)}\n"  # Use the calculated total_price_for_orders
     
 
