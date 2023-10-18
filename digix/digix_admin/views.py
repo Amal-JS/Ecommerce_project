@@ -721,7 +721,7 @@ def change_offer_status(request,id):
     offer = Offers.objects.get(id=id)
 
     if offer.is_active:
-        if offer.is_valid:
+        
             offer.is_active = False
             
             # Check if the 'is_valid' property has changed to False
@@ -766,6 +766,7 @@ def change_offer_status(request,id):
                         #     print(variant.name,'-------- after updating price ------------',variant.selling_price)
                         variant.save()
             offer.save()
+        
     else:
         #activating offer
         if offer.is_valid:

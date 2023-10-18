@@ -75,6 +75,9 @@ def index(request):
             'avg_rating': variant_avg_rating,
         })
 
+    # for variant in variants_with_images:
+    #     variant.selling_price = variant.price_before_offer
+    #     variant.save()
    
     return render(request,'user_app/home.html',{'variants_with_images':variants_with_ratings})
 
