@@ -61,8 +61,9 @@ p{
               <div style="border-bottom:2px solid red;" class="mb-3">
                 <p class="text-dark fw-bold fs-3">Admin responded : {{order_item.return_admin_response }}</p>
                 </div>
-              {% elif not order_item.return_admin_response is None %}
+              {% elif not order_item.return_admin_response is none and order_item.order_status != 'cancelled' %}
               <div style="border-bottom:2px solid red;" class="mb-3">
+                
               <p class="text-dark fw-bold fs-3">Admin responded : {{order_item.return_admin_response }}.Can't accept the return.</p>
               </div>
               
