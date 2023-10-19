@@ -1178,7 +1178,7 @@ def cart_variant_qty_update(request,id,quantity):
     as it ensures that you are working with a 
     single item if it exists.'''
     if cart_item:
-        cart_item.quantity = quantity
+        cart_item.quantity = Decimal(quantity)
         cart_item.save()
         return JsonResponse({'response': f'{variant} : {quantity} updated'})
     else:

@@ -1383,13 +1383,13 @@ if (window.location.pathname.startsWith('/cart/')){
     setInitialTotalPrices()
     setSubTotal()
 
-//hide '-' icon if 1 item
-// Check show_qty value and hide minus icon at the start
-qtyInputs.forEach((qtyInput, index) => {
-  if (parseInt(qtyInput.value) === 1) {
-      minusIcons[index].style.display = 'none';
-  }
-});
+      //hide '-' icon if 1 item
+      // Check show_qty value and hide minus icon at the start
+      qtyInputs.forEach((qtyInput, index) => {
+        if (parseInt(qtyInput.value) === 1) {
+            minusIcons[index].style.display = 'none';
+        }
+      });
 
    // Event listener for the minus icon
 
@@ -1457,10 +1457,53 @@ qtyInputs.forEach((qtyInput, index) => {
 
    } 
 
-
-
-
 //variant qty update in cart
+qtyInputs.forEach((element) => {
+
+  element.addEventListener('keyup', () => {
+      const qtyValue = parseInt(element.value);
+      const maxStock = parseInt(element.getAttribute('max_stock'));
+      const varId = parseInt(element.getAttribute('data-var'))
+      let quantity = 0;
+      
+      if(isNaN(qtyValue)){
+        
+        element.value=1;
+        quantity = 1;
+        
+      }
+      
+      else if (qtyValue > maxStock) {
+        showNotification('Not that much stock available.', 'text-danger');
+        element.value = maxStock;
+        quantity = maxStock;
+    }
+      else{
+          quantity = element.value;
+       
+      }
+
+        if (quantity <= maxStock)
+        {
+          
+          //NaN problem will raise when input value is zero can't assign 1 or the value to qtyValue because of
+          //const variable
+          console.log('comes here')
+          
+          fetch(`/cart_variant_qty_update/${varId}/${quantity}`)
+                    .then(response=>response.json())
+                    .then(response=>console.log(response.response))
+                    .catch(error=>showNotification('Quantity Updation failed','text-danger'))
+
+          setInitialTotalPrices()
+          setSubTotal()
+        }
+      
+  });
+});
+
+
+
 
   }
 
