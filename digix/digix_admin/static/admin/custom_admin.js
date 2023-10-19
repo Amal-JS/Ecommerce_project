@@ -274,28 +274,16 @@ $(document).ready(function () {
         { data: "phone" },
         { data: "email" },
         { data : "is_active"},
-
-        
         {
           data: null,
           render: function (data, type, row) {
-            return (
-              '<button class="btn btn-success view-button-unblock" data-id="' +
-              row.id +
-              '">Unblock</button>'
-            );
+            if (row.is_active) {
+              return '<button class="btn btn-danger view-button-block" data-id="' + row.id + '" style="width:100px";>Block</button>';
+            } else {
+              return '<button class="btn btn-success view-button-unblock" data-id="' + row.id + '" style="width:100px";>Unblock</button>';
+            }
           },
-        },
-        {
-          data: null,
-          render: function (data, type, row) {
-            return (
-              '<button class="btn btn-danger view-button-block" data-id="' +
-              row.id +
-              '">Block</button>'
-            );
-          },
-        },
+        }
       ],
     });
 
