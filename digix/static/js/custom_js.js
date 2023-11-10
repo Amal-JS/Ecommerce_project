@@ -1462,6 +1462,7 @@ if (window.location.pathname.startsWith('/cart/')){
 qtyInputs.forEach((element,index) => {
 
   element.addEventListener('keyup', () => {
+
       const qtyValue = parseInt(element.value);
       const maxStock = parseInt(element.getAttribute('max_stock'));
       const varId = parseInt(element.getAttribute('data-var'))
@@ -1502,8 +1503,10 @@ qtyInputs.forEach((element,index) => {
         }
 
         if (qtyValue>1){
+          // console.log('comes after qty update in the input')
           minusIcons[index].style.display='block'
         }else{
+          // console.log('comes after qty update in the input minus')
           minusIcons[index].style.display='none'
         }
       
