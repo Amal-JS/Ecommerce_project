@@ -1360,7 +1360,7 @@ if (window.location.pathname.startsWith('/cart/')){
         for (let index=0 ;index<variantTotalPrices.length;index++){
           const price = parseFloat(variantTotalPrices[index].innerText.replace(/[^\d.]+/g, '')); // Clean and parse price
           total += price ;
-          console.log(variantTotalPrices[index].innerText,parseFloat(variantTotalPrices[index].innerText.replace(/[^\d.]+/g, '')))
+        //   console.log(variantTotalPrices[index].innerText,parseFloat(variantTotalPrices[index].innerText.replace(/[^\d.]+/g, '')))
         }
         // console.log('total :',total)
         subtotal.innerHTML = total.toFixed(2); // Update subtotal
@@ -1425,6 +1425,7 @@ if (window.location.pathname.startsWith('/cart/')){
           } else {
               minusIcon.style.display = 'block';
           }
+
         });
     });
 
@@ -1458,12 +1459,13 @@ if (window.location.pathname.startsWith('/cart/')){
    } 
 
 //variant qty update in cart
-qtyInputs.forEach((element) => {
+qtyInputs.forEach((element,index) => {
 
   element.addEventListener('keyup', () => {
       const qtyValue = parseInt(element.value);
       const maxStock = parseInt(element.getAttribute('max_stock'));
       const varId = parseInt(element.getAttribute('data-var'))
+      const minusIcons = document.querySelectorAll(".minus_icon");
       let quantity = 0;
       
       if(isNaN(qtyValue)){
@@ -1488,7 +1490,7 @@ qtyInputs.forEach((element) => {
           
           //NaN problem will raise when input value is zero can't assign 1 or the value to qtyValue because of
           //const variable
-          console.log('comes here')
+          
           
           fetch(`/cart_variant_qty_update/${varId}/${quantity}`)
                     .then(response=>response.json())
@@ -1497,6 +1499,12 @@ qtyInputs.forEach((element) => {
 
           setInitialTotalPrices()
           setSubTotal()
+        }
+
+        if (qtyValue>1){
+          minusIcons[index].style.display='block'
+        }else{
+          minusIcons[index].style.display='none'
         }
       
   });
